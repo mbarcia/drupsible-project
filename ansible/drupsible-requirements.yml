@@ -3,25 +3,21 @@
 - src: https://github.com/mbarcia/drupsible-apache
   version: master
   name: drupsible.apache2
-  path: playbooks/roles
 - src: https://github.com/mbarcia/drupsible-memcached
   version: master
   name: drupsible.memcached
-  path: playbooks/roles
 - src: https://github.com/mbarcia/drupsible-newrelic
   version: master
   name: drupsible.newrelic
-  path: playbooks/roles
 - src: https://github.com/mbarcia/drupsible-composer
   version: master
   name: drupsible.composer
-  path: playbooks/roles
 - src: https://github.com/mbarcia/drupsible-drush
   version: master
   name: drupsible.drush
-  path: playbooks/roles
+- src: https://github.com/mbarcia/drupsible-mysql
+  version: master
+  name: drupsible.mysql
 - src: https://github.com/mbarcia/drupsible-deploy
   version: master
   name: drupsible.deploy
-  path: playbooks/roles
-  

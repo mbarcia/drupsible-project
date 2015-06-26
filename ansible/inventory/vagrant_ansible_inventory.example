@@ -1,0 +1,27 @@
+[drupsible_deploy]
+web.domain.com ansible_connection=local
+
+[drupsible_mysql]
+db.domain.com ansible_ssh_host=192.168.50.11
+
+[debops_users]
+db.domain.com ansible_ssh_host=192.168.50.11
+web.domain.com ansible_connection=local
+
+[debops_postfix]
+web.domain.com ansible_connection=local
+
+[debops_php5]
+web.domain.com ansible_connection=local
+
+[drupsible_drush]
+web.domain.com ansible_connection=local
+
+[drupsible_apache2]
+web.domain.com ansible_connection=local
+
+[drupsible_memcached]
+web.domain.com ansible_connection=local
+
+[ansible_controllers]
+web.domain.com ansible_connection=local
