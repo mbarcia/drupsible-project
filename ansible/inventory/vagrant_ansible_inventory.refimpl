@@ -1,0 +1,35 @@
+[webservers]
+local.drupsible.org ansible_connection=local
+
+[drupsible_mysql]
+local.drupsible.org ansible_connection=local
+
+[debops_apt]
+local.drupsible.org ansible_connection=local
+
+[debops_ferm]
+local.drupsible.org ansible_connection=local
+
+[debops_php5]
+local.drupsible.org ansible_connection=local
+
+[debops_tcpwrappers]
+local.drupsible.org ansible_connection=local
+
+[debops_users]
+local.drupsible.org ansible_connection=local
+
+[drupsible_deploy]
+local.drupsible.org ansible_connection=local
+
+[drupsible_apache2]
+local.drupsible.org ansible_connection=local
+
+[drupsible_memcached]
+local.drupsible.org ansible_connection=local
+
+[drupsible_newrelic]
+local.drupsible.org ansible_connection=local
+
+[ansible_controllers]
+local.drupsible.org ansible_connection=local

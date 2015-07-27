@@ -1,0 +1,42 @@
+---
+# worker, event or prefork
+apache2_mpm: "worker"
+
+apache2_packages_ontop: []
+
+apache2_modules:
+  - alias
+  - auth_basic
+  - authn_file
+  - authz_host
+  - authz_user
+  - autoindex
+  - deflate
+  - dir
+  - env
+  - expires
+  - mime
+  - negotiation
+  - reqtimeout
+  - rewrite
+  - setenvif
+  - status
+
+php5_packages_ontop:
+  - php-pear
+  - php-soap
+  - php5-curl
+  - php5-gd
+  - php5-gmp
+  - php5-mcrypt
+  - php5-memcache
+  - php5-mysql
+  - imagemagick
+  - newrelic-php5
+
+post_max_size: "32M"
+upload_max_filesize: "32M"
+php_timezone: "Europe/Madrid"
+memory_limit: "256M"
+html_errors: "Off"
+allow_override_htaccess: All

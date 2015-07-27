@@ -1,0 +1,7 @@
+---
+apt_base_packages: [ 'ed', 'python', 'python-apt', 'lsb-release', 'make', 'gnupg-curl', 'git', 'wget', 'curl', 'rsync', 'netcat-openbsd', 'bridge-utils', 'vlan', 'openssh-server', 'bsdutils', 'python-pycurl', 'python-httplib2', 'apt-transport-https', 'acl', 'python-pip' ]
+
+apt_packages:
+  - vim
+  - cowsay
+  - htop

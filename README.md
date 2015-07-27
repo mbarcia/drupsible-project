@@ -3,12 +3,18 @@ Drupsible project template for Drupal 7 websites.
 
 # Requirements
 ## Local
-* [Virtualbox](https://www.virtualbox.org/wiki/Downloads) 
+* Virtual Machine
+  * [Virtualbox](https://www.virtualbox.org/wiki/Downloads), or
+  * VMWare Fusion or VMWare Workstation, or 
+  * Parallels Desktop 10+ for Mac
 * [Vagrant](http://www.vagrantup.com/downloads) 1.7.2+
+  * requires commercial plug-in for VMWare
 * [Git Bash](https://git-scm.com/download/win) (Windows)
 
 ## Remotes
-Must all be Debian (wheezy/jessie) or Ubuntu (trusty/vivid) stock boxes.
+All remote target servers must be Debian (wheezy/jessie) or Ubuntu (trusty/vivid) stock boxes.
+In the future, Drupsible may run on other platforms.
+In the future, Drupsible may share the server with other webapps.
 
 # Usage
 

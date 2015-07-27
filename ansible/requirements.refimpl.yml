@@ -6,6 +6,9 @@
 - src: https://github.com/mbarcia/drupsible-memcached
   version: master
   name: drupsible.memcached
+- src: https://github.com/mbarcia/drupsible-samba
+  version: master
+  name: drupsible.samba
 - src: https://github.com/mbarcia/drupsible-newrelic
   version: master
   name: drupsible.newrelic

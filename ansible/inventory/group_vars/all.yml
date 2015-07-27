@@ -1,0 +1,41 @@
+---
+target: prod
+
+app_name: drupsible
+webhost: www
+webdomain: drupsible.org
+provision_new_relic: True
+
+app_env:
+  aliases:
+    - drupsible.org
+  user: drupsible
+  group: www-data
+  fpm_listen: '/var/run/php5-fpm-{{ app_name }}.sock'
+  admin_email: admin@{{ webdomain }}
+  files_tarball_filename: "{{ app_name }}-files.tar.gz"
+  db_name: "{{ app_name }}"
+  db_user: "{{ app_name }}"
+  # Set to True if the target env has memcached available
+  memcached: True
+  # True clones the cur database
+  db_clone: False
+  # True looks for a DB dump to upload and import
+  db_import: False
+  # True syncs with source DB
+  db_sync: False
+  # True looks for tarballs (files) to upload and import
+  files_import: False
+  files_sync: False
+  files_copy: True
+  do_cur_backup: True
+  adjust_db: True
+
+# Version of the repository to check out (full 40-character SHA-1 hash, the literal string HEAD, a branch name, or a tag name).
+# git@github.com:mbarcia/drupsible-org.git
+git_version: master
+# can be git, ssh, or http
+git_repo_protocol: git
+git_repo_server: "github.com"
+git_repo_user: mbarcia
+git_repo_path: "drupsible-org.git"

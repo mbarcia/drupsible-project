@@ -1,0 +1,52 @@
+---
+- name: Gather default and custom facts
+  hosts: 'all:!localhost'
+  gather_facts: True
+
+- name: APT
+  hosts: debops_apt
+  roles:
+    - { role: debops.apt, tags: apt, sudo: yes }
+
+- name: MySQL
+  hosts: drupsible_mysql
+  roles:
+    - role: drupsible.mysql
+      sudo: yes
+      tags: mysql
+      mysql_users:
+        - name: "{{ app_env['db_user'] }}"
+          host: "%"
+          state: 'present'
+          password: '{{ app_env["db_password"] | default(lookup("password", secret + "/credentials/" + ansible_fqdn + "/mysql/" + app_env.db_user + "/password length=" + mysql_password_length)) }}'
+        - name: "{{ app_env['db_user'] }}"
+          host: localhost
+          state: 'present'
+          password: '{{ app_env["db_password"] | default(lookup("password", secret + "/credentials/" + ansible_fqdn + "/mysql/" + app_env.db_user + "/password length=" + mysql_password_length)) }}'
+
+- name: MySQL (for cloned DB mode)
+  hosts: drupsible_mysql
+  roles:
+    - role: drupsible.mysql
+      tags: mysql-clone
+      sudo: yes
+      when: "app_env.db_clone"
+      vars:
+        mysql_databases:
+          - name: "{{ app_name }}_{{ build }}"
+            state: 'present'
+  
+- name: PHP-FPM
+  hosts: debops_php5
+  roles:
+    - { role: debops.php5, tags: php5, sudo: yes, when: "apache2_mpm != 'prefork'" }
+
+- name: Apache
+  hosts: drupsible_apache2
+  roles:
+    - { role: drupsible.apache2, tags: apache2, sudo: yes }
+
+- name: Deploy
+  hosts: drupsible_deploy
+  roles:
+    - { role: drupsible.deploy, tags: deploy }

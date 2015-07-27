@@ -1,9 +1,0 @@
----
-- name: Gather default and custom facts
-  hosts: 'all:!localhost'
-  gather_facts: True
-
-- name: Play deploy.
-  hosts: drupsible_deploy
-  roles:
-    - { role: drupsible.deploy, tags: deploy }
