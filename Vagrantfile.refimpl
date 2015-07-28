@@ -164,6 +164,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           sh.args = ["vagrant", install_windows_param.to_s]
         end
 
+        machine.vm.provision "shell", 
+          inline: 'cat /vagrant/shortcuts.sh >> /home/vagrant/.profile'
+        end 
+
         # Run deploy playbook
         machine.vm.provision "shell" do |sh|
           sh.path = "drupsible-deploy.sh"
@@ -171,11 +175,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           sh.privileged = false
           sh.keep_color = true
         end
-
-        machine.vm.provision "shell", 
-          inline: 'cat /vagrant/shortcuts.sh >> /home/vagrant/.profile'
-      end 
-
     end
 
   end # HOSTS-each
