@@ -4,7 +4,15 @@ target: prod
 app_name: drupsible
 webhost: www
 webdomain: drupsible.org
-provision_new_relic: True
+
+mysql_mysqld_allow: [ "ALL" ]
+#mysql_mysqld_allow: "{{ groups['webservers'] }}"
+mysql_mysqld_bind_address: '0.0.0.0'
+
+php_value:
+  memory_limit: 192M
+  newrelic_appname: "{{ app_name }}"
+  max_input_vars: 2000
 
 app_env:
   aliases:
@@ -14,6 +22,7 @@ app_env:
   fpm_listen: '/var/run/php5-fpm-{{ app_name }}.sock'
   admin_email: admin@{{ webdomain }}
   files_tarball_filename: "{{ app_name }}-files.tar.gz"
+  db_dump_filename: '{{ app_name }}.sql.gz'
   db_name: "{{ app_name }}"
   db_user: "{{ app_name }}"
   # Set to True if the target env has memcached available
@@ -30,6 +39,7 @@ app_env:
   files_copy: True
   do_cur_backup: True
   adjust_db: True
+  syslog: yes
 
 # Version of the repository to check out (full 40-character SHA-1 hash, the literal string HEAD, a branch name, or a tag name).
 # git@github.com:mbarcia/drupsible-org.git

@@ -2,7 +2,7 @@
 local.drupsible.org ansible_connection=local
 
 [drupsible_mysql]
-local.drupsible.org ansible_connection=local
+localhost ansible_connection=local
 
 [debops_apt]
 local.drupsible.org ansible_connection=local
@@ -32,4 +32,4 @@ local.drupsible.org ansible_connection=local
 local.drupsible.org ansible_connection=local
 
 [ansible_controllers]
-local.drupsible.org ansible_connection=local
+localhost ansible_connection=local

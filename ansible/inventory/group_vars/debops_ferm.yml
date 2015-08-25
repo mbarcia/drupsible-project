@@ -7,7 +7,7 @@
 # Required:
   # item.dport		list of destination ports to configure
 
-ferm_ansible_controllers: ['84.39.225.34']
+ferm_ansible_controllers: ['80.58.67.168']
 
 # Optional:
   # item.protocol		list of protocols to configure (tcp, udp)
