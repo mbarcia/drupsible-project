@@ -3,7 +3,7 @@
 # Usage info
 show_help() {
 cat << EOF
-Usage: ${0##*/} [-hf] -s app-name -d domain -m db-dump -z files-tarball -k key-filename -g git-server -p git-password -t git-protocol -r git-path -g git-user -b git-branch command
+Usage: ${0##*/} [-hf] -s app-name -d domain -m db-dump -z files-tarball -k key-filename -g git-server -p git-password -t git-protocol -r git-path -u git-user -b git-branch command
 Your Drupal project up and running with Drupsible. Options:
 
 	-h	show this help and exits
@@ -58,8 +58,6 @@ while getopts "hfs:d:m:z:k:g:p:t:r:u:b:" opt; do
         u)  GIT_USER=$OPTARG
             ;;
         b)  GIT_BRANCH=$OPTARG
-            ;;
-        f)  FORCE=$OPTARG
             ;;
         \?)
             show_help >&2
@@ -179,7 +177,7 @@ fi
 if [ ! -d ansible/inventory/host_vars ] || [ $FORCE ]; then
 	cp -pr ansible/inventory/host_vars.default ansible/inventory/host_vars
 	cd ansible/inventory/host_vars
-	mv local.example.com.yml local.$DOMAIN.yml
+	cp local.example.com.yml local.$DOMAIN.yml
 	sed -i "s/example\.com/$DOMAIN/g" local.$DOMAIN.yml
 	
 	if [ "$DBDUMP" != "" ]; then
