@@ -47,5 +47,5 @@ You will then be able to connect your IDE of choice to this folder, or use any e
 $ vagrant ssh
 ...
 vagrant@local:~$ nano ansible/inventory/hosts-prod
-vagrant@local:~$ ansible-playbook -i ansible/inventory/hosts-prod ansible/playbooks/deploy.yml
+vagrant@local:~$ ansible-playbook -i ansible/inventory/hosts-prod ansible/playbooks/config-n-deploy.yml
 ```
