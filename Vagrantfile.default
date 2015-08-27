@@ -93,36 +93,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # We need to disable this in order to pass the correct identity from host to guest.
         config.ssh.insert_key = false
     
-        # Help use agent forwarding
-        # Windows user: use a shell like Git Bash. 
-        cmd = `ssh-add -l`
-        if not $?.success?
-          puts "Connecting to a ssh-agent..."
-          `test -r ~/.ssh-agent && eval "$(<~/.ssh-agent)" >/dev/null`
-          cmd = `ssh-add -l`
-          if not $?.success?
-            puts "Starting a new ssh-agent..."
-            `(umask 066; ssh-agent > ~/.ssh-agent)`
-            `eval "$(<~/.ssh-agent)"`
-            cmd = `ssh-add -l`
-            if not $?.success?
-              puts "Your ssh-agent was NOT running, and could NOT be started."
-              exit 1
-            else
-              puts "A ssh-agent is now running."
-            end
-          end
-        end
-
-        if not cmd.include? "insecure_private_key"
-          `ssh-add ~/.vagrant.d/insecure_private_key`
-          if $?.success?
-            puts "A ssh-agent is running, and Vagrant's default key has been added to it."
-          else
-            puts "A ssh-agent is running, but Vagrant's default key could NOT be added."
-            exit 1
-          end
-        end
+system("
+    if [ #{ARGV[0]} = 'up' ] || [ #{ARGV[0]} = 'provision' ]; then
+        ./bin/ssh-agent.sh ~/.vagrant.d/insecure_private_key
+    fi
+")
         
         # Allow identities to be passed from host to guest.
         # ssh-agent must be running on the host, the private keys loaded with ssh-add

@@ -208,19 +208,7 @@ if [ "$GIT_PASS" == "" ]; then
 	if [ "$KEY_FILENAME" == "" ]; then
 		KEY_FILENAME="~/.ssh/id_rsa"
 	fi
-
-	ssh-add -l &>/dev/null
-	if [ "$?" == 2 ]; then
-		test -r ~/.ssh-agent && eval "$(<~/.ssh-agent)" >/dev/null
-
-		ssh-add -l &>/dev/null
-		if [ "$?" == 2 ]; then
-			(umask 066; ssh-agent > ~/.ssh-agent)
-			eval "$(<~/.ssh-agent)" >/dev/null
-			ssh-add $KEY_FILENAME
-		fi
-	fi
-
+	./ssh-agent.ssh $KEY_FILENAME
 	vagrant "$VAGRANT_COMMAND"
 else
 	DEPLOY_ARGS="git_repo_pass=$GIT_PASS accept_hostkey=True" vagrant "$VAGRANT_COMMAND"
