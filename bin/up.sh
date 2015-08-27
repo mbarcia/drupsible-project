@@ -3,11 +3,12 @@
 # Usage info
 show_help() {
 cat << EOF
-Usage: ${0##*/} [-hf] -s app-name -d domain -m db-dump -z files-tarball -k key-filename -g git-server -p git-password -t git-protocol -r git-path -u git-user -b git-branch command
+Usage: ${0##*/} [-hfn] -s app-name -d domain -m db-dump -z files-tarball -k key-filename -g git-server -p git-password -t git-protocol -r git-path -u git-user -b git-branch command
 Your Drupal project up and running with Drupsible. Options:
 
 	-h	show this help and exits
 	-f	force overriding of config files
+	-n	vagrant provision the VM (instead of vagrant up)
 	-s	application name (defaults to folder name)
 	-d	domain name (ie. example.com)
 	-m	DB dump filename (ie. example.sql.gz, must be in ansible/playbooks/dbdumps)
@@ -20,22 +21,22 @@ Your Drupal project up and running with Drupsible. Options:
 	-u	git user
     -b	git branch (defaults to master)
 
-Commands:
-	up 			Run vagrant up (default)
-	provision	Run vagrant provision
-
 	If you want to run other commands (halt/destroy/suspend/reload) on the VM, 
 	you can use vagrant directly (not this script).
 EOF
 }
 
-while getopts "hfs:d:m:z:k:g:p:t:r:u:b:" opt; do
+VAGRANT_COMMAND="up"
+
+while getopts "hfns:d:m:z:k:g:p:t:r:u:b:" opt; do
     case "$opt" in
         h)
             show_help
             exit 0
             ;;
         f)  FORCE=1
+			;;
+        n)  VAGRANT_COMMAND="provision"
 			;;
         s)  APP_NAME=$OPTARG
             ;;
@@ -67,12 +68,6 @@ while getopts "hfs:d:m:z:k:g:p:t:r:u:b:" opt; do
 done
 
 echo "Is Virtualization enabled in your BIOS settings?"
-
-if [ "$1" == "" ]; then
-	VAGRANT_COMMAND="up"
-else
-	VAGRANT_COMMAND="$1"
-fi
 
 if [ "$APP_NAME" == "" ]; then
 	DIR_NAME=${PWD##*/}
@@ -162,14 +157,14 @@ if [ ! -d ansible/inventory/group_vars ] || [ $FORCE ]; then
 	
 	# Append to group_vars/all
 	cat <<EOF >> all.yml
-	
-	# Version of the repository to check out (full 40-character SHA-1 hash, the literal string HEAD, a branch name, or a tag name).
-	git_version: "$GIT_BRANCH"
-	# can be git, ssh, or http
-	git_repo_protocol: "$GIT_PROTOCOL"
-	git_repo_server: "$GIT_SERVER"
-	git_repo_user: "$GIT_USER"
-	git_repo_path: "$GIT_PATH"
+
+# Version of the repository to check out (full 40-character SHA-1 hash, the literal string HEAD, a branch name, or a tag name).
+git_version: "$GIT_BRANCH"
+# can be git, ssh, or http
+git_repo_protocol: "$GIT_PROTOCOL"
+git_repo_server: "$GIT_SERVER"
+git_repo_user: "$GIT_USER"
+git_repo_path: "$GIT_PATH"
 EOF
 	cd - > /dev/null
 fi
@@ -207,7 +202,7 @@ if [ "$GIT_PASS" == "" ]; then
 		KEY_FILENAME="~/.ssh/id_rsa"
 	fi
 	./ssh-agent.ssh $KEY_FILENAME
-	vagrant "$VAGRANT_COMMAND"
+	vagrant $VAGRANT_COMMAND
 else
-	DEPLOY_ARGS="git_repo_pass=$GIT_PASS accept_hostkey=True" vagrant "$VAGRANT_COMMAND"
+	DEPLOY_ARGS="git_repo_pass=$GIT_PASS accept_hostkey=True" vagrant $VAGRANT_COMMAND
 fi

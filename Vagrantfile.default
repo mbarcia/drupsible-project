@@ -94,7 +94,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         config.ssh.insert_key = false
     
 system("
-    if [ #{ARGV[0]} = 'up' ] || [ #{ARGV[0]} = 'provision' ]; then
+    if [ #{ARGV[0]} == 'up' ] || [ #{ARGV[0]} == 'provision' ]; then
         ./bin/ssh-agent.sh ~/.vagrant.d/insecure_private_key
     fi
 ")
