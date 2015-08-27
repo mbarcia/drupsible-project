@@ -130,7 +130,7 @@ if [ ! -f ansible/inventory/hosts-local ] || [ $FORCE ]; then
 fi
 
 if [ ! -d ansible/inventory/group_vars ] || [ $FORCE ]; then
-	cp -pr ansible/inventory/group_vars.default ansible/inventory/group_vars
+	cp -pr ansible/inventory/group_vars.default/* ansible/inventory/group_vars
 	cd ansible/inventory/group_vars
 	sed -i "s/example\.com/$DOMAIN/g" all.yml
 	sed -i "s/example-project/$APP_NAME/g" all.yml
@@ -175,7 +175,7 @@ EOF
 fi
 
 if [ ! -d ansible/inventory/host_vars ] || [ $FORCE ]; then
-	cp -pr ansible/inventory/host_vars.default ansible/inventory/host_vars
+	cp -pr ansible/inventory/host_vars.default/* ansible/inventory/host_vars
 	cd ansible/inventory/host_vars
 	cp local.example.com.yml local.$DOMAIN.yml
 	sed -i "s/example\.com/$DOMAIN/g" local.$DOMAIN.yml
