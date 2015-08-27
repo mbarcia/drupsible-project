@@ -58,13 +58,13 @@ if [ "$1" == 'vagrant' ]; then
 	
 		# Copy inventory file, as Ansible chokes on its permissions when synced 
 		# with a Windows host
-		cp /vagrant/ansible/inventory/vagrant_ansible_inventory /home/vagrant/ansible/inventory/
+		cp /vagrant/ansible/inventory/hosts-local /home/vagrant/ansible/inventory/
 		
 		# Change owner (this cannot be done on a synced folder in Windows)
 		chown -R vagrant:vagrant /home/vagrant/
 	
 		# Remove exec permission on the inventory file (Ansible does not allow it)
-		chmod -x /home/vagrant/ansible/inventory/vagrant_ansible_inventory
+		chmod -x /home/vagrant/ansible/inventory/hosts-local
 	else
 		echo "Vagrant scaffolding (Linux only)..."
 		if [ ! -L /home/vagrant/ansible ]; then

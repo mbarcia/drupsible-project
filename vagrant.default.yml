@@ -1,0 +1,13 @@
+hosts:
+  - name: local
+    domain: 'example.com'
+    ip_addr: '192.168.50.10'
+    netmask: '255.255.255.0'
+    ram: 1024
+    gui: false
+    box: 'Debian-jessie-amd64-netboot'
+    box_url: 'https://github.com/holms/vagrant-jessie-box/releases/download/Jessie-v0.1/Debian-jessie-amd64-netboot.box'
+    pae: 'on'
+    acpi: 'on'
+    ioapic: 'on'
+    chipset: 'ich9'

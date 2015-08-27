@@ -1,26 +1,24 @@
 ---
 target: local
 
-# License key
-newrelic_license_key: False
-
 ferm_ansible_controllers: ['127.0.0.1']
+tcpwrappers_controllers: ['127.0.0.1']
 
 mysql_mysqld_allow: [ "ALL" ]
 mysql_mysqld_bind_address: '0.0.0.0'
 
 webhost: local
-apache_host: "192.168.50.10"
 allow_override_htaccess: None
 
 app_env:
   aliases: []
   user: 'vagrant'
   group: 'www-data'
-  admin_email: admin@drupsible.org
+  admin_email: admin@{{ webdomain }}
   fpm_listen: '/var/run/php5-fpm-{{ app_name }}.sock'
-  files_tarball_filename: "{{ app_name }}-files.tar.gz"
-  db_name: drupsible
+  files_tarball_filename: '{{ app_name }}.tar.gz'
+  db_dump_filename: '{{ app_name }}.sql.gz'
+  db_name: "{{ app_name }}"
   db_user: "{{ app_name }}"
   # Set to True if the target env has memcached available
   memcached: True
@@ -29,7 +27,7 @@ app_env:
   # True looks for a DB dump to upload and import
   db_import: False
   # True syncs with source DB
-  db_sync: True
+  db_sync: False
   # True looks for tarballs (files) to upload and import
   files_import: False
   files_sync: False
@@ -40,10 +38,6 @@ app_env:
 
 drupal_admin_password: "drups1ble"
 
-app_drush_source:
-  # Source settings for initial import
-  docroot: '/var/www/drupsible/public_html'
-  remote_host: 'www.drupsible.org'
-  remote_user: 'drupsible'
-  remote_port: 22
-  ssh_options: '-o ForwardAgent=yes'
+# License key
+newrelic_license_key: False
+
