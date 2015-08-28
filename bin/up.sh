@@ -3,38 +3,39 @@
 # Usage info
 show_help() {
 cat << EOF
-Usage: ${0##*/} [-hfn] -s app-name -d domain -m db-dump -z files-tarball -k key-filename -g git-server -p git-password -t git-protocol -r git-path -u git-user -b git-branch command
+Usage: ${0##*/} [-hfon] -s app-name -d domain -m db-dump -z files-tarball -k key-filename -g git-server -p git-password -t git-protocol -r git-path -u git-user -b git-branch command
 Your Drupal project up and running with Drupsible. Options:
 
 	-h	show this help and exits
 	-f	force overriding of config files
+	-o	force overriding of config files (no backup)
 	-n	vagrant provision the VM (instead of vagrant up)
-	-s	application name (defaults to folder name)
-	-d	domain name (ie. example.com)
+	-s	application name (defaults to folder name, without -drupsible)
+	-d	webdomain (ie. example.com)
 	-m	DB dump filename (ie. example.sql.gz, must be in ansible/playbooks/dbdumps)
 	-z	Files tarball (ie. example-files.tar.gz, must be in ansible/playbooks/files-tarballs)
 	-k	SSH private key filename (defaults to ~/.ssh/id_rsa)
-	-g	git server (ie. bitbucket.org, or git.your.org:8443)
+	-g	git server (ie. bitbucket.org, or git.your.org:8443 if using http/s)
 	-p	git password (in case you are NOT using an SSH key)
 	-t	git protocol (defaults to git)
 	-r	git path (ie. example.git)
 	-u	git user
     -b	git branch (defaults to master)
 
-	If you want to run other commands (halt/destroy/suspend/reload) on the VM, 
-	you can use vagrant directly (not this script).
 EOF
 }
 
 VAGRANT_COMMAND="up"
 
-while getopts "hfns:d:m:z:k:g:p:t:r:u:b:" opt; do
+while getopts "hfons:d:m:z:k:g:p:t:r:u:b:" opt; do
     case "$opt" in
         h)
             show_help
             exit 0
             ;;
         f)  FORCE=1
+			;;
+        o)  FORCE_NOBACKUP=1
 			;;
         n)  VAGRANT_COMMAND="provision"
 			;;
@@ -67,15 +68,27 @@ while getopts "hfns:d:m:z:k:g:p:t:r:u:b:" opt; do
     esac
 done
 
-echo "Is Virtualization enabled in your BIOS settings?"
-
 if [ "$APP_NAME" == "" ]; then
 	DIR_NAME=${PWD##*/}
 	PROJ_NAME=${DIR_NAME%-drupsible}
+	echo "Make sure VT-x/AMD-V is enabled (in your BIOS settings)."
+	echo "Type bin/up.sh -h for using options (and skip these messages)."
+	echo
 	echo "Application code name? (ie. example, default: $PROJ_NAME): "
 	read APP_NAME
 	if [ "$APP_NAME" == "" ]; then
 		APP_NAME="$PROJ_NAME"
+	fi
+fi
+
+if [ "$FORCE" ] && [ "$FORCE_NOBACKUP" != 1 ]; then
+	DATE=$(date +%Y%m%d_%H%M%S)
+	BACKUP_FILENAME="drupsible-$DATE.tar.gz"
+	tar czvf $BACKUP_FILENAME --exclude "*.default" --exclude-vcs --exclude "*.gz" --exclude "*.zip" --exclude "lookup_plugins" --exclude "*example.com.yml" --exclude "README.*" "ansible/inventory" "ansible/requirements.yml" "ansible/playbooks" >/dev/null
+	if [ "$?" == 0 ]; then
+		echo "Backup of your current config files stored in $BACKUP_FILENAME"
+	else
+		echo "Backup FAILED."
 	fi
 fi
 
@@ -104,27 +117,32 @@ if [ "$FILES_TARBALL" != "" ] && [ ! -f ansible/playbooks/files-tarballs/$FILES_
 	exit -1
 fi
 
-if [ ! -f .gitignore ] || [ $FORCE ]; then
+if [ ! -f .gitignore ] || [ $FORCE ] || [ $FORCE_NOBACKUP ]; then
 	cp default.gitignore .gitignore
 fi
 
-if [ ! -f Vagrantfile ] || [ $FORCE ]; then
+if [ ! -f Vagrantfile ] || [ $FORCE ] || [ $FORCE_NOBACKUP ]; then
 	cp Vagrantfile.default Vagrantfile
 fi
 
-if [ ! -f vagrant.yml ] || [ $FORCE ]; then
+if [ ! -f vagrant.yml ] || [ $FORCE ] || [ $FORCE_NOBACKUP ]; then
 	sed "s/example\.com/$DOMAIN/g" <vagrant.default.yml >vagrant.yml
 fi
 
-if [ ! -f ansible/requirements.yml ] || [ $FORCE ]; then
+if [ ! -f ansible/requirements.yml ] || [ $FORCE ] || [ $FORCE_NOBACKUP ]; then
 	cp ansible/requirements.default.yml ansible/requirements.yml
 fi
 
-if [ ! -f ansible/inventory/hosts-local ] || [ $FORCE ]; then
+if [ ! -f ansible/inventory/hosts-local ] || [ $FORCE ] || [ $FORCE_NOBACKUP ]; then
 	sed "s/example\.com/$DOMAIN/g" <ansible/inventory/hosts-local.default >ansible/inventory/hosts-local
 fi
 
-if [ ! -d ansible/inventory/group_vars ] || [ $FORCE ]; then
+if [ ! -d ansible/playbooks/deploy ] || [ $FORCE ] || [ $FORCE_NOBACKUP ]; then
+	rm -fr ansible/playbooks/deploy 2>/dev/null
+	cp -pr ansible/playbooks/deploy.default ansible/playbooks/deploy
+fi
+
+if [ ! -d ansible/inventory/group_vars ] || [ $FORCE ] || [ $FORCE_NOBACKUP ]; then
 	rm -fr ansible/inventory/group_vars 2>/dev/null
 	cp -pr ansible/inventory/group_vars.default ansible/inventory/group_vars
 	cd ansible/inventory/group_vars
@@ -170,7 +188,7 @@ EOF
 	cd - > /dev/null
 fi
 
-if [ ! -d ansible/inventory/host_vars ] || [ $FORCE ]; then
+if [ ! -d ansible/inventory/host_vars ] || [ $FORCE ] || [ $FORCE_NOBACKUP ]; then
 	rm -fr ansible/inventory/host_vars 2>/dev/null
 	cp -pr ansible/inventory/host_vars.default ansible/inventory/host_vars
 	cd ansible/inventory/host_vars
