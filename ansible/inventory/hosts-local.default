@@ -5,7 +5,7 @@ local.example.com ansible_connection=local
 local.example.com ansible_connection=local
 
 [debops_sshd]
-local.bricodepot.es ansible_connection=local
+local.example.es ansible_connection=local
 
 [debops_apt]
 local.example.com ansible_connection=local

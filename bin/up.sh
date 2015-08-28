@@ -221,7 +221,7 @@ if [ "$GIT_PASS" == "" ]; then
 	if [ "$KEY_FILENAME" == "" ]; then
 		KEY_FILENAME="~/.ssh/id_rsa"
 	fi
-	./ssh-agent.ssh $KEY_FILENAME
+	./bin/ssh-agent.ssh $KEY_FILENAME
 	vagrant $VAGRANT_COMMAND
 else
 	DEPLOY_ARGS="git_repo_pass=$GIT_PASS accept_hostkey=True" vagrant $VAGRANT_COMMAND
