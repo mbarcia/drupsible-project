@@ -1,0 +1,12 @@
+---
+- name: Bootstrap hosts for Drupsible
+  hosts: all:!localhost
+
+  roles:
+    - role: debops.bootstrap
+      sudo: yes
+      bootstrap_raw: False
+      bootstrap_domain: "{{ webdomain }}"
+      bootstrap_base_packages: [ 'lsb-release' ]
+      bootstrap_admin_name: "{{ app_env['user'] }}"
+      bootstrap_admin_comment: "{{ app_name }}/Drupsible administrator"

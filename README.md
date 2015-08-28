@@ -19,33 +19,44 @@ Drupsible project is the starting point of Drupsible, and it is the only thing y
 * Optionally, have a separate files tarball/archive of sites/default/files
 * Optionally, have a SSH key setup for your git repository
 
-Note: A fresh install with drush make or drush site-install is not yet supported, but will be soon
-## Remotes
+## Remote servers
 All remote target servers must be Debian (wheezy/jessie) or Ubuntu (trusty/vivid) stock boxes.
 In the future, Drupsible may run on other platforms.
 In the future, Drupsible may share the server with other webapps.
 
-# Usage
+# Basic usage
 
 ## Local
-* Git clone drupsible-project and put it in a folder named after your project, like _~/myproject-drupsible_, or _~/drupsible/my-project_
+1. Git clone drupsible-project and put it in a folder named after your project, like _~/myproject-drupsible_, or _~/drupsible/my-project_
 ```
 git clone git@github.com:mbarcia/drupsible-project.git myproject-drupsible
 cd myproject-drupsible
 bin/up.sh
 ```
-* Grab a cup of coffee, or watch the tasks on the screen narrated by the cow. Drupsible will finish in about 15 minutes (your mileage may vary).
-* Point your browser to your website: http://local.domain. Voilà.
-* In your file manager (Windows Explorer look for \\LOCAL, or Samba shares), there will be a shared folder:
+1. Grab a cup of coffee, or watch the tasks on the screen narrated by the cow. Drupsible will finish in about 15 minutes (your mileage may vary).
+1. Point your browser to your website: http://local.domain. Voilà.
+1. In your file manager (Windows Explorer look for \\LOCAL, or Samba shares), there will be a shared folder:
 local.webdomain app - Current version of the Drupal website and the logs.
 You will then be able to connect your IDE of choice to this folder, or use any editor to develop and test. After you are done, just commit to your GIT repository.
-## Remote
-* Once your Drupal 7 website is working on your local, write your Ansible inventory for the environment you want to build and choose an Ansible controller server. A good starting point is to use the VM itself as a controller, since it has already provisioned and configured your local.
-* In your target host/s, create a passwordless sudo account for your application. Also make sure it is part of the group sshusers and it can authenticate your private keys using a proper .ssh/authorized_keys.
-* Example: Say you are deploying your app to the live/prod environment from the VM. First, edit your new inventory (use hosts-local as a starting point). Second and last step, run the deploy playbook.
+
+## Other target environments
+Once your Drupal 7 website is working on your local, you can proceed to deploy to the upper environments.
+
+1. Write your Ansible inventory for the target environment
+1. Choose an Ansible controller server. A good starting point is to use the VM itself as a controller, since it has already provisioned and configured your local. However, it is wise to consider having a separate "production" Ansible controller.
+1. In your controller, make sure you have your public key in ~/.ssh/id_rsa.pub. This key will authorize your Drupsible SSH connections to all the hosts.
+
+### Example
+Say you are deploying your app to the live/prod environment from the VM. First, edit your new inventory (use hosts-local as a starting point). Second and last step, run the deploy playbook.
 ```
 $ vagrant ssh
 ...
 vagrant@local:~$ nano ansible/inventory/hosts-prod
-vagrant@local:~$ ansible-playbook -i ansible/inventory/hosts-prod ansible/playbooks/config-n-deploy.yml
+vagrant@local:~$ ansible-playbook -i ansible/inventory/hosts-prod ansible/playbooks/bootstrap-config-deploy.yml
+```
+Once you ran that, subsequent deployments will be simpler, taking this form:
+```
+$ vagrant ssh
+...
+vagrant@local:~$ ansible-playbook -i ansible/inventory/hosts-prod ansible/playbooks/deploy.yml
 ```
