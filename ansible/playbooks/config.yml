@@ -3,6 +3,11 @@
   hosts: 'all:!localhost'
   gather_facts: True
 
+- name: sshd
+  hosts: debops_sshd
+  roles:
+    - { role: debops.sshd, tags: sshd, sudo: yes }
+
 - name: APT
   hosts: debops_apt
   roles:

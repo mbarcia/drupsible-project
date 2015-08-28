@@ -1,5 +1,8 @@
 ---
 # from github
+- src: https://github.com/debops/ansible-sshd
+  version: master
+  name: debops.sshd
 - src: https://github.com/mbarcia/drupsible-apache
   version: master
   name: drupsible.apache2
