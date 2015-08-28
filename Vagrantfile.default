@@ -93,12 +93,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # We need to disable this in order to pass the correct identity from host to guest.
         config.ssh.insert_key = false
     
-system("
-    if [ #{ARGV[0]} == 'up' ] || [ #{ARGV[0]} == 'provision' ]; then
-        ./bin/ssh-agent.sh ~/.vagrant.d/insecure_private_key
-    fi
-")
-        
+        if ARGV[0].eql?'up' or ARGV[0].eql?'provision'
+          system("bin/ssh-agent.sh ~/.vagrant.d/insecure_private_key")
+        end
+                
         # Allow identities to be passed from host to guest.
         # ssh-agent must be running on the host, the private keys loaded with ssh-add
         config.ssh.forward_agent = true
