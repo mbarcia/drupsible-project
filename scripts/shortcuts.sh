@@ -6,7 +6,7 @@ bind '"\e[B": history-search-forward'
 LS_COLORS='di=0;32' ; export LS_COLORS
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=50000
+HISTSIZE=50001
 HISTFILESIZE=500001
 
 # check the window size after each command and, if necessary,
