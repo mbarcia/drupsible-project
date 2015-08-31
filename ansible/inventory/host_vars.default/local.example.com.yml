@@ -13,7 +13,7 @@ tcpwrappers_allow:
 
 mysql_mysqld_allow: [ "ALL" ]
 mysql_mysqld_bind_address: '0.0.0.0'
-sshd_group_whitelist: [ 'vagrant' ]
+sshd_group_allow: [ 'vagrant' ]
 
 webhost: local
 allow_override_htaccess: None
