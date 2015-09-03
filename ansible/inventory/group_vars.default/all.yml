@@ -5,10 +5,6 @@ app_name: example-project
 webhost: www
 webdomain: "example.com"
 
-mysql_mysqld_allow: [ "ALL" ]
-#mysql_mysqld_allow: "{{ groups['webservers'] }}"
-mysql_mysqld_bind_address: '0.0.0.0'
-
 php_value:
   memory_limit: 192M
   newrelic_appname: "{{ app_name }}"
