@@ -1,5 +1,5 @@
 ---
-- include core.yml
+- include: core.yml
 
 - name: Gather default and custom facts
   hosts: 'all:!localhost'
