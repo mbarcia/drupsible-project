@@ -1,7 +1,5 @@
 ---
-- name: Skip facts gathering
-  hosts: 'all:!localhost'
-  gather_facts: False
+- include: config.yml
 
 - name: Deploy
   hosts: drupsible_deploy

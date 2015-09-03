@@ -21,6 +21,7 @@ apache2_modules:
   - rewrite
   - setenvif
   - status
+  - ssl
 
 php5_packages_ontop:
   - php-pear

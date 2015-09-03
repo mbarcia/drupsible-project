@@ -33,11 +33,13 @@ git clone git@github.com:mbarcia/drupsible-project.git myproject-drupsible
 cd myproject-drupsible
 bin/up.sh
 ```
-1. Grab a cup of coffee, or watch the tasks on the screen narrated by the cow. Drupsible will finish in about 15 minutes (your mileage may vary).
-1. Point your browser to your website: http://local.domain. Voilà.
+1. Drupsible will start an interactive session, asking all the values needed.
+1. After it is done asking, you can grab a cup of coffee and watch the tasks being run. 
+1. Drupsible will finish in about 15 minutes (your mileage may vary). 
+1. Now your VM is ready: point your browser to your website: http://local.domain (or https://local.domain). Voilà.
 1. In your file manager (Windows Explorer look for \\LOCAL, or Samba shares), there will be a shared folder:
 local.webdomain app - Current version of the Drupal website and the logs.
-You will then be able to connect your IDE of choice to this folder, or use any editor to develop and test. After you are done, just commit to your GIT repository.
+1. You will then be able to connect your IDE of choice to this folder, or use any editor to develop and test. After you are done, just commit to your GIT repository.
 
 ## Other target environments
 Once your Drupal 7 website is working on your local, you can proceed to deploy to the upper environments.
@@ -52,7 +54,7 @@ Say you are deploying your app to the live/prod environment from the VM. First, 
 $ vagrant ssh
 ...
 vagrant@local:~$ nano ansible/inventory/hosts-prod
-vagrant@local:~$ ansible-playbook -i ansible/inventory/hosts-prod ansible/playbooks/bootstrap-config-deploy.yml
+vagrant@local:~$ ansible-playbook -i ansible/inventory/hosts-prod ansible/playbooks/bootstrap-deploy.yml
 ```
 Once you ran that, subsequent deployments will be simpler, taking this form:
 ```
@@ -60,3 +62,13 @@ $ vagrant ssh
 ...
 vagrant@local:~$ ansible-playbook -i ansible/inventory/hosts-prod ansible/playbooks/deploy.yml
 ```
+### Restarting the local VM ###
+Whenever your local VM may go down (ie. after your workstation has been restarted), you can, instead of going through the up.sh configuration script again, simply run
+```
+$ vagrant up
+```
+BTW, first make sure you have your ssh-agent running for the session, by executing: 
+```
+$ bin/ssh-agent.sh
+```
+(you won't always need it, but it will better if you have your keys loaded and ready to be forwarded to your GIT repos or any other external server requiring SSH access).

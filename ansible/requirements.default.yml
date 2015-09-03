@@ -1,4 +1,10 @@
 ---
+- src: https://github.com/debops/ansible-core
+  version: master
+  name: debops.core
+- src: https://github.com/debops/ansible-pki
+  version: master
+  name: debops.pki
 - src: https://github.com/debops/ansible-bootstrap
   version: master
   name: debops.bootstrap

@@ -1,6 +1,9 @@
 ---
+- include core.yml
+
 - name: Bootstrap hosts for Drupsible
-  hosts: all:!localhost
+  hosts: 'all:!localhost'
+  gather_facts: True
 
   roles:
     - role: debops.bootstrap

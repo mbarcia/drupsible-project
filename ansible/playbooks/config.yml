@@ -1,7 +1,14 @@
 ---
+- include core.yml
+
 - name: Gather default and custom facts
   hosts: 'all:!localhost'
   gather_facts: True
+
+- name: Configure default user account mgmt
+  hosts: 'all:!localhost'
+  roles: 
+    - debops.users
 
 - name: sshd
   hosts: debops_sshd
@@ -58,7 +65,18 @@
   roles:
     - { role: debops.php5, tags: php5, sudo: yes, when: "apache2_mpm != 'prefork'" }
 
+- name: Public Key Infrastructure (apache2 group)
+  hosts: drupsible_apache2
+  roles:
+    - role: debops.pki
+      tags: pki
+      sudo: yes 
+
 - name: Apache
   hosts: drupsible_apache2
   roles:
-    - { role: drupsible.apache2, tags: apache2, sudo: yes }
+    - role: drupsible.apache2
+      tags: apache2
+      sudo: yes
+      apache2_pki_crt: "/etc/pki/host/certs/{{ webhost }}.{{ webdomain }}.crt"
+      apache2_pki_key: "/etc/pki/host/private/{{ webhost }}.{{ webdomain }}.key"
