@@ -1,19 +1,7 @@
 ---
 target: local
 
-ferm_ansible_controllers: ['127.0.0.1']
-
-tcpwrappers_controllers: ['127.0.0.1']
-tcpwrappers_allow:
-  - daemon: 'ALL'
-    client: [ '10.0.2.2' ]
-    comment: 'Access from Vagrant Host'
-    filename: 'allow_vagrant_host'
-    weight: '07'
-
-mysql_mysqld_allow: [ "ALL" ]
-mysql_mysqld_bind_address: '0.0.0.0'
-sshd_group_allow: [ 'vagrant' ]
+sshd_allow_groups: [ 'vagrant' , 'root', 'admins', 'sshusers', 'sftponly' ]
 
 webhost: local
 allow_override_htaccess: None
