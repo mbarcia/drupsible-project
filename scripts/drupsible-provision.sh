@@ -43,18 +43,6 @@ if [ "$1" == 'vagrant' ]; then
 		if [ ! -L /home/vagrant/ansible/playbooks ]; then
 			ln -s /vagrant/ansible/playbooks /home/vagrant/ansible/playbooks
 		fi
-		if [ ! -L /home/vagrant/ansible/playbooks/dbdumps ]; then
-			ln -s /vagrant/ansible/playbooks/dbdumps /home/vagrant/ansible/playbooks/dbdumps
-		fi
-		if [ ! -L /home/vagrant/ansible/playbooks/lookup-plugins ]; then
-			ln -s /vagrant/ansible/playbooks/lookup-plugins /home/vagrant/ansible/playbooks/lookup-plugins
-		fi
-		if [ ! -L /home/vagrant/ansible/playbooks/deploy ]; then
-			ln -s /vagrant/ansible/playbooks/deploy /home/vagrant/ansible/playbooks/deploy
-		fi
-		if [ ! -L /home/vagrant/ansible/playbooks/files-tarballs ]; then
-			ln -s /vagrant/ansible/playbooks/files-tarballs /home/vagrant/ansible/playbooks/files-tarballs
-		fi
 		if [ ! -L /home/vagrant/ansible/inventory/host_vars ]; then
 			ln -s /vagrant/ansible/inventory/host_vars /home/vagrant/ansible/inventory/host_vars
 		fi
