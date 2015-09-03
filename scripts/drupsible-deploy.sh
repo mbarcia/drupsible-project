@@ -7,7 +7,7 @@ ANSIBLE_INVENTORY=$1
 EXTRA_VARS=$2
 TAGS=$3
 SKIP_TAGS=$4
-ANSIBLE_PLAYBOOK=~/ansible/playbooks/config-n-deploy.yml
+ANSIBLE_PLAYBOOK=~/ansible/playbooks/deploy.yml
 
 if [ ! -f $ANSIBLE_PLAYBOOK ]; then
 	echo "Cannot find Ansible playbook at $ANSIBLE_PLAYBOOK."
