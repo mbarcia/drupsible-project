@@ -73,3 +73,19 @@ BTW, first make sure you have your ssh-agent running for the session, by executi
 $ bin/ssh-agent.sh
 ```
 (you won't always need it, but it will better if you have your keys loaded and ready to be forwarded to your GIT repos or any other external server requiring SSH access).
+
+### Email sending capability ###
+Your Drupal website will need to send emails to notify the admin (and the registered users, if any) of several important events.
+In order to do that, a SMTP service must be made available to PHP. Simply add something like this to ansible/inventory/host_vars/<target-server>.yml
+
+```
+# SMTP settings
+smtp_server: 'smtp.gmail.com'
+smtp_port: 587
+smtp_user: 'me@gmail.com'
+```
+and Drupsible will automatically configure everything so the web server is ready to send out notification emails.
+
+*Important* - Your admin_email (under app_env) must be accepted by your SMTP service. Most likely, your admin_email and your smtp_user will need to match.
+And, if you want to use the Gmail SMTP service, you will have to [relax the security measures of your Gmail account]
+(https://support.google.com/accounts/answer/6010255) to let Drupsible send emails via Gmail.
