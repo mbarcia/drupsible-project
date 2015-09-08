@@ -1,7 +1,7 @@
 [webservers]
 local.example.com ansible_connection=local
 
-[drupsible_mysql]
+[debops_ferm]
 local.example.com ansible_connection=local
 
 [debops_sshd]
@@ -10,19 +10,22 @@ local.example.com ansible_connection=local
 [debops_apt]
 local.example.com ansible_connection=local
 
-[debops_ferm]
-local.example.com ansible_connection=local
-
-[debops_php5]
-local.example.com ansible_connection=local
-
 [debops_tcpwrappers]
+local.example.com ansible_connection=local
+
+[debops_pki]
+local.example.com ansible_connection=local
+
+[drupsible_postfix]
 local.example.com ansible_connection=local
 
 [debops_users]
 local.example.com ansible_connection=local
 
-[drupsible_deploy]
+[drupsible_mysql]
+local.example.com ansible_connection=local
+
+[debops_php5]
 local.example.com ansible_connection=local
 
 [drupsible_apache2]
@@ -32,6 +35,9 @@ local.example.com ansible_connection=local
 local.example.com ansible_connection=local
 
 [drupsible_newrelic]
+local.example.com ansible_connection=local
+
+[drupsible_deploy]
 local.example.com ansible_connection=local
 
 [ansible_controllers]

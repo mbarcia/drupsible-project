@@ -10,6 +10,11 @@
   roles: 
     - debops.users
 
+- name: ferm
+  hosts: debops_ferm
+  roles:
+    - { role: debops.ferm, tags: ferm, sudo: yes }
+
 - name: sshd
   hosts: debops_sshd
   roles:
@@ -24,6 +29,16 @@
   hosts: debops_tcpwrappers
   roles:
     - { role: debops.tcpwrappers, tags: tcpwrappers, sudo: yes }
+
+- name: pki
+  hosts: debops_pki
+  roles:
+    - { role: debops.pki, tags: pki, sudo: yes }
+
+- name: postfix
+  hosts: debops_postfix
+  roles:
+    - { role: debops.postfix, tags: postfix, sudo: yes }
 
 - name: MySQL
   hosts: drupsible_mysql
@@ -64,13 +79,6 @@
   hosts: debops_php5
   roles:
     - { role: debops.php5, tags: php5, sudo: yes, when: "apache2_mpm != 'prefork'" }
-
-- name: Public Key Infrastructure (apache2 group)
-  hosts: drupsible_apache2
-  roles:
-    - role: debops.pki
-      tags: pki
-      sudo: yes 
 
 - name: Apache
   hosts: drupsible_apache2

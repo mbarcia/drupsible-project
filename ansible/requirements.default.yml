@@ -8,6 +8,9 @@
 - src: https://github.com/debops/ansible-bootstrap
   version: master
   name: debops.bootstrap
+- src: https://github.com/debops/ansible-postfix
+  version: master
+  name: debops.bootstrap
 - src: https://github.com/debops/ansible-sshd
   version: master
   name: debops.sshd
