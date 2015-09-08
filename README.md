@@ -27,9 +27,10 @@ In the future, Drupsible may share the server with other webapps.
 # Basic usage
 
 ## Local
+1.If you are on Windows, run Git Bash (as _administrator_)
 1. Git clone drupsible-project and put it in a folder named after your project, like _~/myproject-drupsible_, or _~/drupsible/my-project_
 ```
-git clone git@github.com:mbarcia/drupsible-project.git myproject-drupsible
+git clone https://github.com/mbarcia/drupsible-project.git myproject-drupsible
 cd myproject-drupsible
 bin/up.sh
 ```
