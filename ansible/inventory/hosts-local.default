@@ -1,6 +1,3 @@
-[webservers]
-local.example.com ansible_connection=local
-
 [debops_ferm]
 local.example.com ansible_connection=local
 
@@ -16,7 +13,7 @@ local.example.com ansible_connection=local
 [debops_pki]
 local.example.com ansible_connection=local
 
-[drupsible_postfix]
+[debops_postfix]
 local.example.com ansible_connection=local
 
 [debops_users]
@@ -38,6 +35,9 @@ local.example.com ansible_connection=local
 local.example.com ansible_connection=local
 
 [drupsible_deploy]
+local.example.com ansible_connection=local
+
+[drupsible_varnish]
 local.example.com ansible_connection=local
 
 [ansible_controllers]

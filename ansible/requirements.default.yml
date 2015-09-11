@@ -38,3 +38,6 @@
 - src: https://github.com/mbarcia/drupsible-deploy
   version: master
   name: drupsible.deploy
+- src: https://github.com/mbarcia/drupsible-varnish
+  version: master
+  name: drupsible.varnish

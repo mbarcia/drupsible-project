@@ -1,0 +1,5 @@
+---
+sshd_custom_options: |
+  # Drupsible - disable DNS lookups and negotiation of slow GSSAPI
+  UseDNS no
+  GSSAPIAuthentication no

@@ -9,3 +9,8 @@ php5_packages:
   - php5-mysql
 
 php5_post_max_size: '32M'
+
+php_value:
+  memory_limit: 192M
+  newrelic_appname: "{{ app_name }}"
+  max_input_vars: 2000
