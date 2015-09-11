@@ -88,7 +88,7 @@
       sudo: yes
       apache2_pki_crt: "/etc/pki/host/certs/{{ webhost }}.{{ webdomain }}.crt"
       apache2_pki_key: "/etc/pki/host/private/{{ webhost }}.{{ webdomain }}.key"
-      apache_port: "{{ (varnish_enabled is defined and varnish_enabled)|ternary('8080', '80') }}"
+      apache_port: "{{ varnish_enabled | ternary('8080', '80') }}"
 
 - name: Varnish
   hosts: drupsible_varnish
@@ -99,4 +99,4 @@
       trusted_host_patterns: [ "(?i)^.+.{{ webdomain|regex_replace('[.]', '\\.') }}$" ]
       varnish_pipe_timeout: 600
       apache_port: 8080
-      when: varnish_enabled is defined and varnish_enabled
+      when: varnish_enabled
