@@ -10,7 +10,7 @@
   name: debops.bootstrap
 - src: https://github.com/debops/ansible-postfix
   version: master
-  name: debops.bootstrap
+  name: debops.postfix
 - src: https://github.com/debops/ansible-sshd
   version: master
   name: debops.sshd
