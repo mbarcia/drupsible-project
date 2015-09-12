@@ -100,4 +100,5 @@
       trusted_host_patterns: [ "(?i)^.+.{{ webdomain|regex_replace('[.]', '\\.') }}$" ]
       varnish_pipe_timeout: 600
       apache_port: 8080
+      varnish_management_console_listen_on: "{{ varnish_mgmt_port }}"
       when: varnish_enabled

@@ -6,6 +6,7 @@ webhost: www
 webdomain: "example.com"
 
 varnish_enabled: yes
+varnish_mgmt_port: 2000
 server_status_path: "/fpm-status"
 ping_path: "/fpm-ping"
 

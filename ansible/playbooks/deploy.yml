@@ -4,4 +4,7 @@
 - name: Deploy
   hosts: drupsible_deploy
   roles:
-    - { role: drupsible.deploy, tags: deploy }
+    - role: drupsible.deploy
+      tags: deploy
+      varnish_mgmt_port: "{{ varnish_mgmt_port }}"
+

@@ -1,3 +1,7 @@
+
+#
+# Section added by Drupsible
+#
 # history search with arrow up-down, fx type "cd" and press arrow up
 bind '"\e[A": history-search-backward'
 bind '"\e[B": history-search-forward'
@@ -20,7 +24,10 @@ alias l='ls -CF'
 
 ## get rid of command not found ##
 alias cd..='cd ..'
- 
+
 ## a quick way to get out of current directory ##
 alias ..='cd ..'
 alias ...='cd ../../../'
+#
+# End of section by Drupsible
+#

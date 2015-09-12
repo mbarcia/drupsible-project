@@ -32,7 +32,8 @@ In the future, Drupsible may share the server with other webapps.
 ```
 git clone https://github.com/mbarcia/drupsible-project.git myproject-drupsible
 cd myproject-drupsible
-bin/up.sh
+bin/configure.sh
+vagrant up
 ```
 1. Drupsible will start an interactive session, asking all the values needed.
 1. After it is done asking, you can grab a cup of coffee and watch the tasks being run. 
@@ -49,31 +50,6 @@ Once your Drupal 7 website is working on your local, you can proceed to deploy t
 1. Choose an Ansible controller server. A good starting point is to use the VM itself as a controller, since it has already provisioned and configured your local. However, it is wise to consider having a separate "production" Ansible controller.
 1. In your controller, make sure you have your public key in ~/.ssh/id_rsa.pub. This key will authorize your Drupsible SSH connections to all the hosts.
 
-### Example
-Say you are deploying your app to the live/prod environment from the VM. First, edit your new inventory (use hosts-local as a starting point). Second and last step, run the deploy playbook.
-```
-$ vagrant ssh
-...
-vagrant@local:~$ nano ansible/inventory/hosts-prod
-vagrant@local:~$ ansible-playbook -i ansible/inventory/hosts-prod ansible/playbooks/bootstrap-deploy.yml
-```
-Once you ran that, subsequent deployments will be simpler, taking this form:
-```
-$ vagrant ssh
-...
-vagrant@local:~$ ansible-playbook -i ansible/inventory/hosts-prod ansible/playbooks/deploy.yml
-```
-### Restarting the local VM ###
-Whenever your local VM may go down (ie. after your workstation has been restarted), you can, instead of going through the up.sh configuration script again, simply run
-```
-$ vagrant up
-```
-BTW, first make sure you have your ssh-agent running for the session, by executing: 
-```
-$ bin/ssh-agent.sh
-```
-(you won't always need it, but it will better if you have your keys loaded and ready to be forwarded to your GIT repos or any other external server requiring SSH access).
-
 ### Email sending capability ###
 Your Drupal website will need to send emails to notify the admin (and the registered users, if any) of several important events.
 In order to do that, a SMTP service must be made available to PHP. Simply add something like this to ansible/inventory/host_vars/<target-server>.yml
@@ -89,3 +65,32 @@ and Drupsible will automatically configure everything so the web server is ready
 *Important* - Your admin_email (under app_env) must be accepted by your SMTP service. Most likely, your admin_email and your smtp_user will need to match.
 And, if you want to use the Gmail SMTP service, you will have to [relax the security measures of your Gmail account]
 (https://support.google.com/accounts/answer/6010255) to let Drupsible send emails via Gmail.
+
+### Example
+Say you are deploying your app to the live/prod environment from the VM. First, edit your new inventory (use hosts-local as a starting point). Second and last step, run the deploy playbook.
+```
+$ vagrant ssh
+...
+vagrant@local:~$ nano ansible/inventory/hosts-prod
+vagrant@local:~$ ansible-playbook -i ansible/inventory/hosts-prod ansible/playbooks/bootstrap-deploy.yml
+```
+Once you ran that, subsequent deployments will be simpler, taking this form:
+```
+$ vagrant ssh
+...
+vagrant@local:~$ ansible-playbook -i ansible/inventory/hosts-prod ansible/playbooks/deploy.yml
+```
+### Restarting the local VM ###
+Whenever your local VM may go down (ie. after your workstation has been restarted), you need to
+```
+$ vagrant up
+```
+
+### SSH-agent forwarding
+When you need to deploy a new version of your web app, your console needs to run an ssh-agent prior to vagrant up/provision. 
+This agent needs to load your GIT repo's SSH key, like this
+```
+bin/ssh-agent.sh <your-private-key-filename>
+eval $(<~/.ssh-agent)
+```
+Drupsible will, from where the codebase needs to be cloned/checked-out, automatically present the credentials to the Git server.
