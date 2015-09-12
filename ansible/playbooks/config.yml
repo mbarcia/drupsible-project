@@ -33,7 +33,10 @@
 - name: pki
   hosts: debops_pki
   roles:
-    - { role: debops.pki, tags: pki, sudo: yes }
+    - role: debops.pki
+      tags: pki
+      sudo: yes
+  when: app_https_enabled
 
 - name: postfix
   hosts: debops_postfix
