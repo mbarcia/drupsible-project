@@ -89,6 +89,7 @@
       apache2_pki_crt: "/etc/pki/host/certs/{{ webhost }}.{{ webdomain }}.crt"
       apache2_pki_key: "/etc/pki/host/private/{{ webhost }}.{{ webdomain }}.key"
       apache_port: "{{ varnish_enabled | ternary('8080', '80') }}"
+      apache_https_enabled: "{{ app_https_enabled | default(False) }}"
 
 - name: Varnish
   hosts: drupsible_varnish

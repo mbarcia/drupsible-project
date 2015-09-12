@@ -8,3 +8,5 @@ webdomain: "example.com"
 varnish_enabled: yes
 server_status_path: "/fpm-status"
 ping_path: "/fpm-ping"
+
+app_https_enabled: no
