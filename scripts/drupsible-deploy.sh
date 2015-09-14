@@ -23,7 +23,7 @@ if [ -z "$TAGS" ]; then
 	TAGS="all"
 fi
 
-echo "Running Drupsible deploy..."
+echo "Running Drupsible configure and deploy..."
 if [ -z "$EXTRA_VARS" ]; then
 	if [ -z "$SKIP_TAGS" ]; then
 		ansible-playbook -i $ANSIBLE_INVENTORY $ANSIBLE_PLAYBOOK --tags "$TAGS"
