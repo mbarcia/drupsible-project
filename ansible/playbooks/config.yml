@@ -92,7 +92,7 @@
       apache2_pki_crt: "/etc/pki/host/certs/{{ webhost }}.{{ webdomain }}.crt"
       apache2_pki_key: "/etc/pki/host/private/{{ webhost }}.{{ webdomain }}.key"
       apache_port: "{{ varnish_enabled | ternary('8080', '80') }}"
-      apache_https_enabled: "{{ app_https_enabled | default(False) }}"
+      apache2_https_enabled: "{{ app_https_enabled | default(False) }}"
 
 - name: Varnish
   hosts: drupsible_varnish
@@ -103,5 +103,5 @@
       trusted_host_patterns: [ "(?i)^.+.{{ webdomain|regex_replace('[.]', '\\.') }}$" ]
       varnish_pipe_timeout: 600
       apache_port: 8080
-      varnish_management_console_listen_on: "{{ varnish_mgmt_port }}"
+      varnish_management_console_listen_on: "{{ varnish_mgmt_port | default('6082') }}"
       when: varnish_enabled
