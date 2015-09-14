@@ -95,7 +95,7 @@
       apache2_https_enabled: "{{ app_https_enabled | default(True) }}"
       apache2_fpm_server_status_path: "{{ app_fpm_status_path | default('/fpm-status')}}"
       apache2_fpm_ping_path: "{{ app_fpm_ping_path | default('/ping')}}"
-      webhost: "{{ app_webhost | default('www') }}"
+      apache2_webhost: "{{ app_webhost | default('www') }}"
 
 - name: Varnish
   hosts: drupsible_varnish
@@ -108,5 +108,5 @@
       varnish_apache2_port: "{{ app_apache2_port | default(8080) }}"
       varnish_management_console_listen_on: "{{ varnish_mgmt_port | default(6082) }}"
       varnish_fpm_ping_path: "{{ app_fpm_ping_path | default('/ping')}}"
-      webhost: "{{ app_webhost | default('www') }}"
+      varnish_webhost: "{{ app_webhost | default('www') }}"
       when: app_varnish_enabled | default(True)
