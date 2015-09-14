@@ -10,7 +10,7 @@
   name: debops.bootstrap
 - src: https://github.com/debops/ansible-postfix
   version: master
-  name: debops.bootstrap
+  name: debops.postfix
 - src: https://github.com/debops/ansible-sshd
   version: remotes/origin/v0.2.1
   name: debops.sshd
@@ -38,3 +38,6 @@
 - src: https://github.com/mbarcia/drupsible-deploy
   version: remotes/origin/0.8.5
   name: drupsible.deploy
+- src: https://github.com/mbarcia/drupsible-varnish
+  version: master
+  name: drupsible.varnish

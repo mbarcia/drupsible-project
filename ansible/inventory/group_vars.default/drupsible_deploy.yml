@@ -1,17 +1,12 @@
 ---
-app_target: local
-
-sshd_allow_groups: [ 'vagrant' , 'root', 'admins', 'sshusers', 'sftponly' ]
-
-app_webhost: local
-
 app_env:
-  aliases: []
-  user: 'vagrant'
-  group: 'www-data'
-  admin_email: admin@{{ webdomain }}
+  aliases:
+    - "{{ webdomain }}"
+  user: example-project
+  group: www-data
   fpm_listen: '/var/run/php5-fpm-{{ app_name }}.sock'
-  files_tarball_filename: '{{ app_name }}.tar.gz'
+  admin_email: "admin@{{ webdomain }}"
+  files_tarball_filename: '{{ app_name }}-files.tar.gz'
   db_dump_filename: '{{ app_name }}.sql.gz'
   db_name: "{{ app_name }}"
   db_user: "{{ app_name }}"
@@ -26,10 +21,7 @@ app_env:
   # True looks for tarballs (files) to upload and import
   files_import: False
   files_sync: False
-  files_copy: False
-  do_cur_backup: False
-  adjust_db: False
-  syslog: True
-
-# License key
-newrelic_license_key: False
+  files_copy: True
+  do_cur_backup: True
+  adjust_db: True
+  syslog: yes

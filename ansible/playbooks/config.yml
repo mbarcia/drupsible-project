@@ -33,7 +33,10 @@
 - name: pki
   hosts: debops_pki
   roles:
-    - { role: debops.pki, tags: pki, sudo: yes }
+    - role: debops.pki
+      tags: pki
+      sudo: yes
+      when: app_https_enabled | default(True)
 
 - name: postfix
   hosts: debops_postfix
@@ -86,5 +89,24 @@
     - role: drupsible.apache2
       tags: apache2
       sudo: yes
-      apache2_pki_crt: "/etc/pki/host/certs/{{ webhost }}.{{ webdomain }}.crt"
-      apache2_pki_key: "/etc/pki/host/private/{{ webhost }}.{{ webdomain }}.key"
+      apache2_pki_crt: "/etc/pki/host/certs/{{ app_webhost | default('www') }}.{{ webdomain }}.crt"
+      apache2_pki_key: "/etc/pki/host/private/{{ app_webhost | default('www') }}.{{ webdomain }}.key"
+      apache2_port: "{{ varnish_enabled | ternary(app_apache2_port | default(8080), 80) }}"
+      apache2_https_enabled: "{{ app_https_enabled | default(True) }}"
+      apache2_fpm_server_status_path: "{{ app_fpm_status_path | default('/fpm-status')}}"
+      apache2_fpm_ping_path: "{{ app_fpm_ping_path | default('/ping')}}"
+      webhost: "{{ app_webhost | default('www') }}"
+
+- name: Varnish
+  hosts: drupsible_varnish
+  roles:
+    - role: drupsible.varnish
+      tags: varnish
+      sudo: yes
+      trusted_host_patterns: [ "(?i)^.+.{{ webdomain|regex_replace('[.]', '\\.') }}$" ]
+      varnish_pipe_timeout: 600
+      varnish_apache2_port: {{ app_apache2_port | default(8080) }}
+      varnish_management_console_listen_on: "{{ varnish_mgmt_port | default(6082) }}"
+      varnish_fpm_ping_path: "{{ app_fpm_ping_path | default('/ping')}}"
+      webhost: "{{ app_webhost | default('www') }}"
+      when: varnish_enabled | default(True)

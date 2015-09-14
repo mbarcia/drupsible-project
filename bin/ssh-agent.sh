@@ -9,4 +9,4 @@ if [ "$?" == 2 ]; then
 	fi
 fi
 
-ssh-add $1
+ssh-add "${1}"
