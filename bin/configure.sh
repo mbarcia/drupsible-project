@@ -270,7 +270,7 @@ if [ "$GIT_PASS" == "" ]; then
 	# Invoke ssh-agent script, applying bash expansion to the tilde
 	./bin/ssh-agent.sh "${KEY_FILENAME/#\~/$HOME}"
 	# Connect to ssh-agent launched by ssh-agent.sh
-	eval $(<~/.ssh-agent)
+	eval $(< "${~/.ssh-agent/#\~/$HOME}}")
 	# Report back
 	echo "SSH keys loaded:"
 	ssh-add -l
