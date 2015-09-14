@@ -239,8 +239,8 @@ if [ "$GIT_PASS" == "" ]; then
 fi
 
 cd ansible/inventory/group_vars
-# Append to group_vars/all
-cat <<EOF >> all.yml
+# Append to group_vars/drupsible_deploy.yml
+cat <<EOF >> drupsible_deploy.yml
 
 # Version of the repository to check out (full 40-character SHA-1 hash, the literal string HEAD, a branch name, or a tag name).
 git_version: "$GIT_BRANCH"
