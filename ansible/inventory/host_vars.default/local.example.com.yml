@@ -1,9 +1,9 @@
 ---
-target: local
+app_target: local
 
 sshd_allow_groups: [ 'vagrant' , 'root', 'admins', 'sshusers', 'sftponly' ]
 
-webhost: local
+app_webhost: local
 
 app_env:
   aliases: []

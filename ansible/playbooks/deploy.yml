@@ -7,4 +7,6 @@
     - role: drupsible.deploy
       tags: deploy
       varnish_mgmt_port: "{{ varnish_mgmt_port }}"
+      target: "{{ app_target | default('prod') }}"
+      webhost: "{{ app_webhost | default('www') }}"
 

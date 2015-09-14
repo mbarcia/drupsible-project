@@ -2,11 +2,11 @@
 # Self-signed certs
 pki_certificates:
   - cn: "{{ webdomain }}"
-    source: 'hosts/{{ webhost }}.{{ webdomain }}/host'
+    source: "hosts/{{ app_webhost | default('www') }}.{{ webdomain }}/host"
     destination: 'host'
-    filename: "{{ webhost }}.{{ webdomain }}"
+    filename: "{{ app_webhost | default('www') }}.{{ webdomain }}"
 pki_routes:
   - name: "host_{{ webdomain }}"
     authority: 'ca/internal/certs'
-    realm: 'hosts/{{ webhost }}.{{ webdomain }}/host/certs'
-    file: "{{ webhost }}.{{ webdomain }}.crt"
+    realm: "hosts/{{ app_webhost | default('www') }}.{{ webdomain }}/host/certs"
+    file: "{{ app_webhost | default('www') }}.{{ webdomain }}.crt"
