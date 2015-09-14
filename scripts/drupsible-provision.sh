@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export PYTHONUNBUFFERED=1
+
 # Install Ansible and its dependencies if it's not installed already.
 if [ -f /usr/bin/ansible ] || [ -f /usr/local/bin/ansible ]; then
 	echo "Ansible is installed ($(ansible --version))"
