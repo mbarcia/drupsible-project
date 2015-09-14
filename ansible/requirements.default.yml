@@ -1,42 +1,42 @@
 ---
 - src: https://github.com/debops/ansible-core
-  version: remotes/origin/v0.1.1
+  version: master
   name: debops.core
 - src: https://github.com/debops/ansible-pki
   version: master
   name: debops.pki
 - src: https://github.com/debops/ansible-bootstrap
-  version: remotes/origin/v0.1.0
+  version: master
   name: debops.bootstrap
 - src: https://github.com/debops/ansible-postfix
   version: master
   name: debops.postfix
 - src: https://github.com/debops/ansible-sshd
-  version: remotes/origin/v0.2.1
+  version: master
   name: debops.sshd
 - src: https://github.com/mbarcia/drupsible-apache
-  version: remotes/origin/0.8.5
+  version: master
   name: drupsible.apache2
 - src: https://github.com/mbarcia/drupsible-memcached
-  version: remotes/origin/0.8.5
+  version: master
   name: drupsible.memcached
 - src: https://github.com/mbarcia/drupsible-samba
-  version: remotes/origin/0.8.5
+  version: master
   name: drupsible.samba
 - src: https://github.com/mbarcia/drupsible-newrelic
-  version: remotes/origin/0.8.5
+  version: master
   name: drupsible.newrelic
 - src: https://github.com/mbarcia/drupsible-composer
-  version: remotes/origin/0.8.5
+  version: master
   name: drupsible.composer
 - src: https://github.com/mbarcia/drupsible-drush
-  version: remotes/origin/0.8.5
+  version: master
   name: drupsible.drush
 - src: https://github.com/mbarcia/drupsible-mysql
-  version: remotes/origin/0.8.5
+  version: master
   name: drupsible.mysql
 - src: https://github.com/mbarcia/drupsible-deploy
-  version: remotes/origin/0.8.5
+  version: master
   name: drupsible.deploy
 - src: https://github.com/mbarcia/drupsible-varnish
   version: master
