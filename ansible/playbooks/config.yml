@@ -91,7 +91,7 @@
       sudo: yes
       apache2_pki_crt: "/etc/pki/host/certs/{{ app_webhost | default('www') }}.{{ webdomain }}.crt"
       apache2_pki_key: "/etc/pki/host/private/{{ app_webhost | default('www') }}.{{ webdomain }}.key"
-      apache2_port: "{{ app_varnish_enabled | ternary(app_apache2_port | default(8080), 80) }}"
+      apache2_port: "{{ app_varnish_enabled is defined and app_varnish_enabled | ternary(app_apache2_port | default(8080), 80) }}"
       apache2_https_enabled: "{{ app_https_enabled | default(True) }}"
       apache2_fpm_server_status_path: "{{ app_fpm_status_path | default('/fpm-status')}}"
       apache2_fpm_ping_path: "{{ app_fpm_ping_path | default('/ping')}}"
