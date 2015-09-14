@@ -1,0 +1,12 @@
+---
+# Self-signed certs
+pki_certificates:
+  - cn: "{{ webdomain }}"
+    source: 'hosts/{{ webhost }}.{{ webdomain }}/host'
+    destination: 'host'
+    filename: "{{ webhost }}.{{ webdomain }}"
+pki_routes:
+  - name: "host_{{ webdomain }}"
+    authority: 'ca/internal/certs'
+    realm: 'hosts/{{ webhost }}.{{ webdomain }}/host/certs'
+    file: "{{ webhost }}.{{ webdomain }}.crt"
