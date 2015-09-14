@@ -1,4 +1,9 @@
 #!/bin/bash
+ID_FILE="${1}"
+if [ "${ID_FILE}" == "" ]; then
+	ID_FILE="~/.ssh/id_rsa"
+fi
+
 ssh-add -l &>/dev/null
 if [ "$?" == 2 ]; then
 	test -r ~/.ssh-agent && eval "$(<~/.ssh-agent)" >/dev/null
@@ -9,4 +14,4 @@ if [ "$?" == 2 ]; then
 	fi
 fi
 
-ssh-add "${1}"
+ssh-add "$ID_FILE"
