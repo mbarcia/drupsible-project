@@ -27,8 +27,8 @@ app_env:
   do_cur_backup: False
   adjust_db: False
   syslog: True
-  app_https_enabled: no
-  app_varnish_enabled: yes
+  https_enabled: no
+  varnish_enabled: yes
 
 # License key
 newrelic_license_key: False
