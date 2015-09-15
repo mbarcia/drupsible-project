@@ -1,4 +1,4 @@
 ---
-app_name: example-project
 webdomain: "example.com"
-app_webhost: www
+
+app_name: example-project

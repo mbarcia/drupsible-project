@@ -1,4 +1,7 @@
 ---
+app_target: prod
+app_webhost: www
+
 app_env:
   aliases:
     - "{{ webdomain }}"
@@ -25,3 +28,5 @@ app_env:
   do_cur_backup: True
   adjust_db: True
   syslog: yes
+  app_https_enabled: no
+  app_varnish_enabled: yes

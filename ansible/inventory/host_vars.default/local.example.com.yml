@@ -1,8 +1,5 @@
 ---
 app_target: local
-
-sshd_allow_groups: [ 'vagrant' , 'root', 'admins', 'sshusers', 'sftponly' ]
-
 app_webhost: local
 
 app_env:
@@ -30,6 +27,11 @@ app_env:
   do_cur_backup: False
   adjust_db: False
   syslog: True
+  app_https_enabled: no
+  app_varnish_enabled: yes
 
 # License key
 newrelic_license_key: False
+
+# Add vagrant to the default groups defined in debops.sshd
+sshd_allow_groups: [ 'vagrant' , 'root', 'admins', 'sshusers', 'sftponly' ]
