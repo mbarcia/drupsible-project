@@ -78,6 +78,10 @@ Once you ran that, subsequent deployments will be simpler, taking this form:
 ```
 $ vagrant ssh
 ...
+vagrant@local:~$ ansible-playbook -i ansible/inventory/hosts-prod ansible/playbooks/config-deploy.yml
+```
+If you just want to re-configure, say a parameter in Varnish, you would just run the deploy playbook:
+```
 vagrant@local:~$ ansible-playbook -i ansible/inventory/hosts-prod ansible/playbooks/deploy.yml
 ```
 ### Restarting the local VM ###

@@ -1,5 +1,5 @@
 ---
-- include: core.yml
+- include: config.yml
 
 - name: Deploy
   hosts: drupsible_deploy
