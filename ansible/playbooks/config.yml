@@ -91,7 +91,7 @@
       sudo: yes
       apache2_pki_crt: "/etc/pki/host/certs/{{ app_webhost }}.{{ webdomain }}.crt"
       apache2_pki_key: "/etc/pki/host/private/{{ app_webhost }}.{{ webdomain }}.key"
-      apache2_port: "{{ (app_env['varnish_enabled'] is not defined or not app_env['varnish_enabled']) | ternary(app_apache2_port | default(8080), 80) }}"
+      apache2_port: "{{ (app_env['varnish_enabled'] is not defined or not app_env['varnish_enabled']) | ternary(80, app_env['app_apache2_alt_port']) }}"
       apache2_https_enabled: "{{ app_env['https_enabled'] }}"
       apache2_fpm_server_status_path: "{{ app_fpm_status_path | default('/fpm-status') }}"
       apache2_fpm_ping_path: "{{ app_fpm_ping_path | default('/ping') }}"
@@ -105,7 +105,7 @@
       sudo: yes
       trusted_host_patterns: [ "(?i)^.+.{{ webdomain|regex_replace('[.]', '\\.') }}$" ]
       varnish_pipe_timeout: 600
-      varnish_apache2_port: "{{ app_apache2_port | default(8080) }}"
+      varnish_apache2_port: "{{ app_env['app_apache2_alt_port'] }}"
       varnish_management_console_listen_on: "{{ app_env['varnish_mgmt_port'] }}"
       varnish_fpm_ping_path: "{{ app_fpm_ping_path | default('/ping') }}"
       varnish_webhost: "{{ app_webhost }}"
