@@ -36,7 +36,7 @@
     - role: debops.pki
       tags: pki
       sudo: yes
-      when: app_env['https_enabled']
+      when: app_env['https_enabled']|bool
 
 - name: postfix
   hosts: debops_postfix
@@ -72,7 +72,7 @@
     - role: drupsible.mysql
       tags: mysql-clone
       sudo: yes
-      when: "app_env.db_clone"
+      when: app_env.db_clone|bool
       vars:
         mysql_databases:
           - name: "{{ app_name }}_{{ build }}"
@@ -109,4 +109,4 @@
       varnish_management_console_listen_on: "{{ varnish_mgmt_port | default(6082) }}"
       varnish_fpm_ping_path: "{{ app_fpm_ping_path | default('/ping') }}"
       varnish_webhost: "{{ app_webhost }}"
-      when: app_env['varnish_enabled']
+      when: app_env['varnish_enabled']|bool
