@@ -28,5 +28,6 @@ app_env:
   do_cur_backup: True
   adjust_db: True
   syslog: yes
-  app_https_enabled: no
-  app_varnish_enabled: yes
+  https_enabled: no
+  varnish_enabled: yes
+  varnish_mgmt_port: 6082
