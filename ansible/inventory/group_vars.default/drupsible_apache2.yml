@@ -40,4 +40,4 @@ upload_max_filesize: "32M"
 php_timezone: "Europe/Madrid"
 memory_limit: "256M"
 html_errors: "Off"
-allow_override_htaccess: All
+allow_override_htaccess: None
