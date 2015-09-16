@@ -8,6 +8,9 @@ APP_NAME="default"
 # This is your web domain, like example.com
 DOMAIN=""
 #
+# This is the codebase tarball of your drupal site.
+CODEBASE_TARBALL=""
+#
 # This is the DB dump of your drupal site to import into your local.
 DBDUMP=""
 #
@@ -17,9 +20,7 @@ FILES_TARBALL=""
 #
 KEY_FILENAME="~/.ssh/id_rsa"
 #
-GIT_BRANCH="master"
-#
-GIT_PROTOCOL="ssh"
+GIT_PROTOCOL=""
 #
 GIT_SERVER=""
 #
@@ -28,5 +29,7 @@ GIT_USER=""
 GIT_PATH=""
 #
 GIT_PASS=""
+#
+GIT_BRANCH="master"
 
 # Last reconfigured on:

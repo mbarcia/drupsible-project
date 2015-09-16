@@ -64,7 +64,7 @@ Your Drupal project up and running with Drupsible.
 
 Usage: ${0##*/} [-h]
 	[-d domain] 
-	[-m db-dump] [-z files-tarball] [-k key-filename] 
+	[-m db-dump] [-z files-tarball] [-c codebase-tarball] [-k key-filename] 
 	[-g git-server] [-t git-protocol] [-r git-path] [-u git-user] [-p git-password] [-b git-branch]
 	app-name
 
@@ -74,6 +74,7 @@ Options:
 	-d	webdomain (ie. example.com)
 	-m	DB dump filename (ie. example.sql.gz, must be in ansible/playbooks/dbdumps)
 	-z	Files tarball (ie. example-files.tar.gz, must be in ansible/playbooks/files-tarballs)
+	-c	Codebase tarball (ie. example-codebase.tar.gz, must be in ansible/playbooks/codebase-tarballs)
 	-k	SSH private key filename (defaults to ~/.ssh/id_rsa)
 	-g	git server (ie. bitbucket.org, or git.your.org:8443 if using http/s)
 	-t	git protocol (defaults to git)
@@ -86,7 +87,7 @@ EOH
 }
 
 # Read any option from the command line (with precedence over the .profile)
-while getopts "hd:m:z:k:g:t:r:u:p:b:" opt; do
+while getopts "hd:m:z:c:k:g:t:r:u:p:b:" opt; do
     case "$opt" in
         h)
             show_help
@@ -97,6 +98,8 @@ while getopts "hd:m:z:k:g:t:r:u:p:b:" opt; do
         m)  DBDUMP=$OPTARG
             ;;
         z)  FILES_TARBALL=$OPTARG
+            ;;
+        c)  CODEBASE_TARBALL=$OPTARG
             ;;
         k)  KEY_FILENAME=$OPTARG
             ;;
@@ -136,11 +139,11 @@ if [ "$DBDUMP" == "" ] && [ "$CONFIRM" == 'yes' ]; then
 	echo "DB dump filename? (ie. example.sql.gz, must be in ansible/playbooks/dbdumps)"
 	read DBDUMP
 	# Write DBDUMP
-	sed -i "s/DBDUMP=.*$/DBDUMP=${DBDUMP}/g" "${APP_NAME}.profile"
+	sed -i "s/DBDUMP=.*$/DBDUMP=\"${DBDUMP}\"/g" "${APP_NAME}.profile"
 fi
 
 if [ "$DBDUMP" != "" ] && [ ! -f ansible/playbooks/dbdumps/$DBDUMP ]; then
-	echo "Please copy your DB dump $DBDUMP to ansible/playbooks/dbdumps/"
+	echo "Please copy $DBDUMP to ansible/playbooks/dbdumps/"
 	exit -1
 fi
 
@@ -148,11 +151,23 @@ if [ "$FILES_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ]; then
 	echo "Files tarball? (ie. example-files.tar.gz, must be in ansible/playbooks/files-tarballs)"
 	read FILES_TARBALL
 	# Write FILES_TARBALL
-	sed -i "s/FILES_TARBALL=.*$/FILES_TARBALL=${FILES_TARBALL}/g" "${APP_NAME}.profile"
+	sed -i "s/FILES_TARBALL=.*$/FILES_TARBALL=\"${FILES_TARBALL}\"/g" "${APP_NAME}.profile"
 fi
 
 if [ "$FILES_TARBALL" != "" ] && [ ! -f ansible/playbooks/files-tarballs/$FILES_TARBALL ]; then
-	echo "Please copy your file tarball $FILES_TARBALL to ansible/playbooks/files-tarballs/"
+	echo "Please copy $FILES_TARBALL to ansible/playbooks/files-tarballs/"
+	exit -1
+fi
+
+if [ "$CODEBASE_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ]; then
+	echo "Codebase tarball? (must be in ansible/playbooks/codebase-tarballs, leave empty if you have a Git repo.)"
+	read CODEBASE_TARBALL
+	# Write CODEBASE_TARBALL
+	sed -i "s/CODEBASE_TARBALL=.*$/CODEBASE_TARBALL=\"${CODEBASE_TARBALL}\"/g" "${APP_NAME}.profile"
+fi
+
+if [ "$CODEBASE_TARBALL" != "" ] && [ ! -f ansible/playbooks/codebase-tarballs/$CODEBASE_TARBALL ]; then
+	echo "Please copy $CODEBASE_TARBALL to ansible/playbooks/codebase-tarballs/"
 	exit -1
 fi
 
@@ -174,6 +189,14 @@ sed -i "s/example\.com/${DOMAIN}/g" all.yml
 sed -i "s/example\.com/${DOMAIN}/g" drupsible_deploy.yml
 sed -i "s/example-project/${APP_NAME}/g" all.yml
 sed -i "s/example-project/${APP_NAME}/g" drupsible_deploy.yml
+
+if [ ! "$CODEBASE_TARBALL" == "" ]; then
+	sed -i "s/codebase_tarball_filename:.*$/codebase_tarball_filename: '${CODEBASE_TARBALL}'/g" drupsible_deploy.yml
+	sed -i "s/codebase_import:.*$/codebase_import: yes/g" drupsible_deploy.yml
+else
+	sed -i "s/codebase_import:.*$/codebase_import: no/g" drupsible_deploy.yml
+fi
+
 cd - > /dev/null
 
 rm -fr ansible/inventory/host_vars 2>/dev/null
@@ -183,73 +206,78 @@ cp local.example.com.yml "local.$DOMAIN.yml"
 sed -i "s/example\.com/${DOMAIN}/g" "local.$DOMAIN.yml"
 	
 if [ ! "$DBDUMP" == "" ]; then
-	sed -i "s/db_dump_filename: '{{ app_name }}.sql.gz'/db_dump_filename: '${DBDUMP}'/g" "local.$DOMAIN.yml"
-	sed -i "s/db_import: False/db_import: yes/g" "local.$DOMAIN.yml"
+	sed -i "s/db_dump_filename:.*$/db_dump_filename: '${DBDUMP}'/g" "local.$DOMAIN.yml"
+	sed -i "s/db_import:.*$/db_import: yes/g" "local.$DOMAIN.yml"
+else
+	sed -i "s/db_import:.*$/db_import: no/g" "local.$DOMAIN.yml"
 fi
-	
+
 if [ ! "$FILES_TARBALL" == "" ]; then
-	sed -i "s/files_tarball_filename: '{{ app_name }}.tar.gz'/files_tarball_filename: '${FILES_TARBALL}'/g" "local.$DOMAIN.yml"
-	sed -i "s/files_import: False/files_import: yes/g" "local.$DOMAIN.yml"
+	sed -i "s/files_tarball_filename:.*$/files_tarball_filename: '${FILES_TARBALL}'/g" "local.$DOMAIN.yml"
+	sed -i "s/files_import:.*$/files_import: yes/g" "local.$DOMAIN.yml"
+else
+	sed -i "s/files_import:.*$/files_import: no/g" "local.$DOMAIN.yml"
 fi
+
 cd - > /dev/null
 
-#
-# GIT config values
-#
-# Set branch to default: master
-if [ "$GIT_BRANCH" == "" ]; then
-	GIT_BRANCH=master
-	# Write GIT_BRANCH
-	sed -i "s/GIT_BRANCH=.*$/GIT_BRANCH=\"${GIT_BRANCH}\"/g" "${APP_NAME}.profile"
-fi
-
-# Set protocol to default: git
-if [ "$GIT_PROTOCOL" == "" ]; then
-	GIT_PROTOCOL=git
-	# Write GIT_PROTOCOL
-	sed -i "s/GIT_PROTOCOL=.*$/GIT_PROTOCOL=\"${GIT_PROTOCOL}\"/g" "${APP_NAME}.profile"
-fi
-
-if [ "$GIT_SERVER" == "" ]; then
-	echo "Git server name where your Drupal website is?"
-	read GIT_SERVER
-	# Write GIT_SERVER
-	sed -i "s/GIT_SERVER=.*$/GIT_SERVER=\"${GIT_SERVER}\"/g" "${APP_NAME}.profile"
-fi
-
-if [ "$GIT_USER" == "" ]; then
-	echo "Git username of your Drupal repository?"
-	read GIT_USER
-	# Write GIT_USER
-	sed -i "s/GIT_USER=.*$/GIT_USER=\"${GIT_USER}\"/g" "${APP_NAME}.profile"
-fi
-
-if [ "$GIT_PATH" == "" ]; then
-	echo "Git path of your Drupal repository? (ie. example.git)"
-	read GIT_PATH
-	# Write GIT_PATH
-	sed -i "s/GIT_PATH=.*$/GIT_PATH=\"${GIT_PATH}\"/g" "${APP_NAME}.profile"
-fi
-
-if [ "$GIT_PASS" == "" ]; then
-	echo "Git password? (leave it empty if you use a SSH key)"
-	read -s GIT_PASS
-	# Write GIT_PASS
-	sed -i "s/GIT_PASS=.*$/GIT_PASS=\"${GIT_PASS}\"/g" "${APP_NAME}.profile"
+if [ "$CODEBASE_TARBALL" == "" ]; then
+	#
+	# GIT config values
+	#
+	if [ "$GIT_PROTOCOL" == "" ]; then
+		echo "Protocol to access your Git repository (git/ssh/http/https)?"
+		read GIT_PROTOCOL
+		# Write GIT_PROTOCOL
+		sed -i "s/GIT_PROTOCOL=.*$/GIT_PROTOCOL=\"${GIT_PROTOCOL}\"/g" "${APP_NAME}.profile"
+	fi
+	
+	if [ "$GIT_SERVER" == "" ]; then
+		echo "Git server name where your Drupal website is?"
+		read GIT_SERVER
+		# Write GIT_SERVER
+		sed -i "s/GIT_SERVER=.*$/GIT_SERVER=\"${GIT_SERVER}\"/g" "${APP_NAME}.profile"
+	fi
+	
+	if [ "$GIT_USER" == "" ]; then
+		echo "Git username of your Drupal repository?"
+		read GIT_USER
+		# Write GIT_USER
+		sed -i "s/GIT_USER=.*$/GIT_USER=\"${GIT_USER}\"/g" "${APP_NAME}.profile"
+	fi
+	
+	if [ "$GIT_PATH" == "" ]; then
+		echo "Git path of your Drupal repository? (ie. example.git)"
+		read GIT_PATH
+		# Write GIT_PATH
+		sed -i "s/GIT_PATH=.*$/GIT_PATH=\"${GIT_PATH}\"/g" "${APP_NAME}.profile"
+	fi
+	
+	if [ "$GIT_PASS" == "" ]; then
+		echo "Git password? (leave it empty if you use a SSH key)"
+		read -s GIT_PASS
+		# Write GIT_PASS
+		sed -i "s/GIT_PASS=.*$/GIT_PASS=\"${GIT_PASS}\"/g" "${APP_NAME}.profile"
+	fi
+	
+	if [ "$GIT_BRANCH" == "" ]; then
+		echo "Branch/version of your codebase? [master]"
+		read GIT_BRANCH
+		# Write GIT_BRANCH
+		sed -i "s/GIT_BRANCH=.*$/GIT_BRANCH=\"${GIT_BRANCH}\"/g" "${APP_NAME}.profile"
+	fi
 fi
 
 cd ansible/inventory/group_vars
 # Append to group_vars/drupsible_deploy.yml
 cat <<EOF >> drupsible_deploy.yml
 
-# Version of the repository to check out (full 40-character SHA-1 hash, the literal string HEAD, a branch name, or a tag name).
-git_version: "$GIT_BRANCH"
-# can be git, ssh, or http
 git_repo_protocol: "$GIT_PROTOCOL"
 git_repo_server: "$GIT_SERVER"
 git_repo_user: "$GIT_USER"
 git_repo_path: "$GIT_PATH"
 git_repo_pass: "$GIT_PASS"
+git_version: "$GIT_BRANCH"
 EOF
 cd - > /dev/null
 
@@ -270,7 +298,8 @@ if [ "$GIT_PASS" == "" ]; then
 	# Invoke ssh-agent script, applying bash expansion to the tilde
 	./bin/ssh-agent.sh "${KEY_FILENAME/#\~/$HOME}"
 	# Connect to ssh-agent launched by ssh-agent.sh
-	eval $(< "${~/.ssh-agent/#\~/$HOME}}")
+	SSH_AGENT_DATA="~/.ssh-agent"
+	eval "$(<${SSH_AGENT_DATA/#\~/$HOME})"
 	# Report back
 	echo "SSH keys loaded:"
 	ssh-add -l

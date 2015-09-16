@@ -32,3 +32,6 @@ app_env:
   varnish_enabled: yes
   varnish_mgmt_port: 6082
   app_apache2_alt_port: 8080
+
+codebase_tarball_filename: '{{ app_name }}-codebase.tar.gz'
+codebase_import: no
