@@ -47,7 +47,7 @@ if [ ! "$CONFIRM" == "yes" ]; then
 		$EDITOR "$APP_NAME.profile.tmp"
 	fi
 	DIFF=$(diff "$APP_NAME.profile.tmp" "$APP_NAME.profile")
-	if [ "$DIFF" == "" ]; then 
+	if [ ! "$DIFF" == "" ]; then 
 		# Copy changes from tmp file and discard it
 		cp "${APP_NAME}.profile.tmp" "${APP_NAME}.profile"
 		rm "${APP_NAME}.profile.tmp"
@@ -64,7 +64,7 @@ Your Drupal project up and running with Drupsible.
 
 Usage: ${0##*/} [-h]
 	[-d domain] 
-	[-m db-dump] [-z files-tarball] [-c codebase-tarball] [-k key-filename] 
+	[-i install-profile] [-m db-dump] [-z files-tarball] [-c codebase-tarball] [-k key-filename] 
 	[-g git-server] [-t git-protocol] [-r git-path] [-u git-user] [-p git-password] [-b git-branch]
 	app-name
 
@@ -72,6 +72,7 @@ Options:
 
 	-h	show this help and exits
 	-d	webdomain (ie. example.com)
+	-i  Drupal install profile name, on drupal.org (ie. standard, commerce_profile)
 	-m	DB dump filename (ie. example.sql.gz, must be in ansible/playbooks/dbdumps)
 	-z	Files tarball (ie. example-files.tar.gz, must be in ansible/playbooks/files-tarballs)
 	-c	Codebase tarball (ie. example-codebase.tar.gz, must be in ansible/playbooks/codebase-tarballs)
@@ -87,13 +88,15 @@ EOH
 }
 
 # Read any option from the command line (with precedence over the .profile)
-while getopts "hd:m:z:c:k:g:t:r:u:p:b:" opt; do
+while getopts "hd:i:m:z:c:k:g:t:r:u:p:b:" opt; do
     case "$opt" in
         h)
             show_help
             exit 0
             ;;
         d)  DOMAIN=$OPTARG
+            ;;
+        i)  INSTALL_PROFILE=$OPTARG
             ;;
         m)  DBDUMP=$OPTARG
             ;;
@@ -135,7 +138,14 @@ if [ "$DOMAIN" == "" ]; then
 	sed -i "s/DOMAIN=.*$/DOMAIN=\"${DOMAIN}\"/g" "${APP_NAME}.profile"
 fi
 
-if [ "$DBDUMP" == "" ] && [ "$CONFIRM" == 'yes' ]; then
+if [ "$INSTALL_PROFILE" == "" ] && [ "$CONFIRM" == 'yes' ]; then
+	echo "Drupal install profile? (ie. commerce_profile)"
+	read INSTALL_PROFILE
+	# Write INSTALL_PROFILE
+	sed -i "s/INSTALL_PROFILE=.*$/INSTALL_PROFILE=\"${INSTALL_PROFILE}\"/g" "${APP_NAME}.profile"
+fi
+
+if [ "$DBDUMP" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFILE" == "" ]; then
 	echo "DB dump filename? (ie. example.sql.gz, must be in ansible/playbooks/dbdumps)"
 	read DBDUMP
 	# Write DBDUMP
@@ -147,7 +157,7 @@ if [ "$DBDUMP" != "" ] && [ ! -f ansible/playbooks/dbdumps/$DBDUMP ]; then
 	exit -1
 fi
 
-if [ "$FILES_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ]; then
+if [ "$FILES_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFILE" == "" ]; then
 	echo "Files tarball? (ie. example-files.tar.gz, must be in ansible/playbooks/files-tarballs)"
 	read FILES_TARBALL
 	# Write FILES_TARBALL
@@ -159,7 +169,7 @@ if [ "$FILES_TARBALL" != "" ] && [ ! -f ansible/playbooks/files-tarballs/$FILES_
 	exit -1
 fi
 
-if [ "$CODEBASE_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ]; then
+if [ "$CODEBASE_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFILE" == "" ]; then
 	echo "Codebase tarball? (must be in ansible/playbooks/codebase-tarballs, leave empty if you have a Git repo.)"
 	read CODEBASE_TARBALL
 	# Write CODEBASE_TARBALL
@@ -189,13 +199,21 @@ sed -i "s/example\.com/${DOMAIN}/g" all.yml
 sed -i "s/example\.com/${DOMAIN}/g" drupsible_deploy.yml
 sed -i "s/example-project/${APP_NAME}/g" all.yml
 sed -i "s/example-project/${APP_NAME}/g" drupsible_deploy.yml
+sed -i "s/example-project/${APP_NAME}/g" drupsible_deploy.yml
 
-if [ ! "$CODEBASE_TARBALL" == "" ]; then
-	sed -i "s/codebase_tarball_filename:.*$/codebase_tarball_filename: '${CODEBASE_TARBALL}'/g" drupsible_deploy.yml
-	sed -i "s/codebase_import:.*$/codebase_import: yes/g" drupsible_deploy.yml
+if [ ! "$INSTALL_PROFILE" == "" ]; then
+	sed -i "s/deploy_install_profile:.*$/deploy_install_profile: '${INSTALL_PROFILE}'/g" drupsible_deploy.yml
+	sed -i "s/deploy_site_install:.*$/deploy_site_install: yes/g" drupsible_deploy.yml
 else
-	sed -i "s/codebase_import:.*$/codebase_import: no/g" drupsible_deploy.yml
+	sed -i "s/deploy_site_install:.*$/deploy_site_install: no/g" drupsible_deploy.yml
+	if [ ! "$CODEBASE_TARBALL" == "" ]; then
+		sed -i "s/codebase_tarball_filename:.*$/codebase_tarball_filename: '${CODEBASE_TARBALL}'/g" drupsible_deploy.yml
+		sed -i "s/codebase_import:.*$/codebase_import: yes/g" drupsible_deploy.yml
+	else
+		sed -i "s/codebase_import:.*$/codebase_import: no/g" drupsible_deploy.yml
+	fi
 fi
+
 
 cd - > /dev/null
 
@@ -205,23 +223,25 @@ cd ansible/inventory/host_vars
 cp local.example.com.yml "local.$DOMAIN.yml"
 sed -i "s/example\.com/${DOMAIN}/g" "local.$DOMAIN.yml"
 	
-if [ ! "$DBDUMP" == "" ]; then
-	sed -i "s/db_dump_filename:.*$/db_dump_filename: '${DBDUMP}'/g" "local.$DOMAIN.yml"
-	sed -i "s/db_import:.*$/db_import: yes/g" "local.$DOMAIN.yml"
-else
-	sed -i "s/db_import:.*$/db_import: no/g" "local.$DOMAIN.yml"
-fi
-
-if [ ! "$FILES_TARBALL" == "" ]; then
-	sed -i "s/files_tarball_filename:.*$/files_tarball_filename: '${FILES_TARBALL}'/g" "local.$DOMAIN.yml"
-	sed -i "s/files_import:.*$/files_import: yes/g" "local.$DOMAIN.yml"
-else
-	sed -i "s/files_import:.*$/files_import: no/g" "local.$DOMAIN.yml"
+if [ "$INSTALL_PROFILE" == "" ]; then
+	if [ ! "$DBDUMP" == "" ]; then 
+		sed -i "s/db_dump_filename:.*$/db_dump_filename: '${DBDUMP}'/g" "local.$DOMAIN.yml"
+		sed -i "s/db_import:.*$/db_import: yes/g" "local.$DOMAIN.yml"
+	else
+		sed -i "s/db_import:.*$/db_import: no/g" "local.$DOMAIN.yml"
+	fi
+	
+	if [ ! "$FILES_TARBALL" == "" ]; then
+		sed -i "s/files_tarball_filename:.*$/files_tarball_filename: '${FILES_TARBALL}'/g" "local.$DOMAIN.yml"
+		sed -i "s/files_import:.*$/files_import: yes/g" "local.$DOMAIN.yml"
+	else
+		sed -i "s/files_import:.*$/files_import: no/g" "local.$DOMAIN.yml"
+	fi
 fi
 
 cd - > /dev/null
 
-if [ "$CODEBASE_TARBALL" == "" ]; then
+if [ "$CODEBASE_TARBALL" == "" ] && [ "$INSTALL_PROFILE" == "" ]; then
 	#
 	# GIT config values
 	#
@@ -266,20 +286,19 @@ if [ "$CODEBASE_TARBALL" == "" ]; then
 		# Write GIT_BRANCH
 		sed -i "s/GIT_BRANCH=.*$/GIT_BRANCH=\"${GIT_BRANCH}\"/g" "${APP_NAME}.profile"
 	fi
+
+	cd ansible/inventory/group_vars
+	
+	sed -i "s/git_repo_protocol:.*$/git_repo_protocol: \"${GIT_PROTOCOL}\"/g" drupsible_deploy.yml
+	sed -i "s/git_repo_server:.*$/git_repo_server: \"${GIT_SERVER}\"/g" drupsible_deploy.yml
+	sed -i "s/git_repo_user:.*$/git_repo_user: \"${GIT_USER}\"/g" drupsible_deploy.yml
+	sed -i "s/git_repo_path:.*$/git_repo_path: \"${GIT_PATH}\"/g" drupsible_deploy.yml
+	sed -i "s/git_repo_pass:.*$/git_repo_pass: \"${GIT_PASS}\"/g" drupsible_deploy.yml
+	sed -i "s/git_version:.*$/git_version: \"${GIT_BRANCH}\"/g" drupsible_deploy.yml
+	
+	cd - > /dev/null
+
 fi
-
-cd ansible/inventory/group_vars
-# Append to group_vars/drupsible_deploy.yml
-cat <<EOF >> drupsible_deploy.yml
-
-git_repo_protocol: "$GIT_PROTOCOL"
-git_repo_server: "$GIT_SERVER"
-git_repo_user: "$GIT_USER"
-git_repo_path: "$GIT_PATH"
-git_repo_pass: "$GIT_PASS"
-git_version: "$GIT_BRANCH"
-EOF
-cd - > /dev/null
 
 # Connect to a new or existing ssh-agent
 # Then add/load your SSH key

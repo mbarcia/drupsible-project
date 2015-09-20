@@ -15,29 +15,29 @@
   version: remotes/origin/v0.2.1
   name: debops.sshd
 - src: https://github.com/mbarcia/drupsible-apache
-  version: remotes/origin/0.9
+  version: remotes/origin/0.9.1
   name: drupsible.apache2
 - src: https://github.com/mbarcia/drupsible-memcached
-  version: remotes/origin/0.9
+  version: remotes/origin/0.9.1
   name: drupsible.memcached
 - src: https://github.com/mbarcia/drupsible-samba
-  version: remotes/origin/0.9
+  version: remotes/origin/0.9.1
   name: drupsible.samba
 - src: https://github.com/mbarcia/drupsible-newrelic
-  version: remotes/origin/0.9
+  version: remotes/origin/0.9.1
   name: drupsible.newrelic
 - src: https://github.com/mbarcia/drupsible-composer
-  version: remotes/origin/0.9
+  version: remotes/origin/0.9.1
   name: drupsible.composer
 - src: https://github.com/mbarcia/drupsible-drush
-  version: remotes/origin/0.9
+  version: remotes/origin/0.9.1
   name: drupsible.drush
 - src: https://github.com/mbarcia/drupsible-mysql
-  version: remotes/origin/0.9
+  version: remotes/origin/0.9.1
   name: drupsible.mysql
 - src: https://github.com/mbarcia/drupsible-deploy
-  version: remotes/origin/0.9
+  version: remotes/origin/0.9.1
   name: drupsible.deploy
 - src: https://github.com/mbarcia/drupsible-varnish
-  version: remotes/origin/0.9
+  version: remotes/origin/0.9.1
   name: drupsible.varnish

@@ -35,3 +35,13 @@ app_env:
 
 codebase_tarball_filename: '{{ app_name }}-codebase.tar.gz'
 codebase_import: no
+
+git_repo_protocol: ''
+git_repo_server: ''
+git_repo_user: ''
+git_repo_path: ''
+git_repo_pass: ''
+git_version: ''
+
+deploy_site_install: no
+deploy_install_profile: ''
