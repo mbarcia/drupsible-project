@@ -1,3 +1,10 @@
+# Release Notes - Drupsible - Version 0.9.1
+## Stories
+*   [[DRUPSIBLE-17](https://drupsible.atlassian.net/browse/DRUPSIBLE-17)] - Add specific versions to requirements.default.yml
+*   [[DRUPSIBLE-22](https://drupsible.atlassian.net/browse/DRUPSIBLE-22)] - Create a Drupsible Controller box for Virtualbox (based upon Debian Jessie)
+*   [[DRUPSIBLE-44](https://drupsible.atlassian.net/browse/DRUPSIBLE-44)] - I want to easily install a Drupal profile/distribution
+*   [[DRUPSIBLE-45](https://drupsible.atlassian.net/browse/DRUPSIBLE-45)] - Backups not being done
+
 # Release Notes - Drupsible - Version 0.9
 ## Stories
 *   [[DRUPSIBLE-17](https://drupsible.atlassian.net/browse/DRUPSIBLE-17)] - Add specific versions to requirements.default.yml
