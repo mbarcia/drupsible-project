@@ -87,12 +87,12 @@ Whenever your local VM may go down (ie. after your workstation has been restarte
 ```
 $ vagrant up
 ```
-
+in your myproject directory.
 # Advanced usage
 ## Advanced customization
-In line with Ansible's best practices, you can customize and override any value of your  Drupsible stock/default by creating and editing any of the following:
-```ansible/playbooks/group_vars/<role>.yml```, 
-```ansible/playbooks/host_vars/<host>.yml``` 
+In line with Ansible's best practices, you can customize and override any value of your Drupsible stock/default by creating and editing any of the following:
+* ```ansible/playbooks/group_vars/<role>.yml```
+* ```ansible/playbooks/host_vars/<host>.yml```
 
 A good example (SMTP) follows.
 ### Email sending capability ###
