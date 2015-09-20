@@ -5,7 +5,8 @@ Drupsible project is the starting point of Drupsible, and it is the only thing y
 
 # Requirements
 ## Local
-* Any Windows, Linux or MacOS workstation, with VT-x/AMD-V enabled and 1G RAM free memory.
+* Any Windows, Linux or MacOS workstation, with VT-x/AMD-V enabled
+* 1G of free RAM, 10G of free disk space
 * A Virtual Machine provider
   * [Virtualbox](https://www.virtualbox.org/wiki/Downloads), or
   * VMWare Fusion or VMWare Workstation, or 
