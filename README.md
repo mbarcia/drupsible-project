@@ -11,7 +11,7 @@ Drupsible project is the starting point of Drupsible, and it is the only thing y
   * [Virtualbox](https://www.virtualbox.org/wiki/Downloads), or
   * VMWare Fusion or VMWare Workstation, or 
   * Parallels Desktop 10+ for Mac
-* [Vagrant](http://www.vagrantup.com/downloads) 1.8+
+* [Vagrant](http://www.vagrantup.com/downloads) 1.7.2+
   * requires commercial plug-in for VMWare
 * [Git Bash](https://git-scm.com/download/win) (only if you are on Windows)
 * [Check your BIOS](http://www.howtogeek.com/213795/how-to-enable-intel-vt-x-in-your-computers-bios-or-uefi-firmware/) for virtualization, it must be enabled
