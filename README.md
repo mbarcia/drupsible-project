@@ -115,7 +115,8 @@ And, if you want to use the Gmail SMTP service, you will have to [relax the secu
 (https://support.google.com/accounts/answer/6010255) to let Drupsible send emails via Gmail.
 
 ## Git keys and SSH-agent forwarding
-If you are NOT using a codebase tarball/archive, and have your Drupal codebase in a Git repository, you are aware that, in order to deploy a new version of your codebase, 
+If you are NOT using a codebase tarball/archive, and have your Drupal codebase in a Git repository, you are aware that, in order to deploy a new version of your codebase,
+ 
 1. your session needs to be running an ssh-agent. 
 1. your Git repository needs to authorize Drupsible through your public key. For a real world example, see the [docs at Bitbucket](https://confluence.atlassian.com/bitbucket/how-to-install-a-public-key-on-your-bitbucket-account-276628835.html).
 
