@@ -5,8 +5,7 @@ hosts:
     netmask: '255.255.255.0'
     ram: 1024
     gui: false
-    box: 'Debian-jessie-amd64-netboot'
-    box_url: 'https://github.com/holms/vagrant-jessie-box/releases/download/Jessie-v0.1/Debian-jessie-amd64-netboot.box'
+    box: 'mbarcia/drupsible'
     pae: 'on'
     acpi: 'on'
     ioapic: 'on'
