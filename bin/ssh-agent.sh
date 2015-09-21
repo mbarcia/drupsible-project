@@ -7,11 +7,11 @@ fi
 
 ssh-add -l &>/dev/null
 if [ "$?" == 2 ]; then
-	test -r SSH_AGENT_DATA && eval "$(<SSH_AGENT_DATA)" >/dev/null
+	test -r $SSH_AGENT_DATA && eval "$(<${SSH_AGENT_DATA/#\~/$HOME})" >/dev/null
 	ssh-add -l &>/dev/null
 	if [ "$?" == 2 ]; then
-		(umask 066; ssh-agent > SSH_AGENT_DATA)
-		eval "$(<~/SSH_AGENT_DATA)" >/dev/null
+		(umask 066; ssh-agent > "${SSH_AGENT_DATA/#\~/$HOME}")
+		eval "$(<${SSH_AGENT_DATA/#\~/$HOME})" >/dev/null
 	fi
 fi
 
