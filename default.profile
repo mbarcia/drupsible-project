@@ -8,6 +8,8 @@ APP_NAME="default"
 # This is your web domain, like example.com
 DOMAIN=""
 #
+DRUPAL_VERSION=7
+#
 INSTALL_PROFILE=""
 #
 # This is the codebase tarball of your drupal site.

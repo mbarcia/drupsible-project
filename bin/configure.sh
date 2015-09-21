@@ -64,7 +64,7 @@ Your Drupal project up and running with Drupsible.
 
 Usage: ${0##*/} [-h]
 	[-d domain] 
-	[-i install-profile] [-m db-dump] [-z files-tarball] [-c codebase-tarball] [-k key-filename] 
+	[-i install-profile] [-m db-dump] [-z files-tarball] [-c codebase-tarball] [-k key-filename] [-d drupal-version]
 	[-g git-server] [-t git-protocol] [-r git-path] [-u git-user] [-p git-password] [-b git-branch]
 	app-name
 
@@ -77,6 +77,7 @@ Options:
 	-z	Files tarball (ie. example-files.tar.gz, must be in ansible/playbooks/files-tarballs)
 	-c	Codebase tarball (ie. example-codebase.tar.gz, must be in ansible/playbooks/codebase-tarballs)
 	-k	SSH private key filename (defaults to ~/.ssh/id_rsa)
+	-d	Drupal version (7 or 8)
 	-g	git server (ie. bitbucket.org, or git.your.org:8443 if using http/s)
 	-t	git protocol (defaults to git)
 	-r	git path (ie. example.git)
@@ -88,7 +89,7 @@ EOH
 }
 
 # Read any option from the command line (with precedence over the .profile)
-while getopts "hd:i:m:z:c:k:g:t:r:u:p:b:" opt; do
+while getopts "hd:i:m:z:c:k:d:g:t:r:u:p:b:" opt; do
     case "$opt" in
         h)
             show_help
@@ -105,6 +106,8 @@ while getopts "hd:i:m:z:c:k:g:t:r:u:p:b:" opt; do
         c)  CODEBASE_TARBALL=$OPTARG
             ;;
         k)  KEY_FILENAME=$OPTARG
+            ;;
+        k)  DRUPAL_VERSION=$OPTARG
             ;;
         g)  GIT_SERVER=$OPTARG
             ;;
@@ -136,6 +139,16 @@ if [ "$DOMAIN" == "" ]; then
 	read DOMAIN
 	# Write DOMAIN
 	sed -i "s/DOMAIN=.*$/DOMAIN=\"${DOMAIN}\"/g" "${APP_NAME}.profile"
+fi
+
+if [ "$DRUPAL_VERSION" == "" ] && [ "$CONFIRM" == 'yes' ]; then
+	echo "Drupal version? (7 or 8, default is 7)"
+	read DRUPAL_VERSION
+	if [ "$DRUPAL_VERSION" == "" ]; then
+		DRUPAL_VERSION=7
+	fi
+	# Write DRUPAL_VERSION
+	sed -i "s/DRUPAL_VERSION=.*$/DRUPAL_VERSION=\"${DRUPAL_VERSION}\"/g" "${APP_NAME}.profile"
 fi
 
 if [ "$INSTALL_PROFILE" == "" ] && [ "$CONFIRM" == 'yes' ]; then
@@ -199,7 +212,7 @@ sed -i "s/example\.com/${DOMAIN}/g" all.yml
 sed -i "s/example\.com/${DOMAIN}/g" drupsible_deploy.yml
 sed -i "s/example-project/${APP_NAME}/g" all.yml
 sed -i "s/example-project/${APP_NAME}/g" drupsible_deploy.yml
-sed -i "s/example-project/${APP_NAME}/g" drupsible_deploy.yml
+sed -i "s/drupal_version:.*$/drupal_version: '${DRUPAL_VERSION}'/g" all.yml
 
 if [ ! "$INSTALL_PROFILE" == "" ]; then
 	sed -i "s/deploy_install_profile:.*$/deploy_install_profile: '${INSTALL_PROFILE}'/g" drupsible_deploy.yml
