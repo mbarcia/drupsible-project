@@ -18,6 +18,8 @@ fi
 
 echo "Installing Ansible scripts in /usr/local/bin..."
 pip install ansible
+echo "Installing Debops support..."
+pip install debops
 
 #
 # Vagrant-specific
