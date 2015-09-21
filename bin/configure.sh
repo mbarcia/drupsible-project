@@ -29,7 +29,7 @@ if [ ! -f "${APP_NAME}.profile" ]; then
 		# Create APP_NAME.profile from the empty project template
 		cp default.profile "${APP_NAME}.profile"
 		# Write APP_NAME
-		sed -i.ori '.ori' "s/APP_NAME=.*/APP_NAME=\"${APP_NAME}\"/g" "${APP_NAME}.profile"
+		sed -i.ori "s/APP_NAME=.*/APP_NAME=\"${APP_NAME}\"/g" "${APP_NAME}.profile"
 		CONFIRM='yes'
 	else
 		echo "Check the app name. Exiting..."
@@ -135,21 +135,21 @@ if [ "$DOMAIN" == "" ]; then
 	echo "Domain name? (ie. example.com)"
 	read DOMAIN
 	# Write DOMAIN
-	sed -i.ori '.ori' "s/DOMAIN=.*$/DOMAIN=\"${DOMAIN}\"/g" "${APP_NAME}.profile"
+	sed -i.ori "s/DOMAIN=.*$/DOMAIN=\"${DOMAIN}\"/g" "${APP_NAME}.profile"
 fi
 
 if [ "$INSTALL_PROFILE" == "" ] && [ "$CONFIRM" == 'yes' ]; then
 	echo "Drupal install profile? (ie. commerce_profile)"
 	read INSTALL_PROFILE
 	# Write INSTALL_PROFILE
-	sed -i.ori '.ori' "s/INSTALL_PROFILE=.*$/INSTALL_PROFILE=\"${INSTALL_PROFILE}\"/g" "${APP_NAME}.profile"
+	sed -i.ori "s/INSTALL_PROFILE=.*$/INSTALL_PROFILE=\"${INSTALL_PROFILE}\"/g" "${APP_NAME}.profile"
 fi
 
 if [ "$DBDUMP" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFILE" == "" ]; then
 	echo "DB dump filename? (ie. example.sql.gz, must be in ansible/playbooks/dbdumps)"
 	read DBDUMP
 	# Write DBDUMP
-	sed -i.ori '.ori' "s/DBDUMP=.*$/DBDUMP=\"${DBDUMP}\"/g" "${APP_NAME}.profile"
+	sed -i.ori "s/DBDUMP=.*$/DBDUMP=\"${DBDUMP}\"/g" "${APP_NAME}.profile"
 fi
 
 if [ "$DBDUMP" != "" ] && [ ! -f ansible/playbooks/dbdumps/$DBDUMP ]; then
@@ -161,7 +161,7 @@ if [ "$FILES_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFILE"
 	echo "Files tarball? (ie. example-files.tar.gz, must be in ansible/playbooks/files-tarballs)"
 	read FILES_TARBALL
 	# Write FILES_TARBALL
-	sed -i.ori '.ori' "s/FILES_TARBALL=.*$/FILES_TARBALL=\"${FILES_TARBALL}\"/g" "${APP_NAME}.profile"
+	sed -i.ori "s/FILES_TARBALL=.*$/FILES_TARBALL=\"${FILES_TARBALL}\"/g" "${APP_NAME}.profile"
 fi
 
 if [ "$FILES_TARBALL" != "" ] && [ ! -f ansible/playbooks/files-tarballs/$FILES_TARBALL ]; then
@@ -173,7 +173,7 @@ if [ "$CODEBASE_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFI
 	echo "Codebase tarball? (must be in ansible/playbooks/codebase-tarballs, leave empty if you have a Git repo.)"
 	read CODEBASE_TARBALL
 	# Write CODEBASE_TARBALL
-	sed -i.ori '.ori' "s/CODEBASE_TARBALL=.*$/CODEBASE_TARBALL=\"${CODEBASE_TARBALL}\"/g" "${APP_NAME}.profile"
+	sed -i.ori "s/CODEBASE_TARBALL=.*$/CODEBASE_TARBALL=\"${CODEBASE_TARBALL}\"/g" "${APP_NAME}.profile"
 fi
 
 if [ "$CODEBASE_TARBALL" != "" ] && [ ! -f ansible/playbooks/codebase-tarballs/$CODEBASE_TARBALL ]; then
@@ -195,22 +195,22 @@ cp -pr ansible/playbooks/deploy.default ansible/playbooks/deploy
 rm -fr ansible/inventory/group_vars 2>/dev/null
 cp -pr ansible/inventory/group_vars.default ansible/inventory/group_vars
 cd ansible/inventory/group_vars
-sed -i.ori '.ori' "s/example\.com/${DOMAIN}/g" all.yml
-sed -i.ori '.ori' "s/example\.com/${DOMAIN}/g" drupsible_deploy.yml
-sed -i.ori '.ori' "s/example-project/${APP_NAME}/g" all.yml
-sed -i.ori '.ori' "s/example-project/${APP_NAME}/g" drupsible_deploy.yml
-sed -i.ori '.ori' "s/example-project/${APP_NAME}/g" drupsible_deploy.yml
+sed -i.ori "s/example\.com/${DOMAIN}/g" all.yml
+sed -i.ori "s/example\.com/${DOMAIN}/g" drupsible_deploy.yml
+sed -i.ori "s/example-project/${APP_NAME}/g" all.yml
+sed -i.ori "s/example-project/${APP_NAME}/g" drupsible_deploy.yml
+sed -i.ori "s/example-project/${APP_NAME}/g" drupsible_deploy.yml
 
 if [ ! "$INSTALL_PROFILE" == "" ]; then
-	sed -i.ori '.ori' "s/deploy_install_profile:.*$/deploy_install_profile: '${INSTALL_PROFILE}'/g" drupsible_deploy.yml
-	sed -i.ori '.ori' "s/deploy_site_install:.*$/deploy_site_install: yes/g" drupsible_deploy.yml
+	sed -i.ori "s/deploy_install_profile:.*$/deploy_install_profile: '${INSTALL_PROFILE}'/g" drupsible_deploy.yml
+	sed -i.ori "s/deploy_site_install:.*$/deploy_site_install: yes/g" drupsible_deploy.yml
 else
-	sed -i.ori '.ori' "s/deploy_site_install:.*$/deploy_site_install: no/g" drupsible_deploy.yml
+	sed -i.ori "s/deploy_site_install:.*$/deploy_site_install: no/g" drupsible_deploy.yml
 	if [ ! "$CODEBASE_TARBALL" == "" ]; then
-		sed -i.ori '.ori' "s/codebase_tarball_filename:.*$/codebase_tarball_filename: '${CODEBASE_TARBALL}'/g" drupsible_deploy.yml
-		sed -i.ori '.ori' "s/codebase_import:.*$/codebase_import: yes/g" drupsible_deploy.yml
+		sed -i.ori "s/codebase_tarball_filename:.*$/codebase_tarball_filename: '${CODEBASE_TARBALL}'/g" drupsible_deploy.yml
+		sed -i.ori "s/codebase_import:.*$/codebase_import: yes/g" drupsible_deploy.yml
 	else
-		sed -i.ori '.ori' "s/codebase_import:.*$/codebase_import: no/g" drupsible_deploy.yml
+		sed -i.ori "s/codebase_import:.*$/codebase_import: no/g" drupsible_deploy.yml
 	fi
 fi
 
