@@ -318,7 +318,7 @@ if [ "$GIT_PASS" == "" ]; then
 	./bin/ssh-agent.sh "${KEY_FILENAME/#\~/$HOME}"
 	# Connect to ssh-agent launched by ssh-agent.sh
 	SSH_AGENT_DATA="~/.ssh-agent"
-	eval "$(<${SSH_AGENT_DATA/#\~/$HOME})"
+	eval $(< "${SSH_AGENT_DATA/#\~/$HOME}")
 	# Report back
 	echo "SSH keys loaded:"
 	ssh-add -l
