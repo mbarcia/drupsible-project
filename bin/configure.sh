@@ -29,7 +29,7 @@ if [ ! -f "${APP_NAME}.profile" ]; then
 		# Create APP_NAME.profile from the empty project template
 		cp default.profile "${APP_NAME}.profile"
 		# Write APP_NAME
-		sed -i '.ori' '.ori' "s/APP_NAME=.*/APP_NAME=\"${APP_NAME}\"/g" "${APP_NAME}.profile"
+		sed -i.ori '.ori' "s/APP_NAME=.*/APP_NAME=\"${APP_NAME}\"/g" "${APP_NAME}.profile"
 		CONFIRM='yes'
 	else
 		echo "Check the app name. Exiting..."
@@ -135,21 +135,21 @@ if [ "$DOMAIN" == "" ]; then
 	echo "Domain name? (ie. example.com)"
 	read DOMAIN
 	# Write DOMAIN
-	sed -i '.ori' '.ori' "s/DOMAIN=.*$/DOMAIN=\"${DOMAIN}\"/g" "${APP_NAME}.profile"
+	sed -i.ori '.ori' "s/DOMAIN=.*$/DOMAIN=\"${DOMAIN}\"/g" "${APP_NAME}.profile"
 fi
 
 if [ "$INSTALL_PROFILE" == "" ] && [ "$CONFIRM" == 'yes' ]; then
 	echo "Drupal install profile? (ie. commerce_profile)"
 	read INSTALL_PROFILE
 	# Write INSTALL_PROFILE
-	sed -i '.ori' '.ori' "s/INSTALL_PROFILE=.*$/INSTALL_PROFILE=\"${INSTALL_PROFILE}\"/g" "${APP_NAME}.profile"
+	sed -i.ori '.ori' "s/INSTALL_PROFILE=.*$/INSTALL_PROFILE=\"${INSTALL_PROFILE}\"/g" "${APP_NAME}.profile"
 fi
 
 if [ "$DBDUMP" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFILE" == "" ]; then
 	echo "DB dump filename? (ie. example.sql.gz, must be in ansible/playbooks/dbdumps)"
 	read DBDUMP
 	# Write DBDUMP
-	sed -i '.ori' '.ori' "s/DBDUMP=.*$/DBDUMP=\"${DBDUMP}\"/g" "${APP_NAME}.profile"
+	sed -i.ori '.ori' "s/DBDUMP=.*$/DBDUMP=\"${DBDUMP}\"/g" "${APP_NAME}.profile"
 fi
 
 if [ "$DBDUMP" != "" ] && [ ! -f ansible/playbooks/dbdumps/$DBDUMP ]; then
@@ -161,7 +161,7 @@ if [ "$FILES_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFILE"
 	echo "Files tarball? (ie. example-files.tar.gz, must be in ansible/playbooks/files-tarballs)"
 	read FILES_TARBALL
 	# Write FILES_TARBALL
-	sed -i '.ori' '.ori' "s/FILES_TARBALL=.*$/FILES_TARBALL=\"${FILES_TARBALL}\"/g" "${APP_NAME}.profile"
+	sed -i.ori '.ori' "s/FILES_TARBALL=.*$/FILES_TARBALL=\"${FILES_TARBALL}\"/g" "${APP_NAME}.profile"
 fi
 
 if [ "$FILES_TARBALL" != "" ] && [ ! -f ansible/playbooks/files-tarballs/$FILES_TARBALL ]; then
@@ -173,7 +173,7 @@ if [ "$CODEBASE_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFI
 	echo "Codebase tarball? (must be in ansible/playbooks/codebase-tarballs, leave empty if you have a Git repo.)"
 	read CODEBASE_TARBALL
 	# Write CODEBASE_TARBALL
-	sed -i '.ori' '.ori' "s/CODEBASE_TARBALL=.*$/CODEBASE_TARBALL=\"${CODEBASE_TARBALL}\"/g" "${APP_NAME}.profile"
+	sed -i.ori '.ori' "s/CODEBASE_TARBALL=.*$/CODEBASE_TARBALL=\"${CODEBASE_TARBALL}\"/g" "${APP_NAME}.profile"
 fi
 
 if [ "$CODEBASE_TARBALL" != "" ] && [ ! -f ansible/playbooks/codebase-tarballs/$CODEBASE_TARBALL ]; then
@@ -195,22 +195,22 @@ cp -pr ansible/playbooks/deploy.default ansible/playbooks/deploy
 rm -fr ansible/inventory/group_vars 2>/dev/null
 cp -pr ansible/inventory/group_vars.default ansible/inventory/group_vars
 cd ansible/inventory/group_vars
-sed -i '.ori' '.ori' "s/example\.com/${DOMAIN}/g" all.yml
-sed -i '.ori' '.ori' "s/example\.com/${DOMAIN}/g" drupsible_deploy.yml
-sed -i '.ori' '.ori' "s/example-project/${APP_NAME}/g" all.yml
-sed -i '.ori' '.ori' "s/example-project/${APP_NAME}/g" drupsible_deploy.yml
-sed -i '.ori' '.ori' "s/example-project/${APP_NAME}/g" drupsible_deploy.yml
+sed -i.ori '.ori' "s/example\.com/${DOMAIN}/g" all.yml
+sed -i.ori '.ori' "s/example\.com/${DOMAIN}/g" drupsible_deploy.yml
+sed -i.ori '.ori' "s/example-project/${APP_NAME}/g" all.yml
+sed -i.ori '.ori' "s/example-project/${APP_NAME}/g" drupsible_deploy.yml
+sed -i.ori '.ori' "s/example-project/${APP_NAME}/g" drupsible_deploy.yml
 
 if [ ! "$INSTALL_PROFILE" == "" ]; then
-	sed -i '.ori' '.ori' "s/deploy_install_profile:.*$/deploy_install_profile: '${INSTALL_PROFILE}'/g" drupsible_deploy.yml
-	sed -i '.ori' '.ori' "s/deploy_site_install:.*$/deploy_site_install: yes/g" drupsible_deploy.yml
+	sed -i.ori '.ori' "s/deploy_install_profile:.*$/deploy_install_profile: '${INSTALL_PROFILE}'/g" drupsible_deploy.yml
+	sed -i.ori '.ori' "s/deploy_site_install:.*$/deploy_site_install: yes/g" drupsible_deploy.yml
 else
-	sed -i '.ori' '.ori' "s/deploy_site_install:.*$/deploy_site_install: no/g" drupsible_deploy.yml
+	sed -i.ori '.ori' "s/deploy_site_install:.*$/deploy_site_install: no/g" drupsible_deploy.yml
 	if [ ! "$CODEBASE_TARBALL" == "" ]; then
-		sed -i '.ori' '.ori' "s/codebase_tarball_filename:.*$/codebase_tarball_filename: '${CODEBASE_TARBALL}'/g" drupsible_deploy.yml
-		sed -i '.ori' '.ori' "s/codebase_import:.*$/codebase_import: yes/g" drupsible_deploy.yml
+		sed -i.ori '.ori' "s/codebase_tarball_filename:.*$/codebase_tarball_filename: '${CODEBASE_TARBALL}'/g" drupsible_deploy.yml
+		sed -i.ori '.ori' "s/codebase_import:.*$/codebase_import: yes/g" drupsible_deploy.yml
 	else
-		sed -i '.ori' '.ori' "s/codebase_import:.*$/codebase_import: no/g" drupsible_deploy.yml
+		sed -i.ori '.ori' "s/codebase_import:.*$/codebase_import: no/g" drupsible_deploy.yml
 	fi
 fi
 
@@ -221,21 +221,21 @@ rm -fr ansible/inventory/host_vars 2>/dev/null
 cp -pr ansible/inventory/host_vars.default ansible/inventory/host_vars
 cd ansible/inventory/host_vars
 cp local.example.com.yml "local.$DOMAIN.yml"
-sed -i '.ori' "s/example\.com/${DOMAIN}/g" "local.$DOMAIN.yml"
+sed -i.ori "s/example\.com/${DOMAIN}/g" "local.$DOMAIN.yml"
 	
 if [ "$INSTALL_PROFILE" == "" ]; then
 	if [ ! "$DBDUMP" == "" ]; then 
-		sed -i '.ori' "s/db_dump_filename:.*$/db_dump_filename: '${DBDUMP}'/g" "local.$DOMAIN.yml"
-		sed -i '.ori' "s/db_import:.*$/db_import: yes/g" "local.$DOMAIN.yml"
+		sed -i.ori "s/db_dump_filename:.*$/db_dump_filename: '${DBDUMP}'/g" "local.$DOMAIN.yml"
+		sed -i.ori "s/db_import:.*$/db_import: yes/g" "local.$DOMAIN.yml"
 	else
-		sed -i '.ori' "s/db_import:.*$/db_import: no/g" "local.$DOMAIN.yml"
+		sed -i.ori "s/db_import:.*$/db_import: no/g" "local.$DOMAIN.yml"
 	fi
 	
 	if [ ! "$FILES_TARBALL" == "" ]; then
-		sed -i '.ori' "s/files_tarball_filename:.*$/files_tarball_filename: '${FILES_TARBALL}'/g" "local.$DOMAIN.yml"
-		sed -i '.ori' "s/files_import:.*$/files_import: yes/g" "local.$DOMAIN.yml"
+		sed -i.ori "s/files_tarball_filename:.*$/files_tarball_filename: '${FILES_TARBALL}'/g" "local.$DOMAIN.yml"
+		sed -i.ori "s/files_import:.*$/files_import: yes/g" "local.$DOMAIN.yml"
 	else
-		sed -i '.ori' "s/files_import:.*$/files_import: no/g" "local.$DOMAIN.yml"
+		sed -i.ori "s/files_import:.*$/files_import: no/g" "local.$DOMAIN.yml"
 	fi
 fi
 
@@ -249,52 +249,52 @@ if [ "$CODEBASE_TARBALL" == "" ] && [ "$INSTALL_PROFILE" == "" ]; then
 		echo "Protocol to access your Git repository (git/ssh/http/https)?"
 		read GIT_PROTOCOL
 		# Write GIT_PROTOCOL
-		sed -i '.ori' "s/GIT_PROTOCOL=.*$/GIT_PROTOCOL=\"${GIT_PROTOCOL}\"/g" "${APP_NAME}.profile"
+		sed -i.ori "s/GIT_PROTOCOL=.*$/GIT_PROTOCOL=\"${GIT_PROTOCOL}\"/g" "${APP_NAME}.profile"
 	fi
 	
 	if [ "$GIT_SERVER" == "" ]; then
 		echo "Git server name where your Drupal website is?"
 		read GIT_SERVER
 		# Write GIT_SERVER
-		sed -i '.ori' "s/GIT_SERVER=.*$/GIT_SERVER=\"${GIT_SERVER}\"/g" "${APP_NAME}.profile"
+		sed -i.ori "s/GIT_SERVER=.*$/GIT_SERVER=\"${GIT_SERVER}\"/g" "${APP_NAME}.profile"
 	fi
 	
 	if [ "$GIT_USER" == "" ]; then
 		echo "Git username of your Drupal repository?"
 		read GIT_USER
 		# Write GIT_USER
-		sed -i '.ori' "s/GIT_USER=.*$/GIT_USER=\"${GIT_USER}\"/g" "${APP_NAME}.profile"
+		sed -i.ori "s/GIT_USER=.*$/GIT_USER=\"${GIT_USER}\"/g" "${APP_NAME}.profile"
 	fi
 	
 	if [ "$GIT_PATH" == "" ]; then
 		echo "Git path of your Drupal repository? (ie. example.git)"
 		read GIT_PATH
 		# Write GIT_PATH
-		sed -i '.ori' "s/GIT_PATH=.*$/GIT_PATH=\"${GIT_PATH}\"/g" "${APP_NAME}.profile"
+		sed -i.ori "s/GIT_PATH=.*$/GIT_PATH=\"${GIT_PATH}\"/g" "${APP_NAME}.profile"
 	fi
 	
 	if [ "$GIT_PASS" == "" ]; then
 		echo "Git password? (leave it empty if you use a SSH key)"
 		read -s GIT_PASS
 		# Write GIT_PASS
-		sed -i '.ori' "s/GIT_PASS=.*$/GIT_PASS=\"${GIT_PASS}\"/g" "${APP_NAME}.profile"
+		sed -i.ori "s/GIT_PASS=.*$/GIT_PASS=\"${GIT_PASS}\"/g" "${APP_NAME}.profile"
 	fi
 	
 	if [ "$GIT_BRANCH" == "" ]; then
 		echo "Branch/version of your codebase? [master]"
 		read GIT_BRANCH
 		# Write GIT_BRANCH
-		sed -i '.ori' "s/GIT_BRANCH=.*$/GIT_BRANCH=\"${GIT_BRANCH}\"/g" "${APP_NAME}.profile"
+		sed -i.ori "s/GIT_BRANCH=.*$/GIT_BRANCH=\"${GIT_BRANCH}\"/g" "${APP_NAME}.profile"
 	fi
 
 	cd ansible/inventory/group_vars
 	
-	sed -i '.ori' "s/git_repo_protocol:.*$/git_repo_protocol: \"${GIT_PROTOCOL}\"/g" drupsible_deploy.yml
-	sed -i '.ori' "s/git_repo_server:.*$/git_repo_server: \"${GIT_SERVER}\"/g" drupsible_deploy.yml
-	sed -i '.ori' "s/git_repo_user:.*$/git_repo_user: \"${GIT_USER}\"/g" drupsible_deploy.yml
-	sed -i '.ori' "s/git_repo_path:.*$/git_repo_path: \"${GIT_PATH}\"/g" drupsible_deploy.yml
-	sed -i '.ori' "s/git_repo_pass:.*$/git_repo_pass: \"${GIT_PASS}\"/g" drupsible_deploy.yml
-	sed -i '.ori' "s/git_version:.*$/git_version: \"${GIT_BRANCH}\"/g" drupsible_deploy.yml
+	sed -i.ori "s/git_repo_protocol:.*$/git_repo_protocol: \"${GIT_PROTOCOL}\"/g" drupsible_deploy.yml
+	sed -i.ori "s/git_repo_server:.*$/git_repo_server: \"${GIT_SERVER}\"/g" drupsible_deploy.yml
+	sed -i.ori "s/git_repo_user:.*$/git_repo_user: \"${GIT_USER}\"/g" drupsible_deploy.yml
+	sed -i.ori "s/git_repo_path:.*$/git_repo_path: \"${GIT_PATH}\"/g" drupsible_deploy.yml
+	sed -i.ori "s/git_repo_pass:.*$/git_repo_pass: \"${GIT_PASS}\"/g" drupsible_deploy.yml
+	sed -i.ori "s/git_version:.*$/git_version: \"${GIT_BRANCH}\"/g" drupsible_deploy.yml
 	
 	cd - > /dev/null
 
@@ -310,7 +310,7 @@ if [ "$GIT_PASS" == "" ] && [ "$KEY_FILENAME" == "" ]; then
 		KEY_FILENAME="~/.ssh/id_rsa"
 	fi
 	# Write KEY_FILENAME
-	sed -i '.ori' "s|KEY_FILENAME=.*$|KEY_FILENAME=\"${KEY_FILENAME}\"|g" "${APP_NAME}.profile"
+	sed -i.ori "s|KEY_FILENAME=.*$|KEY_FILENAME=\"${KEY_FILENAME}\"|g" "${APP_NAME}.profile"
 fi
 
 if [ "$GIT_PASS" == "" ]; then
@@ -327,7 +327,7 @@ fi
 # Append last-mod
 DATE_LEGEND=$(date +"%c %Z")
 PHRASE="Last reconfigured on"
-sed -i '.ori' "s/${PHRASE}:.*$/${PHRASE}: ${DATE_LEGEND}/g" "${APP_NAME}.profile"
+sed -i.ori "s/${PHRASE}:.*$/${PHRASE}: ${DATE_LEGEND}/g" "${APP_NAME}.profile"
 
 echo
 echo "Your webapp has been reconfigured for Drupsible."
