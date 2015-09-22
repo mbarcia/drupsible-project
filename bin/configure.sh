@@ -149,6 +149,8 @@ if [ "$DRUPAL_VERSION" == "" ] && [ "$CONFIRM" == 'yes' ]; then
 	fi
 	# Write DRUPAL_VERSION
 	sed -i '.ori' "s/DRUPAL_VERSION=.*$/DRUPAL_VERSION=\"${DRUPAL_VERSION}\"/g" "${APP_NAME}.profile"
+	drush_min_version: 7.*
+	
 fi
 
 if [ "$INSTALL_PROFILE" == "" ] && [ "$CONFIRM" == 'yes' ]; then
@@ -213,6 +215,7 @@ sed -i.ori "s/example\.com/${DOMAIN}/g" drupsible_deploy.yml
 sed -i.ori "s/example-project/${APP_NAME}/g" all.yml
 sed -i.ori "s/example-project/${APP_NAME}/g" drupsible_deploy.yml
 sed -i.ori "s/drupal_version:.*/drupal_version: ${DRUPAL_VERSION}/g" all.yml
+sed -i.ori "s/drush_min_version:.*/drush_min_version: \"${DRUPAL_VERSION}\.*\"/g" drupsible_deploy.yml
 
 if [ ! "$INSTALL_PROFILE" == "" ]; then
 	sed -i.ori "s/deploy_install_profile:.*$/deploy_install_profile: '${INSTALL_PROFILE}'/g" drupsible_deploy.yml

@@ -60,3 +60,5 @@ deploy_container_base_class: '\Drupal\Core\DependencyInjection\Container'
 
 config_dirs: []
 deploy_identifier: '\Drupal::VERSION'
+drush_min_version: 7.*
+
