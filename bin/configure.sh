@@ -149,8 +149,6 @@ if [ "$DRUPAL_VERSION" == "" ] && [ "$CONFIRM" == 'yes' ]; then
 	fi
 	# Write DRUPAL_VERSION
 	sed -i '.ori' "s/DRUPAL_VERSION=.*$/DRUPAL_VERSION=\"${DRUPAL_VERSION}\"/g" "${APP_NAME}.profile"
-	drush_min_version: 7.*
-	
 fi
 
 if [ "$INSTALL_PROFILE" == "" ] && [ "$CONFIRM" == 'yes' ]; then
@@ -208,6 +206,10 @@ sed "s/example\.com/${DOMAIN}/g" <ansible/inventory/hosts-local.default >ansible
 rm -fr ansible/playbooks/deploy 2>/dev/null
 cp -pr ansible/playbooks/deploy.default ansible/playbooks/deploy
 rm -fr ansible/inventory/group_vars 2>/dev/null
+
+#
+# groups_vars
+#
 cp -pr ansible/inventory/group_vars.default ansible/inventory/group_vars
 cd ansible/inventory/group_vars
 sed -i.ori "s/example\.com/${DOMAIN}/g" all.yml
@@ -234,7 +236,6 @@ else
 		sed -i.ori "s/codebase_import:.*$/codebase_import: no/g" drupsible_deploy.yml
 	fi
 fi
-
 
 cd - > /dev/null
 
@@ -323,7 +324,7 @@ fi
 
 # Connect to a new or existing ssh-agent
 # Then add/load your SSH key
-if [ "$GIT_PASS" == "" ] && [ "$KEY_FILENAME" == "" ]; then
+if [ "$GIT_PASS" == "" ] && [ "$KEY_FILENAME" == "" ] && [ "$INSTALL_PROFILE" == "" ]; then
 	echo "SSH key filename? (~/.ssh/id_rsa)"
 	read KEY_FILENAME
 	if [ "$KEY_FILENAME" == "" ]; then
@@ -334,7 +335,7 @@ if [ "$GIT_PASS" == "" ] && [ "$KEY_FILENAME" == "" ]; then
 	sed -i.ori "s|KEY_FILENAME=.*$|KEY_FILENAME=\"${KEY_FILENAME}\"|g" "${APP_NAME}.profile"
 fi
 
-if [ "$GIT_PASS" == "" ]; then
+if [ "$GIT_PASS" == "" ] && [ "$INSTALL_PROFILE" == "" ]; then
 	# Invoke ssh-agent script, applying bash expansion to the tilde
 	./bin/ssh-agent.sh "${KEY_FILENAME/#\~/$HOME}"
 	# Connect to ssh-agent launched by ssh-agent.sh
