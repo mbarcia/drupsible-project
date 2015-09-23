@@ -209,7 +209,7 @@ sed -i.ori "s/example-project/${APP_NAME}/g" all.yml
 sed -i.ori "s/example-project/${APP_NAME}/g" drupsible_deploy.yml
 sed -i.ori "s/drupal_version:.*/drupal_version: ${DRUPAL_VERSION}/g" all.yml
 
-if [ ! "$DRUPAL_VERSION" == "8" ]; then
+if [ "$DRUPAL_VERSION" == "8" ]; then
 	sed -i.ori "s/drush_min_version:.*/drush_min_version: \"dev-master\"/g" drupsible_deploy.yml
 else
 	sed -i.ori "s/drush_min_version:.*/drush_min_version: \"${DRUPAL_VERSION}\.*\"/g" drupsible_deploy.yml
