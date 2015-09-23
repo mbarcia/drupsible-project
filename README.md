@@ -116,6 +116,7 @@ And, if you want to use the Gmail SMTP service, you will have to [relax the secu
 (https://support.google.com/accounts/answer/6010255) to let Drupsible send emails via Gmail.
 
 ## Git keys and SSH-agent forwarding
+
 If you are NOT using a codebase tarball/archive, and have your Drupal codebase in a Git repository, you are aware that, in order to deploy a new version of your codebase,
  
 1. your session needs to be running an ssh-agent. 
@@ -132,3 +133,7 @@ bin/ssh-agent.sh <your-private-key-filename>
 eval $(<~/.ssh-agent)
 ```
 Drupsible will, from where the codebase needs to be cloned/checked-out, automatically present the credentials to the Git server.
+### Note to OSX users
+You will see a few errors in Drupsible 1.9.2, but the keychain in OSX has some advantages, so just make sure you private key is in the keychain and you will be fine.
+Also, config backups are not being made. Expect these pitfalls to be fixed in Drupsible 0.9.3.
+

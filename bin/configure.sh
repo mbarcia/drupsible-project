@@ -1,7 +1,15 @@
 #!/bin/bash
 
 #
-# Set APP_NAME
+# Chdir to top-level folder if needed.
+#
+if [ -f "../default.profile" ]; then
+	echo "Changed current dir to the project's top level folder, for your convenience."
+	cd ..
+fi
+
+#
+# Set APP_NAME.
 #
 if [ "$1" == "" ]; then
 	# Take the folder name as app name, if app-name param has not been given.
