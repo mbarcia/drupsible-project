@@ -21,20 +21,11 @@ else
 fi
 
 if [ ! -f "${APP_NAME}.profile" ]; then
-	echo "${APP_NAME}.profile does not exist." 
-	echo "Configuring for the first time? Just type 'yes' or Enter."
-	echo "Otherwise, type 'no' and check the app name."
-	read CONFIRM
-	if [ ! "$CONFIRM" == "no" ]; then
-		# Create APP_NAME.profile from the empty project template
-		cp default.profile "${APP_NAME}.profile"
-		# Write APP_NAME
-		sed -i.ori "s/APP_NAME=.*/APP_NAME=\"${APP_NAME}\"/g" "${APP_NAME}.profile"
-		CONFIRM='yes'
-	else
-		echo "Check the app name. Exiting..."
-		exit 0
-	fi
+	CONFIRM='yes'
+	# Create APP_NAME.profile from the empty project template
+	cp default.profile "${APP_NAME}.profile"
+	# Write APP_NAME
+	sed -i.ori "s/APP_NAME=.*/APP_NAME=\"${APP_NAME}\"/g" "${APP_NAME}.profile"
 fi
 
 # Do NOT open the editor the first time
@@ -141,7 +132,7 @@ if [ "$DOMAIN" == "" ]; then
 	sed -i.ori "s/DOMAIN=.*$/DOMAIN=\"${DOMAIN}\"/g" "${APP_NAME}.profile"
 fi
 
-if [ "$DRUPAL_VERSION" == "" ] && [ "$CONFIRM" == 'yes' ]; then
+if [ "$DRUPAL_VERSION" == "" ] || [ "$CONFIRM" == 'yes' ]; then
 	echo "Drupal version? (7 or 8, default is 7)"
 	read DRUPAL_VERSION
 	if [ "$DRUPAL_VERSION" == "" ]; then
