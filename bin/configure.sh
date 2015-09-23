@@ -139,7 +139,7 @@ if [ "$DRUPAL_VERSION" == "" ] || [ "$CONFIRM" == 'yes' ]; then
 		DRUPAL_VERSION=7
 	fi
 	# Write DRUPAL_VERSION
-	sed -i '.ori' "s/DRUPAL_VERSION=.*$/DRUPAL_VERSION=\"${DRUPAL_VERSION}\"/g" "${APP_NAME}.profile"
+	sed -i.ori "s/DRUPAL_VERSION=.*$/DRUPAL_VERSION=\"${DRUPAL_VERSION}\"/g" "${APP_NAME}.profile"
 fi
 
 if [ "$INSTALL_PROFILE" == "" ] && [ "$CONFIRM" == 'yes' ]; then
