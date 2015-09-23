@@ -10,3 +10,4 @@
       deploy_varnish_mgmt_port: "{{ app_env['varnish_mgmt_port'] }}"
       deploy_target: "{{ app_target }}"
       deploy_webhost: "{{ app_webhost }}"
+      trusted_host_patterns: [ "(?i)^.+\\.{{ webdomain|regex_replace('[.]', '\\.') }}$" ]
