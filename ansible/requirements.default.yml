@@ -39,7 +39,7 @@
   version: master
   name: drupsible.mysql
 - src: https://github.com/mbarcia/drupsible-deploy
-  version: remotes/origin/drupal8
+  version: master
   name: drupsible.deploy
 - src: https://github.com/mbarcia/drupsible-varnish
   version: master
