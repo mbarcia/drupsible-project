@@ -33,7 +33,7 @@ In the future, Drupsible may run on other platforms. In the future, Drupsible ma
 # Basic usage
 
 ## Local
-1. If you are on Windows, run Git Bash (as _administrator_)
+1. If you are on Windows, run Git Bash (as _administrator_) and, due to a [currently open bug](https://github.com/mitchellh/vagrant/issues/6026), run "export VAGRANT_DETECTED_OS=cygwin". Adding it as well to ~/.profile should be your best option.
 1. Git clone drupsible-project and put it in a folder named after your project, like _~/myproject-drupsible_, or _~/drupsible/my-project_
 ```
 git clone https://github.com/mbarcia/drupsible-project.git myproject
@@ -42,6 +42,7 @@ bin/configure.sh
 ```
 1. Drupsible will start an interactive session, asking for the handful of values that really matter (app name, domain name, etc.).
 1. Next, run ```vagrant up``` and Drupsible will start working hard. 
+1. Vagrant will ask "Which interface should the network bridge to?". Give it "1" and you should be good, and your choice will be saved.
 1. Grab a cup of coffee while you watch the tasks being run. 
 1. When you see it's done, you will see a message like this:
 ```
