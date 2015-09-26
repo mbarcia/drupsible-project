@@ -15,9 +15,19 @@ Vagrant.require_version ">= 1.7.2"
 
 # Use rbconfig to determine if we're on a windows host or not.
 require 'rbconfig'
-is_windows = (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
+is_windows = (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin|msys|bccwin|wince|emc/)
 if is_windows
   install_windows_param = 'is_windows'
+# Due to this bug https://github.com/mitchellh/vagrant/issues/6026,
+# we need this workaround.
+  if ARGV[0].eql?'up' or ARGV[0].eql?'provision'
+    retcode = system("set | grep VAGRANT_DETECTED_OS")
+    if !retcode
+      puts "Due to this open bug https://github.com/mitchellh/vagrant/issues/6026,"
+      puts "please run: export VAGRANT_DETECTED_OS=cygwin; vagrant up"
+      exit
+    end
+  end
 end
 
 # Install required plugins if not present.
@@ -79,7 +89,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       end
 
       machine.vm.hostname = host['name'] + '.' + host['domain']
-      machine.vm.network 'private_network', ip: host['ip_addr'], netmask: host['netmask']
+      if host['ip_addr'] and host['netmask']
+        machine.vm.network 'private_network', ip: host['ip_addr'], netmask: host['netmask']
+      else
+        machine.vm.network 'public_network', type: 'dhcp', 
+      end
 
       # Add aliases of each host to /etc/hosts
       config.hostsupdater.aliases = [ host['name'] + '.bak.' + host['domain'] ]

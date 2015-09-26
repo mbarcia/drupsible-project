@@ -1,8 +1,9 @@
 hosts:
   - name: local
     domain: 'example.com'
-    ip_addr: '192.168.50.10'
-    netmask: '255.255.255.0'
+# Optionally specify fixed IPs if needed
+#    ip_addr: '192.168.50.10'
+#    netmask: '255.255.255.0'
     ram: 1024
     gui: false
     box: 'mbarcia/drupsible'
