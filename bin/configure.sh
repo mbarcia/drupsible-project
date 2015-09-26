@@ -134,7 +134,7 @@ done
 # Prompt for values not yet assigned.
 #
 if [ "$DOMAIN" == "" ]; then
-	echo "Domain name? (ie. example.com)"
+	echo "Domain name? (ie. $APP_NAME.com)"
 	read DOMAIN
 	# Write DOMAIN
 	sed -i.ori "s/DOMAIN=.*$/DOMAIN=\"${DOMAIN}\"/g" "${APP_NAME}.profile"
@@ -281,14 +281,14 @@ if [ "$CODEBASE_TARBALL" == "" ] && [ "$INSTALL_PROFILE" == "" ]; then
 	fi
 	
 	if [ "$GIT_USER" == "" ]; then
-		echo "Git username of your Drupal repository?"
+		echo "Git username who will be cloning the Drupal repository?"
 		read GIT_USER
 		# Write GIT_USER
 		sed -i.ori "s/GIT_USER=.*$/GIT_USER=\"${GIT_USER}\"/g" "${APP_NAME}.profile"
 	fi
 	
 	if [ "$GIT_PATH" == "" ]; then
-		echo "Git path of your Drupal repository? (ie. example.git)"
+		echo "Git path of your Drupal repository? (ie. mbarcia/drupsible-project.git)"
 		read GIT_PATH
 		# Write GIT_PATH
 		sed -i.ori "s|GIT_PATH=.*$|GIT_PATH=\"${GIT_PATH}\"|g" "${APP_NAME}.profile"
@@ -298,7 +298,9 @@ if [ "$CODEBASE_TARBALL" == "" ] && [ "$INSTALL_PROFILE" == "" ]; then
 		echo "Git password? (leave it empty if you use a SSH key)"
 		read -s GIT_PASS
 		# Write GIT_PASS
-		sed -i.ori "s/GIT_PASS=.*$/GIT_PASS=\"${GIT_PASS}\"/g" "${APP_NAME}.profile"
+		if [ ! "$GIT_PASS" == "" ]; then
+			sed -i.ori "s/GIT_PASS=.*$/GIT_PASS=\"${GIT_PASS}\"/g" "${APP_NAME}.profile"
+		fi
 	fi
 	
 	if [ "$GIT_BRANCH" == "" ]; then
