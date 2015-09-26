@@ -63,23 +63,24 @@ Your Drupal project up and running with Drupsible.
 
 Usage: ${0##*/} [-h]
 	[-d domain] 
-	[-i install-profile] [-m db-dump] [-z files-tarball] [-c codebase-tarball] [-k key-filename] [-d drupal-version]
+	[-f drush-makefile] [-i install-profile] [-m db-dump] [-z files-tarball] [-c codebase-tarball] [-k key-filename] [-d drupal-version]
 	[-g git-server] [-t git-protocol] [-r git-path] [-u git-user] [-p git-password] [-b git-branch]
 	app-name
 
 Options:
 
 	-h	show this help and exits
-	-d	webdomain (ie. example.com)
+	-d	webdomain (ie. app.com)
+	-f	drush make filename (ie. app.make)
 	-i  Drupal install profile name, on drupal.org (ie. standard, commerce_profile)
-	-m	DB dump filename (ie. example.sql.gz, must be in ansible/playbooks/dbdumps)
-	-z	Files tarball (ie. example-files.tar.gz, must be in ansible/playbooks/files-tarballs)
-	-c	Codebase tarball (ie. example-codebase.tar.gz, must be in ansible/playbooks/codebase-tarballs)
+	-m	DB dump filename (ie. app.sql.gz, must be in ansible/playbooks/dbdumps)
+	-z	Files tarball (ie. app-files.tar.gz, must be in ansible/playbooks/files-tarballs)
+	-c	Codebase tarball (ie. app-codebase.tar.gz, must be in ansible/playbooks/codebase-tarballs)
 	-k	SSH private key filename (defaults to ~/.ssh/id_rsa)
 	-d	Drupal version (7 or 8)
 	-g	git server (ie. bitbucket.org, or git.your.org:8443 if using http/s)
 	-t	git protocol (defaults to git)
-	-r	git path (ie. example.git)
+	-r	git path (ie. someuser/app.git)
 	-u	git user
 	-p	git password (in case you are NOT using an SSH key)
     -b	git branch (defaults to master)
@@ -88,13 +89,15 @@ EOH
 }
 
 # Read any option from the command line (with precedence over the .profile)
-while getopts "hd:i:m:z:c:k:d:g:t:r:u:p:b:" opt; do
+while getopts "hd:f:i:m:z:c:k:d:g:t:r:u:p:b:" opt; do
     case "$opt" in
         h)
             show_help
             exit 0
             ;;
         d)  DOMAIN=$OPTARG
+            ;;
+        f)  DRUSH_MAKEFILE=$OPTARG
             ;;
         i)  INSTALL_PROFILE=$OPTARG
             ;;
@@ -150,7 +153,14 @@ if [ "$DRUPAL_VERSION" == "" ] || [ "$CONFIRM" == 'yes' ]; then
 	sed -i.ori "s/DRUPAL_VERSION=.*$/DRUPAL_VERSION=\"${DRUPAL_VERSION}\"/g" "${APP_NAME}.profile"
 fi
 
-if [ "$INSTALL_PROFILE" == "" ] && [ "$CONFIRM" == 'yes' ]; then
+if [ "$DRUSH_MAKEFILE" == "" ] && [ "$CONFIRM" == 'yes' ]; then
+	echo "Drush make filename? [$APP_NAME.make]"
+	read DRUSH_MAKEFILE
+	# Write DRUSH_MAKEFILE
+	sed -i.ori "s/DRUSH_MAKEFILE=.*$/DRUSH_MAKEFILE=\"${DRUSH_MAKEFILE}\"/g" "${APP_NAME}.profile"
+fi
+
+if [ "$INSTALL_PROFILE" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$DRUSH_MAKEFILE" == "" ]; then
 	echo "Drupal install profile? (ie. commerce_profile)"
 	read INSTALL_PROFILE
 	# Write INSTALL_PROFILE
@@ -181,7 +191,7 @@ if [ "$FILES_TARBALL" != "" ] && [ ! -f ansible/playbooks/files-tarballs/$FILES_
 	exit -1
 fi
 
-if [ "$CODEBASE_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFILE" == "" ]; then
+if [ "$CODEBASE_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFILE" == "" ] && [ "$DRUSH_MAKEFILE" == "" ]; then
 	echo "Codebase tarball? (must be in ansible/playbooks/codebase-tarballs, leave empty if you have a Git repo.)"
 	read CODEBASE_TARBALL
 	# Write CODEBASE_TARBALL
@@ -227,10 +237,14 @@ else
 	sed -i.ori "s/drush_min_version:.*/drush_min_version: \"${DRUPAL_VERSION}\.*\"/g" drupsible_deploy.yml
 fi
 
-if [ ! "$INSTALL_PROFILE" == "" ]; then
+if [ ! "$DRUSH_MAKEFILE" == "" ]; then
+	sed -i.ori "s/deploy_makefile:.*$/deploy_makefile: '${DRUSH_MAKEFILE}'/g" drupsible_deploy.yml
+	sed -i.ori "s/deploy_make:.*$/deploy_make: yes/g" drupsible_deploy.yml
+elif [ ! "$INSTALL_PROFILE" == "" ]; then
 	sed -i.ori "s/deploy_install_profile:.*$/deploy_install_profile: '${INSTALL_PROFILE}'/g" drupsible_deploy.yml
 	sed -i.ori "s/deploy_site_install:.*$/deploy_site_install: yes/g" drupsible_deploy.yml
 else
+	sed -i.ori "s/deploy_make:.*$/deploy_make: no/g" drupsible_deploy.yml
 	sed -i.ori "s/deploy_site_install:.*$/deploy_site_install: no/g" drupsible_deploy.yml
 	if [ ! "$CODEBASE_TARBALL" == "" ]; then
 		sed -i.ori "s|codebase_tarball_filename:.*$|codebase_tarball_filename: '${CODEBASE_TARBALL}'|g" drupsible_deploy.yml
