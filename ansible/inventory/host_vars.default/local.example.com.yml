@@ -11,7 +11,7 @@ app_env:
   files_tarball_filename: '{{ app_name }}-files.tar.gz'
   db_dump_filename: '{{ app_name }}.sql.gz'
   db_name: "{{ app_name }}"
-  db_user: "{{ app_name }}"
+  db_user: drupsible
   # Set to True if the target env has memcached available
   memcached: True
   # True clones the cur database
