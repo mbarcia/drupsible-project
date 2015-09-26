@@ -1,6 +1,7 @@
 # drupsible-project
 
 [![Join the chat at https://gitter.im/mbarcia/drupsible-project](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mbarcia/drupsible-project?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Drupsible is a DevOps tool for Drupal continuous delivery, based on Ansible. By using Drupsible, your team will be able to provision, import, integrate, deploy and maintain Drupal websites across complex infrastructures using a simple set of YAML configuration files.
 
 Drupsible project is the starting point of Drupsible, and it is the only thing you need to download/clone, as every other component will be handled by Drupsible automatically.
@@ -33,7 +34,7 @@ In the future, Drupsible may run on other platforms. In the future, Drupsible ma
 # Basic usage
 
 ## Local
-1. If you are on Windows, run Git Bash (as _administrator_)
+1. If you are on Windows, run Git Bash (as _administrator_) 
 1. Git clone drupsible-project and put it in a folder named after your project, like _~/myproject-drupsible_, or _~/drupsible/my-project_
 ```
 git clone https://github.com/mbarcia/drupsible-project.git myproject
@@ -41,15 +42,18 @@ cd myproject
 bin/configure.sh
 ```
 1. Drupsible will start an interactive session, asking for the handful of values that really matter (app name, domain name, etc.).
-1. Next, run ```vagrant up``` and Drupsible will start working hard. 
-1. Grab a cup of coffee while you watch the tasks being run. 
+1. Next, run ```vagrant up``` 
+1. Grab a cup of green tea, well deserved!
+1. For one time only, it will download some plugins and the drupsible box from the internet, in 4-30 minutes depending on your download speed.
+1. While you watch the tasks being run, that should take 7-15 minutes depending on your hardware speed. It may ask for your sysadmin password at the beginning if your terminal does not have root privileges.
 1. When you see it's done, you will see a message like this:
 ```
 ==> local: local.<domain>        : ok=493  changed=190  unreachable=0    failed=0
 ==> local: Drupsible box has been provisioned and configured. Go to your app URL and have a happy development.
 ```
 
-* Your VM will be ready: point your browser to your website: http://local.domain (or https://local.domain). Voilà.
+* Your VM will be ready: point your browser to your website: http://local.domain. Voilà.
+* Your credentials at http://local.domain/user/login are admin/drups1ble.
 * In your file manager (Windows Explorer look for \\LOCAL, or Samba shares), there will be a shared folder:
 local.webdomain app - Current version of the Drupal website and the logs.
 * You will then be able to connect your IDE of choice to this folder, or use any editor to develop and test. After you are done, just commit to your GIT repository.
@@ -59,7 +63,7 @@ local.webdomain app - Current version of the Drupal website and the logs.
 * If you want to customize more, please read section "Advanced usage" below. 
 
 ## Other target environments
-Once your Drupal 7 website is working on your local, you can proceed to deploy to the upper environments.
+Once your Drupal website is working on your local, you can proceed to deploy to the upper environments.
 
 1. Write your Ansible inventory for the target environment
 1. Choose an Ansible controller server. A good starting point is to use the VM itself as a controller, since it has already provisioned and configured your local. However, it is wise to consider having a separate "production" Ansible controller.
