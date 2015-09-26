@@ -92,7 +92,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       if host['ip_addr'] and host['netmask']
         machine.vm.network 'private_network', ip: host['ip_addr'], netmask: host['netmask']
       else
-        machine.vm.network 'public_network', type: 'dhcp', 
+        machine.vm.network 'public_network', type: 'dhcp'
       end
 
       # Add aliases of each host to /etc/hosts
