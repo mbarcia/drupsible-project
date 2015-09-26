@@ -137,8 +137,11 @@ done
 # Prompt for values not yet assigned.
 #
 if [ "$DOMAIN" == "" ]; then
-	echo "Domain name? (ie. $APP_NAME.com)"
+	echo "Domain name? [$APP_NAME.com]"
 	read DOMAIN
+	if [ "$DOMAIN" == "" ]; then
+		DOMAIN="$APP_NAME.com"
+	fi
 	# Write DOMAIN
 	sed -i.ori "s/DOMAIN=.*$/DOMAIN=\"${DOMAIN}\"/g" "${APP_NAME}.profile"
 fi
