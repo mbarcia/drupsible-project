@@ -140,6 +140,4 @@ eval $(<~/.ssh-agent)
 ```
 Drupsible will, from where the codebase needs to be cloned/checked-out, automatically present the credentials to the Git server.
 ### Note to OSX users
-You will see a few errors in Drupsible 1.9.2, but the keychain in OSX has some advantages, so just make sure you private key is in the keychain and you will be fine.
-Also, config backups are not being made. Expect these pitfalls to be fixed in Drupsible 0.9.3.
-
+Make sure your private key is in the keychain before trying to clone from a secured git repo.

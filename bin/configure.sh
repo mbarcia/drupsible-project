@@ -334,7 +334,7 @@ if [ "$GIT_PASS" == "" ] && [ "$KEY_FILENAME" == "" ] && [ "$INSTALL_PROFILE" ==
 	sed -i.ori "s|KEY_FILENAME=.*$|KEY_FILENAME=\"${KEY_FILENAME}\"|g" "${APP_NAME}.profile"
 fi
 
-if [ "$GIT_PASS" == "" ] && [ "$INSTALL_PROFILE" == "" ]; then
+if [ "$GIT_PASS" == "" ] && [ "$INSTALL_PROFILE" == "" ] && [[ ! $OSTYPE = "darwin"* ]]; then
 	# Invoke ssh-agent script, applying bash expansion to the tilde
 	./bin/ssh-agent.sh "${KEY_FILENAME/#\~/$HOME}"
 	# Connect to ssh-agent launched by ssh-agent.sh
