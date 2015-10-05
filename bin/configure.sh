@@ -161,7 +161,7 @@ if [ "$DBDUMP" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFILE" == "" 
 	echo "DB dump filename? (ie. example.sql.gz, must be in ansible/playbooks/dbdumps)"
 	read DBDUMP
 	# Write DBDUMP
-	sed -i.ori "s/DBDUMP=.*$/DBDUMP=\"${DBDUMP}\"/g" "${APP_NAME}.profile"
+	sed -i.ori "s|DBDUMP=.*$|DBDUMP=\"${DBDUMP}\"|g" "${APP_NAME}.profile"
 fi
 
 if [ "$DBDUMP" != "" ] && [ ! -f ansible/playbooks/dbdumps/$DBDUMP ]; then
@@ -173,7 +173,7 @@ if [ "$FILES_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFILE"
 	echo "Files tarball? (ie. example-files.tar.gz, must be in ansible/playbooks/files-tarballs)"
 	read FILES_TARBALL
 	# Write FILES_TARBALL
-	sed -i.ori "s/FILES_TARBALL=.*$/FILES_TARBALL=\"${FILES_TARBALL}\"/g" "${APP_NAME}.profile"
+	sed -i.ori "s|FILES_TARBALL=.*$|FILES_TARBALL=\"${FILES_TARBALL}\"|g" "${APP_NAME}.profile"
 fi
 
 if [ "$FILES_TARBALL" != "" ] && [ ! -f ansible/playbooks/files-tarballs/$FILES_TARBALL ]; then
@@ -185,7 +185,7 @@ if [ "$CODEBASE_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFI
 	echo "Codebase tarball? (must be in ansible/playbooks/codebase-tarballs, leave empty if you have a Git repo.)"
 	read CODEBASE_TARBALL
 	# Write CODEBASE_TARBALL
-	sed -i.ori "s/CODEBASE_TARBALL=.*$/CODEBASE_TARBALL=\"${CODEBASE_TARBALL}\"/g" "${APP_NAME}.profile"
+	sed -i.ori "s|CODEBASE_TARBALL=.*$|CODEBASE_TARBALL=\"${CODEBASE_TARBALL}\"|g" "${APP_NAME}.profile"
 fi
 
 if [ "$CODEBASE_TARBALL" != "" ] && [ ! -f ansible/playbooks/codebase-tarballs/$CODEBASE_TARBALL ]; then
@@ -229,10 +229,10 @@ if [ ! "$INSTALL_PROFILE" == "" ]; then
 else
 	sed -i.ori "s/deploy_site_install:.*$/deploy_site_install: no/g" drupsible_deploy.yml
 	if [ ! "$CODEBASE_TARBALL" == "" ]; then
-		sed -i.ori "s/codebase_tarball_filename:.*$/codebase_tarball_filename: '${CODEBASE_TARBALL}'/g" drupsible_deploy.yml
-		sed -i.ori "s/codebase_import:.*$/codebase_import: yes/g" drupsible_deploy.yml
+		sed -i.ori "s|codebase_tarball_filename:.*$|codebase_tarball_filename: '${CODEBASE_TARBALL}'|g" drupsible_deploy.yml
+		sed -i.ori "s|codebase_import:.*$|codebase_import: yes|g" drupsible_deploy.yml
 	else
-		sed -i.ori "s/codebase_import:.*$/codebase_import: no/g" drupsible_deploy.yml
+		sed -i.ori "s|codebase_import:.*$|codebase_import: no|g" drupsible_deploy.yml
 	fi
 fi
 
@@ -246,17 +246,17 @@ sed -i.ori "s/example\.com/${DOMAIN}/g" "local.$DOMAIN.yml"
 	
 if [ "$INSTALL_PROFILE" == "" ]; then
 	if [ ! "$DBDUMP" == "" ]; then 
-		sed -i.ori "s/db_dump_filename:.*$/db_dump_filename: '${DBDUMP}'/g" "local.$DOMAIN.yml"
-		sed -i.ori "s/db_import:.*$/db_import: yes/g" "local.$DOMAIN.yml"
+		sed -i.ori "s|db_dump_filename:.*$|db_dump_filename: '${DBDUMP}'|g" "local.$DOMAIN.yml"
+		sed -i.ori "s|db_import:.*$|db_import: yes|g" "local.$DOMAIN.yml"
 	else
-		sed -i.ori "s/db_import:.*$/db_import: no/g" "local.$DOMAIN.yml"
+		sed -i.ori "s|db_import:.*$|db_import: no|g" "local.$DOMAIN.yml"
 	fi
 	
 	if [ ! "$FILES_TARBALL" == "" ]; then
-		sed -i.ori "s/files_tarball_filename:.*$/files_tarball_filename: '${FILES_TARBALL}'/g" "local.$DOMAIN.yml"
-		sed -i.ori "s/files_import:.*$/files_import: yes/g" "local.$DOMAIN.yml"
+		sed -i.ori "s|files_tarball_filename:.*$|files_tarball_filename: '${FILES_TARBALL}'|g" "local.$DOMAIN.yml"
+		sed -i.ori "s|files_import:.*$|files_import: yes|g" "local.$DOMAIN.yml"
 	else
-		sed -i.ori "s/files_import:.*$/files_import: no/g" "local.$DOMAIN.yml"
+		sed -i.ori "s|files_import:.*$|files_import: no|g" "local.$DOMAIN.yml"
 	fi
 fi
 
@@ -291,7 +291,7 @@ if [ "$CODEBASE_TARBALL" == "" ] && [ "$INSTALL_PROFILE" == "" ]; then
 		echo "Git path of your Drupal repository? (ie. example.git)"
 		read GIT_PATH
 		# Write GIT_PATH
-		sed -i.ori "s/GIT_PATH=.*$/GIT_PATH=\"${GIT_PATH}\"/g" "${APP_NAME}.profile"
+		sed -i.ori "s|GIT_PATH=.*$|GIT_PATH=\"${GIT_PATH}\"|g" "${APP_NAME}.profile"
 	fi
 	
 	if [ "$GIT_PASS" == "" ]; then
@@ -305,7 +305,7 @@ if [ "$CODEBASE_TARBALL" == "" ] && [ "$INSTALL_PROFILE" == "" ]; then
 		echo "Branch/version of your codebase? [master]"
 		read GIT_BRANCH
 		# Write GIT_BRANCH
-		sed -i.ori "s/GIT_BRANCH=.*$/GIT_BRANCH=\"${GIT_BRANCH}\"/g" "${APP_NAME}.profile"
+		sed -i.ori "s|GIT_BRANCH=.*$|GIT_BRANCH=\"${GIT_BRANCH}\"|g" "${APP_NAME}.profile"
 	fi
 
 	cd ansible/inventory/group_vars
