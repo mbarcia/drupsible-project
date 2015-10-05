@@ -313,9 +313,9 @@ if [ "$CODEBASE_TARBALL" == "" ] && [ "$INSTALL_PROFILE" == "" ]; then
 	sed -i.ori "s/git_repo_protocol:.*$/git_repo_protocol: \"${GIT_PROTOCOL}\"/g" drupsible_deploy.yml
 	sed -i.ori "s/git_repo_server:.*$/git_repo_server: \"${GIT_SERVER}\"/g" drupsible_deploy.yml
 	sed -i.ori "s/git_repo_user:.*$/git_repo_user: \"${GIT_USER}\"/g" drupsible_deploy.yml
-	sed -i.ori "s/git_repo_path:.*$/git_repo_path: \"${GIT_PATH}\"/g" drupsible_deploy.yml
+	sed -i.ori "s|git_repo_path:.*$|git_repo_path: \"${GIT_PATH}\"|g" drupsible_deploy.yml
 	sed -i.ori "s/git_repo_pass:.*$/git_repo_pass: \"${GIT_PASS}\"/g" drupsible_deploy.yml
-	sed -i.ori "s/git_version:.*$/git_version: \"${GIT_BRANCH}\"/g" drupsible_deploy.yml
+	sed -i.ori "s|git_version:.*$|git_version: \"${GIT_BRANCH}\"|g" drupsible_deploy.yml
 	
 	cd - > /dev/null
 
