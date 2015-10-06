@@ -28,5 +28,5 @@ php_value:
 php_flag:
   cgi.fix_path_info: 1
   # The following settings for PHP 5.5 are based on https://goo.gl/AsDmgt
-  opcache.validate_timestamps: "{{ (app_target is defined and app_target != 'prod') | ternary(1, 0) }}"
+  opcache.validate_timestamps: "{{ (app_target is defined and app_target != 'prod') | ternary('True', 'False') }}"
   opcache.fast_shutdown: 1
