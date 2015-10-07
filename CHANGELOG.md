@@ -1,3 +1,16 @@
+# Release Notes - Drupsible - Version 0.9.3
+
+## Bugs
+
+*  [[DRUPSIBLE-70](https://drupsible.atlassian.net/browse/DRUPSIBLE-70)] Escape slashes when expanding paths
+
+## Stories
+
+*  [[DRUPSIBLE-56](https://drupsible.atlassian.net/browse/DRUPSIBLE-56)] Test on Ubuntu Trusty
+*  [[DRUPSIBLE-51](https://drupsible.atlassian.net/browse/DRUPSIBLE-51)] Fix backup in OSX
+*  [[DRUPSIBLE-63](https://drupsible.atlassian.net/browse/DRUPSIBLE-63)] Varnish 4 and systemd in Debian/Ubuntu
+*  [[DRUPSIBLE-69](https://drupsible.atlassian.net/browse/DRUPSIBLE-69)] Varnish does not autostart on systemd
+
 # Release Notes - Drupsible - Version 0.9.2
 
 ## Bugs
