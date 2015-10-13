@@ -37,3 +37,7 @@ newrelic_license_key: False
 
 # Add vagrant to the default groups defined in debops.sshd
 sshd_allow_groups: [ 'vagrant' , 'root', 'admins', 'sshusers', 'sftponly' ]
+
+# PHP Development settings
+php5_max_execution_time: '0'
+php5_max_input_time: '-1'
