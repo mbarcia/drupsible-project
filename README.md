@@ -141,3 +141,7 @@ eval $(<~/.ssh-agent)
 Drupsible will, from where the codebase needs to be cloned/checked-out, automatically present the credentials to the Git server.
 ### Note to OSX users
 Make sure your private key is in the keychain before trying to clone from a secured git repo.
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/mbarcia/drupsible-project/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
