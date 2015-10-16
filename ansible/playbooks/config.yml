@@ -36,7 +36,7 @@
     - role: debops.pki
       tags: pki
       sudo: yes
-      when: app_env['https_enabled']|bool
+      when: app_env['https_enabled']|bool or (smtp_server is defined and smtp_port is defined and smtp_user is defined)
 
 - name: postfix
   hosts: debops_postfix
