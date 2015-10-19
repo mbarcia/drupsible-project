@@ -1,3 +1,20 @@
+Release Notes - Drupsible - Version 0.9.4
+
+## Bugs
+
+*  [[DRUPSIBLE-81](https://drupsible.atlassian.net/browse/DRUPSIBLE-81)] - Fix PKI installation
+*  [[DRUPSIBLE-82](https://drupsible.atlassian.net/browse/DRUPSIBLE-82)] - Fix Newrelic PHP Agent configuration
+*  [[DRUPSIBLE-85](https://drupsible.atlassian.net/browse/DRUPSIBLE-85)] - drush dl site_audit fails because of home dir
+*  [[DRUPSIBLE-87](https://drupsible.atlassian.net/browse/DRUPSIBLE-87)] - Trying to branch when importing
+
+## Stories
+
+*  [[DRUPSIBLE-77](https://drupsible.atlassian.net/browse/DRUPSIBLE-77)] - Ability to disable trusted host pattern (teapot error) in Varnish
+*  [[DRUPSIBLE-78](https://drupsible.atlassian.net/browse/DRUPSIBLE-78)] - Ability to specify more paths for piping
+*  [[DRUPSIBLE-79](https://drupsible.atlassian.net/browse/DRUPSIBLE-79)] - Customize frequency and quantity of backups
+*  [[DRUPSIBLE-84](https://drupsible.atlassian.net/browse/DRUPSIBLE-84)] - Skip base_url and cookie_domain if the webapp spans multiple different domains
+*  [[DRUPSIBLE-86](https://drupsible.atlassian.net/browse/DRUPSIBLE-86)] - Copy and decompress codebase tarball failed
+
 # Release Notes - Drupsible - Version 0.9.3
 
 ## Bugs
@@ -9,6 +26,7 @@
 *  [[DRUPSIBLE-56](https://drupsible.atlassian.net/browse/DRUPSIBLE-56)] Test on Ubuntu Trusty
 *  [[DRUPSIBLE-51](https://drupsible.atlassian.net/browse/DRUPSIBLE-51)] Fix backup in OSX
 *  [[DRUPSIBLE-63](https://drupsible.atlassian.net/browse/DRUPSIBLE-63)] Varnish 4 and systemd in Debian/Ubuntu
+*  [[DRUPSIBLE-63](https://drupsible.atlassian.net/browse/DRUPSIBLE-63)] Varnish 4 and systemd in Ubuntu Trusty
 *  [[DRUPSIBLE-69](https://drupsible.atlassian.net/browse/DRUPSIBLE-69)] Varnish does not autostart on systemd
 
 # Release Notes - Drupsible - Version 0.9.2
