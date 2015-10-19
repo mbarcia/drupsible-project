@@ -103,7 +103,7 @@
     - role: drupsible.varnish
       tags: varnish
       sudo: yes
-      trusted_host_patterns: [ "(?i)^.+\\.{{ webdomain|regex_replace('[.]', '\\.') }}$" ]
+      trusted_hosts: "app_env['aliases'] }}"
       varnish_pipe_timeout: 600
       varnish_apache2_port: "{{ app_env['app_apache2_alt_port'] }}"
       varnish_management_console_listen_on: "{{ app_env['varnish_mgmt_port'] }}"
