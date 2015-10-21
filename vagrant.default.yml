@@ -2,7 +2,7 @@ hosts:
   - name: local
     domain: 'example.com'
 #
-# Comment out ip_adddr to use DHCP assignment instead. Then
+# Comment out ip_adddr and netmask to use DHCP assignment instead. Then
 # 1. vagrant reload
 # 2. vagrant ssh
 # 3. sudo ifconfig
