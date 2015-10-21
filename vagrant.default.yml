@@ -1,9 +1,20 @@
 hosts:
   - name: local
     domain: 'example.com'
-# Optionally specify fixed IPs if needed
-#    ip_addr: '192.168.50.10'
-#    netmask: '255.255.255.0'
+#
+# Comment out ip_adddr to use DHCP assignment instead. Then
+# 1. vagrant reload
+# 2. vagrant ssh
+# 3. sudo ifconfig
+# 4. eth1 will inform the IP assigned, ie. 192.168.1.33
+# 5. Add a line to your /etc/hosts, ie.
+# 192.168.1.33 local.mydomain.com
+# 6. Open your browser at http://local.mydomain.com
+#
+# This fixed IP will be added automatically to your /etc/hosts
+    ip_addr: '192.168.50.10'
+    netmask: '255.255.255.0'
+#
     ram: 1024
     gui: false
     box: 'mbarcia/drupsible'
