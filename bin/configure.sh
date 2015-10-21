@@ -200,6 +200,10 @@ fi
 cp default.gitignore .gitignore
 cp Vagrantfile.default Vagrantfile
 sed "s/example\.com/${DOMAIN}/g" <vagrant.default.yml >vagrant.yml
+# Assign a random private IP address to minimize collision with other Drupsible projects.
+set $(dd if=/dev/urandom bs=2 count=1 2>/dev/null | od -An -tu1)
+IP_ADDR_RANDOM="192.168.$1.$2"
+sed -i.ori "s/ip_addr:.*/ip_addr: '${IP_ADDR_RANDOM}'/g" vagrant.yml
 cp ansible/requirements.default.yml ansible/requirements.yml
 sed "s/example\.com/${DOMAIN}/g" <ansible/inventory/hosts-local.default >ansible/inventory/hosts-local
 rm -fr ansible/playbooks/deploy 2>/dev/null
