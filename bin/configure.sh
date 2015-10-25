@@ -134,7 +134,7 @@ done
 # Prompt for values not yet assigned.
 #
 if [ "$DOMAIN" == "" ]; then
-	echo "Domain name? (ie. example.com)"
+	echo "Domain name? (ie. $APP_NAME.com)"
 	read DOMAIN
 	# Write DOMAIN
 	sed -i.ori "s/DOMAIN=.*$/DOMAIN=\"${DOMAIN}\"/g" "${APP_NAME}.profile"
@@ -161,7 +161,7 @@ if [ "$DBDUMP" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFILE" == "" 
 	echo "DB dump filename? (ie. example.sql.gz, must be in ansible/playbooks/dbdumps)"
 	read DBDUMP
 	# Write DBDUMP
-	sed -i.ori "s|DBDUMP=.*$|DBDUMP=\"${DBDUMP}\"|g" "${APP_NAME}.profile"
+	sed -i.ori "s/DBDUMP=.*$/DBDUMP=\"${DBDUMP}\"/g" "${APP_NAME}.profile"
 fi
 
 if [ "$DBDUMP" != "" ] && [ ! -f ansible/playbooks/dbdumps/$DBDUMP ]; then
@@ -173,7 +173,7 @@ if [ "$FILES_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFILE"
 	echo "Files tarball? (ie. example-files.tar.gz, must be in ansible/playbooks/files-tarballs)"
 	read FILES_TARBALL
 	# Write FILES_TARBALL
-	sed -i.ori "s|FILES_TARBALL=.*$|FILES_TARBALL=\"${FILES_TARBALL}\"|g" "${APP_NAME}.profile"
+	sed -i.ori "s/FILES_TARBALL=.*$/FILES_TARBALL=\"${FILES_TARBALL}\"/g" "${APP_NAME}.profile"
 fi
 
 if [ "$FILES_TARBALL" != "" ] && [ ! -f ansible/playbooks/files-tarballs/$FILES_TARBALL ]; then
@@ -185,7 +185,7 @@ if [ "$CODEBASE_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFI
 	echo "Codebase tarball? (must be in ansible/playbooks/codebase-tarballs, leave empty if you have a Git repo.)"
 	read CODEBASE_TARBALL
 	# Write CODEBASE_TARBALL
-	sed -i.ori "s|CODEBASE_TARBALL=.*$|CODEBASE_TARBALL=\"${CODEBASE_TARBALL}\"|g" "${APP_NAME}.profile"
+	sed -i.ori "s/CODEBASE_TARBALL=.*$/CODEBASE_TARBALL=\"${CODEBASE_TARBALL}\"/g" "${APP_NAME}.profile"
 fi
 
 if [ "$CODEBASE_TARBALL" != "" ] && [ ! -f ansible/playbooks/codebase-tarballs/$CODEBASE_TARBALL ]; then
@@ -200,10 +200,6 @@ fi
 cp default.gitignore .gitignore
 cp Vagrantfile.default Vagrantfile
 sed "s/example\.com/${DOMAIN}/g" <vagrant.default.yml >vagrant.yml
-# Assign a random private IP address to minimize collision with other Drupsible projects.
-set $(dd if=/dev/urandom bs=2 count=1 2>/dev/null | od -An -tu1)
-IP_ADDR_RANDOM="192.168.$1.$2"
-sed -i.ori "s/ip_addr:.*/ip_addr: '${IP_ADDR_RANDOM}'/g" vagrant.yml
 cp ansible/requirements.default.yml ansible/requirements.yml
 sed "s/example\.com/${DOMAIN}/g" <ansible/inventory/hosts-local.default >ansible/inventory/hosts-local
 rm -fr ansible/playbooks/deploy 2>/dev/null
@@ -233,10 +229,10 @@ if [ ! "$INSTALL_PROFILE" == "" ]; then
 else
 	sed -i.ori "s/deploy_site_install:.*$/deploy_site_install: no/g" drupsible_deploy.yml
 	if [ ! "$CODEBASE_TARBALL" == "" ]; then
-		sed -i.ori "s|codebase_tarball_filename:.*$|codebase_tarball_filename: '${CODEBASE_TARBALL}'|g" drupsible_deploy.yml
-		sed -i.ori "s|codebase_import:.*$|codebase_import: yes|g" drupsible_deploy.yml
+		sed -i.ori "s/codebase_tarball_filename:.*$/codebase_tarball_filename: '${CODEBASE_TARBALL}'/g" drupsible_deploy.yml
+		sed -i.ori "s/codebase_import:.*$/codebase_import: yes/g" drupsible_deploy.yml
 	else
-		sed -i.ori "s|codebase_import:.*$|codebase_import: no|g" drupsible_deploy.yml
+		sed -i.ori "s/codebase_import:.*$/codebase_import: no/g" drupsible_deploy.yml
 	fi
 fi
 
@@ -250,17 +246,17 @@ sed -i.ori "s/example\.com/${DOMAIN}/g" "local.$DOMAIN.yml"
 	
 if [ "$INSTALL_PROFILE" == "" ]; then
 	if [ ! "$DBDUMP" == "" ]; then 
-		sed -i.ori "s|db_dump_filename:.*$|db_dump_filename: '${DBDUMP}'|g" "local.$DOMAIN.yml"
-		sed -i.ori "s|db_import:.*$|db_import: yes|g" "local.$DOMAIN.yml"
+		sed -i.ori "s/db_dump_filename:.*$/db_dump_filename: '${DBDUMP}'/g" "local.$DOMAIN.yml"
+		sed -i.ori "s/db_import:.*$/db_import: yes/g" "local.$DOMAIN.yml"
 	else
-		sed -i.ori "s|db_import:.*$|db_import: no|g" "local.$DOMAIN.yml"
+		sed -i.ori "s/db_import:.*$/db_import: no/g" "local.$DOMAIN.yml"
 	fi
 	
 	if [ ! "$FILES_TARBALL" == "" ]; then
-		sed -i.ori "s|files_tarball_filename:.*$|files_tarball_filename: '${FILES_TARBALL}'|g" "local.$DOMAIN.yml"
-		sed -i.ori "s|files_import:.*$|files_import: yes|g" "local.$DOMAIN.yml"
+		sed -i.ori "s/files_tarball_filename:.*$/files_tarball_filename: '${FILES_TARBALL}'/g" "local.$DOMAIN.yml"
+		sed -i.ori "s/files_import:.*$/files_import: yes/g" "local.$DOMAIN.yml"
 	else
-		sed -i.ori "s|files_import:.*$|files_import: no|g" "local.$DOMAIN.yml"
+		sed -i.ori "s/files_import:.*$/files_import: no/g" "local.$DOMAIN.yml"
 	fi
 fi
 
@@ -285,31 +281,33 @@ if [ "$CODEBASE_TARBALL" == "" ] && [ "$INSTALL_PROFILE" == "" ]; then
 	fi
 	
 	if [ "$GIT_USER" == "" ]; then
-		echo "Git username of your Drupal repository?"
+		echo "Git username who will be cloning the Drupal repository?"
 		read GIT_USER
 		# Write GIT_USER
 		sed -i.ori "s/GIT_USER=.*$/GIT_USER=\"${GIT_USER}\"/g" "${APP_NAME}.profile"
 	fi
 	
 	if [ "$GIT_PATH" == "" ]; then
-		echo "Git path of your Drupal repository? (ie. example.git)"
+		echo "Git path of your Drupal repository? (ie. mbarcia/drupsible-project.git)"
 		read GIT_PATH
 		# Write GIT_PATH
-		sed -i.ori "s|GIT_PATH=.*$|GIT_PATH=\"${GIT_PATH}\"|g" "${APP_NAME}.profile"
+		sed -i.ori "s/GIT_PATH=.*$/GIT_PATH=\"${GIT_PATH//./\\.}\"/g" "${APP_NAME}.profile"
 	fi
 	
 	if [ "$GIT_PASS" == "" ]; then
 		echo "Git password? (leave it empty if you use a SSH key)"
 		read -s GIT_PASS
 		# Write GIT_PASS
-		sed -i.ori "s/GIT_PASS=.*$/GIT_PASS=\"${GIT_PASS}\"/g" "${APP_NAME}.profile"
+		if [ ! "$GIT_PASS" == "" ]; then
+			sed -i.ori "s/GIT_PASS=.*$/GIT_PASS=\"${GIT_PASS}\"/g" "${APP_NAME}.profile"
+		fi
 	fi
 	
 	if [ "$GIT_BRANCH" == "" ]; then
 		echo "Branch/version of your codebase? [master]"
 		read GIT_BRANCH
 		# Write GIT_BRANCH
-		sed -i.ori "s|GIT_BRANCH=.*$|GIT_BRANCH=\"${GIT_BRANCH}\"|g" "${APP_NAME}.profile"
+		sed -i.ori "s/GIT_BRANCH=.*$/GIT_BRANCH=\"${GIT_BRANCH}\"/g" "${APP_NAME}.profile"
 	fi
 
 	cd ansible/inventory/group_vars
@@ -317,9 +315,9 @@ if [ "$CODEBASE_TARBALL" == "" ] && [ "$INSTALL_PROFILE" == "" ]; then
 	sed -i.ori "s/git_repo_protocol:.*$/git_repo_protocol: \"${GIT_PROTOCOL}\"/g" drupsible_deploy.yml
 	sed -i.ori "s/git_repo_server:.*$/git_repo_server: \"${GIT_SERVER}\"/g" drupsible_deploy.yml
 	sed -i.ori "s/git_repo_user:.*$/git_repo_user: \"${GIT_USER}\"/g" drupsible_deploy.yml
-	sed -i.ori "s|git_repo_path:.*$|git_repo_path: \"${GIT_PATH}\"|g" drupsible_deploy.yml
+	sed -i.ori "s/git_repo_path:.*$/git_repo_path: \"${GIT_PATH}\"/g" drupsible_deploy.yml
 	sed -i.ori "s/git_repo_pass:.*$/git_repo_pass: \"${GIT_PASS}\"/g" drupsible_deploy.yml
-	sed -i.ori "s|git_version:.*$|git_version: \"${GIT_BRANCH}\"|g" drupsible_deploy.yml
+	sed -i.ori "s/git_version:.*$/git_version: \"${GIT_BRANCH}\"/g" drupsible_deploy.yml
 	
 	cd - > /dev/null
 
@@ -338,7 +336,7 @@ if [ "$GIT_PASS" == "" ] && [ "$KEY_FILENAME" == "" ] && [ "$INSTALL_PROFILE" ==
 	sed -i.ori "s|KEY_FILENAME=.*$|KEY_FILENAME=\"${KEY_FILENAME}\"|g" "${APP_NAME}.profile"
 fi
 
-if [ "$GIT_PASS" == "" ] && [ "$INSTALL_PROFILE" == "" ] && [[ ! $OSTYPE = "darwin"* ]]; then
+if [ "$GIT_PASS" == "" ] && [ "$INSTALL_PROFILE" == "" ]; then
 	# Invoke ssh-agent script, applying bash expansion to the tilde
 	./bin/ssh-agent.sh "${KEY_FILENAME/#\~/$HOME}"
 	# Connect to ssh-agent launched by ssh-agent.sh
