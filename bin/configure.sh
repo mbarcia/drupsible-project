@@ -19,7 +19,7 @@ if [ "$1" == "" ]; then
 	echo "Make sure VT-x/AMD-V is enabled (in your BIOS settings)."
 	echo "Type bin/configure.sh <app-name> (and skip these messages)."
 	echo
-	echo "Application code name? (ie. example, default: $PROJ_NAME): "
+	echo "Application code name? [$PROJ_NAME]: "
 	read APP_NAME
 	if [ "${APP_NAME}" == "" ]; then
 		APP_NAME="${PROJ_NAME}"
@@ -63,23 +63,24 @@ Your Drupal project up and running with Drupsible.
 
 Usage: ${0##*/} [-h]
 	[-d domain] 
-	[-i install-profile] [-m db-dump] [-z files-tarball] [-c codebase-tarball] [-k key-filename] [-d drupal-version]
+	[-f drush-makefile] [-i install-profile] [-m db-dump] [-z files-tarball] [-c codebase-tarball] [-k key-filename] [-d drupal-version]
 	[-g git-server] [-t git-protocol] [-r git-path] [-u git-user] [-p git-password] [-b git-branch]
 	app-name
 
 Options:
 
 	-h	show this help and exits
-	-d	webdomain (ie. example.com)
+	-d	webdomain (ie. app.com)
+	-f	drush make filename (ie. app.make)
 	-i  Drupal install profile name, on drupal.org (ie. standard, commerce_profile)
-	-m	DB dump filename (ie. example.sql.gz, must be in ansible/playbooks/dbdumps)
-	-z	Files tarball (ie. example-files.tar.gz, must be in ansible/playbooks/files-tarballs)
-	-c	Codebase tarball (ie. example-codebase.tar.gz, must be in ansible/playbooks/codebase-tarballs)
+	-m	DB dump filename (ie. app.sql.gz, must be in ansible/playbooks/dbdumps)
+	-z	Files tarball (ie. app-files.tar.gz, must be in ansible/playbooks/files-tarballs)
+	-c	Codebase tarball (ie. app-codebase.tar.gz, must be in ansible/playbooks/codebase-tarballs)
 	-k	SSH private key filename (defaults to ~/.ssh/id_rsa)
 	-d	Drupal version (7 or 8)
 	-g	git server (ie. bitbucket.org, or git.your.org:8443 if using http/s)
 	-t	git protocol (defaults to git)
-	-r	git path (ie. example.git)
+	-r	git path (ie. someuser/app.git)
 	-u	git user
 	-p	git password (in case you are NOT using an SSH key)
     -b	git branch (defaults to master)
@@ -88,13 +89,15 @@ EOH
 }
 
 # Read any option from the command line (with precedence over the .profile)
-while getopts "hd:i:m:z:c:k:d:g:t:r:u:p:b:" opt; do
+while getopts "hd:f:i:m:z:c:k:d:g:t:r:u:p:b:" opt; do
     case "$opt" in
         h)
             show_help
             exit 0
             ;;
         d)  DOMAIN=$OPTARG
+            ;;
+        f)  DRUSH_MAKEFILE=$OPTARG
             ;;
         i)  INSTALL_PROFILE=$OPTARG
             ;;
@@ -134,14 +137,17 @@ done
 # Prompt for values not yet assigned.
 #
 if [ "$DOMAIN" == "" ]; then
-	echo "Domain name? (ie. $APP_NAME.com)"
+	echo "Domain name? [$APP_NAME.com]"
 	read DOMAIN
+	if [ "$DOMAIN" == "" ]; then
+		DOMAIN="$APP_NAME.com"
+	fi
 	# Write DOMAIN
 	sed -i.ori "s/DOMAIN=.*$/DOMAIN=\"${DOMAIN}\"/g" "${APP_NAME}.profile"
 fi
 
 if [ "$DRUPAL_VERSION" == "" ] || [ "$CONFIRM" == 'yes' ]; then
-	echo "Drupal version? (7 or 8, default is 7)"
+	echo "Drupal major version? (7|8) [7]"
 	read DRUPAL_VERSION
 	if [ "$DRUPAL_VERSION" == "" ]; then
 		DRUPAL_VERSION=7
@@ -150,18 +156,38 @@ if [ "$DRUPAL_VERSION" == "" ] || [ "$CONFIRM" == 'yes' ]; then
 	sed -i.ori "s/DRUPAL_VERSION=.*$/DRUPAL_VERSION=\"${DRUPAL_VERSION}\"/g" "${APP_NAME}.profile"
 fi
 
-if [ "$INSTALL_PROFILE" == "" ] && [ "$CONFIRM" == 'yes' ]; then
+if [ "$DRUSH_MAKEFILE" == "" ] && [ "$CONFIRM" == 'yes' ]; then
+<<<<<<< HEAD
+	echo "Drush make filename? [$APP_NAME.make]"
+	read DRUSH_MAKEFILE
+=======
+	echo "Drush make filename, if applicable? [$APP_NAME.make]"
+	read DRUSH_MAKEFILE
+	if [ "$DRUSH_MAKEFILE" == "" ]; then
+		DRUSH_MAKEFILE="$APP_NAME.make"
+	fi
+>>>>>>> 86c5a477510a7a96ddcf9e20928ec89fa8c30527
+	# Write DRUSH_MAKEFILE
+	sed -i.ori "s/DRUSH_MAKEFILE=.*$/DRUSH_MAKEFILE=\"${DRUSH_MAKEFILE}\"/g" "${APP_NAME}.profile"
+fi
+
+<<<<<<< HEAD
+if [ "$INSTALL_PROFILE" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$DRUSH_MAKEFILE" == "" ]; then
 	echo "Drupal install profile? (ie. commerce_profile)"
+=======
+if [ "$INSTALL_PROFILE" == "" ] && [ "$CONFIRM" == 'yes' ]; then
+	echo "Drupal install profile name, if applicable? (ie. standard)"
+>>>>>>> 86c5a477510a7a96ddcf9e20928ec89fa8c30527
 	read INSTALL_PROFILE
 	# Write INSTALL_PROFILE
 	sed -i.ori "s/INSTALL_PROFILE=.*$/INSTALL_PROFILE=\"${INSTALL_PROFILE}\"/g" "${APP_NAME}.profile"
 fi
 
-if [ "$DBDUMP" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFILE" == "" ]; then
-	echo "DB dump filename? (ie. example.sql.gz, must be in ansible/playbooks/dbdumps)"
+if [ "$DBDUMP" == "" ] && [ "$CONFIRM" == 'yes' ]; then
+	echo "DB dump filename, if applicable? (ie. $APP_NAME.sql.gz, must be in ansible/playbooks/dbdumps)"
 	read DBDUMP
 	# Write DBDUMP
-	sed -i.ori "s/DBDUMP=.*$/DBDUMP=\"${DBDUMP}\"/g" "${APP_NAME}.profile"
+	sed -i.ori "s|DBDUMP=.*$|DBDUMP=\"${DBDUMP}\"|g" "${APP_NAME}.profile"
 fi
 
 if [ "$DBDUMP" != "" ] && [ ! -f ansible/playbooks/dbdumps/$DBDUMP ]; then
@@ -169,11 +195,11 @@ if [ "$DBDUMP" != "" ] && [ ! -f ansible/playbooks/dbdumps/$DBDUMP ]; then
 	exit -1
 fi
 
-if [ "$FILES_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFILE" == "" ]; then
-	echo "Files tarball? (ie. example-files.tar.gz, must be in ansible/playbooks/files-tarballs)"
+if [ "$FILES_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ]; then
+	echo "Files tarball, if applicable? (ie. $APP_NAME-files.tar.gz, must be in ansible/playbooks/files-tarballs)"
 	read FILES_TARBALL
 	# Write FILES_TARBALL
-	sed -i.ori "s/FILES_TARBALL=.*$/FILES_TARBALL=\"${FILES_TARBALL}\"/g" "${APP_NAME}.profile"
+	sed -i.ori "s|FILES_TARBALL=.*$|FILES_TARBALL=\"${FILES_TARBALL}\"|g" "${APP_NAME}.profile"
 fi
 
 if [ "$FILES_TARBALL" != "" ] && [ ! -f ansible/playbooks/files-tarballs/$FILES_TARBALL ]; then
@@ -181,11 +207,16 @@ if [ "$FILES_TARBALL" != "" ] && [ ! -f ansible/playbooks/files-tarballs/$FILES_
 	exit -1
 fi
 
-if [ "$CODEBASE_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFILE" == "" ]; then
+<<<<<<< HEAD
+if [ "$CODEBASE_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$INSTALL_PROFILE" == "" ] && [ "$DRUSH_MAKEFILE" == "" ]; then
 	echo "Codebase tarball? (must be in ansible/playbooks/codebase-tarballs, leave empty if you have a Git repo.)"
+=======
+if [ "$CODEBASE_TARBALL" == "" ] && [ "$CONFIRM" == 'yes' ] && [ "$DRUSH_MAKEFILE" == "" ]; then
+	echo "Codebase tarball, if applicable? (must be in ansible/playbooks/codebase-tarballs)"
+>>>>>>> 86c5a477510a7a96ddcf9e20928ec89fa8c30527
 	read CODEBASE_TARBALL
 	# Write CODEBASE_TARBALL
-	sed -i.ori "s/CODEBASE_TARBALL=.*$/CODEBASE_TARBALL=\"${CODEBASE_TARBALL}\"/g" "${APP_NAME}.profile"
+	sed -i.ori "s|CODEBASE_TARBALL=.*$|CODEBASE_TARBALL=\"${CODEBASE_TARBALL}\"|g" "${APP_NAME}.profile"
 fi
 
 if [ "$CODEBASE_TARBALL" != "" ] && [ ! -f ansible/playbooks/codebase-tarballs/$CODEBASE_TARBALL ]; then
@@ -200,6 +231,10 @@ fi
 cp default.gitignore .gitignore
 cp Vagrantfile.default Vagrantfile
 sed "s/example\.com/${DOMAIN}/g" <vagrant.default.yml >vagrant.yml
+# Assign a random private IP address to minimize collision with other Drupsible projects.
+set $(dd if=/dev/urandom bs=2 count=1 2>/dev/null | od -An -tu1)
+IP_ADDR_RANDOM="192.168.$1.$2"
+sed -i.ori "s/ip_addr:.*/ip_addr: '${IP_ADDR_RANDOM}'/g" vagrant.yml
 cp ansible/requirements.default.yml ansible/requirements.yml
 sed "s/example\.com/${DOMAIN}/g" <ansible/inventory/hosts-local.default >ansible/inventory/hosts-local
 rm -fr ansible/playbooks/deploy 2>/dev/null
@@ -223,17 +258,33 @@ else
 	sed -i.ori "s/drush_min_version:.*/drush_min_version: \"${DRUPAL_VERSION}\.*\"/g" drupsible_deploy.yml
 fi
 
+if [ ! "$DRUSH_MAKEFILE" == "" ]; then
+	sed -i.ori "s/deploy_makefile:.*$/deploy_makefile: '${DRUSH_MAKEFILE}'/g" drupsible_deploy.yml
+	sed -i.ori "s/deploy_make:.*$/deploy_make: yes/g" drupsible_deploy.yml
+<<<<<<< HEAD
+elif [ ! "$INSTALL_PROFILE" == "" ]; then
+	sed -i.ori "s/deploy_install_profile:.*$/deploy_install_profile: '${INSTALL_PROFILE}'/g" drupsible_deploy.yml
+	sed -i.ori "s/deploy_site_install:.*$/deploy_site_install: yes/g" drupsible_deploy.yml
+else
+	sed -i.ori "s/deploy_make:.*$/deploy_make: no/g" drupsible_deploy.yml
+	sed -i.ori "s/deploy_site_install:.*$/deploy_site_install: no/g" drupsible_deploy.yml
+=======
+else
+	sed -i.ori "s/deploy_make:.*$/deploy_make: no/g" drupsible_deploy.yml
+>>>>>>> 86c5a477510a7a96ddcf9e20928ec89fa8c30527
+	if [ ! "$CODEBASE_TARBALL" == "" ]; then
+		sed -i.ori "s|codebase_tarball_filename:.*$|codebase_tarball_filename: '${CODEBASE_TARBALL}'|g" drupsible_deploy.yml
+		sed -i.ori "s|codebase_import:.*$|codebase_import: yes|g" drupsible_deploy.yml
+	else
+		sed -i.ori "s|codebase_import:.*$|codebase_import: no|g" drupsible_deploy.yml
+	fi
+fi
+
 if [ ! "$INSTALL_PROFILE" == "" ]; then
 	sed -i.ori "s/deploy_install_profile:.*$/deploy_install_profile: '${INSTALL_PROFILE}'/g" drupsible_deploy.yml
 	sed -i.ori "s/deploy_site_install:.*$/deploy_site_install: yes/g" drupsible_deploy.yml
 else
 	sed -i.ori "s/deploy_site_install:.*$/deploy_site_install: no/g" drupsible_deploy.yml
-	if [ ! "$CODEBASE_TARBALL" == "" ]; then
-		sed -i.ori "s/codebase_tarball_filename:.*$/codebase_tarball_filename: '${CODEBASE_TARBALL}'/g" drupsible_deploy.yml
-		sed -i.ori "s/codebase_import:.*$/codebase_import: yes/g" drupsible_deploy.yml
-	else
-		sed -i.ori "s/codebase_import:.*$/codebase_import: no/g" drupsible_deploy.yml
-	fi
 fi
 
 cd - > /dev/null
@@ -246,56 +297,79 @@ sed -i.ori "s/example\.com/${DOMAIN}/g" "local.$DOMAIN.yml"
 	
 if [ "$INSTALL_PROFILE" == "" ]; then
 	if [ ! "$DBDUMP" == "" ]; then 
-		sed -i.ori "s/db_dump_filename:.*$/db_dump_filename: '${DBDUMP}'/g" "local.$DOMAIN.yml"
-		sed -i.ori "s/db_import:.*$/db_import: yes/g" "local.$DOMAIN.yml"
+		sed -i.ori "s|db_dump_filename:.*$|db_dump_filename: '${DBDUMP}'|g" "local.$DOMAIN.yml"
+		sed -i.ori "s|db_import:.*$|db_import: yes|g" "local.$DOMAIN.yml"
 	else
-		sed -i.ori "s/db_import:.*$/db_import: no/g" "local.$DOMAIN.yml"
+		sed -i.ori "s|db_import:.*$|db_import: no|g" "local.$DOMAIN.yml"
 	fi
 	
 	if [ ! "$FILES_TARBALL" == "" ]; then
-		sed -i.ori "s/files_tarball_filename:.*$/files_tarball_filename: '${FILES_TARBALL}'/g" "local.$DOMAIN.yml"
-		sed -i.ori "s/files_import:.*$/files_import: yes/g" "local.$DOMAIN.yml"
+		sed -i.ori "s|files_tarball_filename:.*$|files_tarball_filename: '${FILES_TARBALL}'|g" "local.$DOMAIN.yml"
+		sed -i.ori "s|files_import:.*$|files_import: yes|g" "local.$DOMAIN.yml"
 	else
-		sed -i.ori "s/files_import:.*$/files_import: no/g" "local.$DOMAIN.yml"
+		sed -i.ori "s|files_import:.*$|files_import: no|g" "local.$DOMAIN.yml"
 	fi
 fi
 
 cd - > /dev/null
 
-if [ "$CODEBASE_TARBALL" == "" ] && [ "$INSTALL_PROFILE" == "" ]; then
+if [ "$CODEBASE_TARBALL" == "" ]; then
 	#
 	# GIT config values
 	#
 	if [ "$GIT_PROTOCOL" == "" ]; then
-		echo "Protocol to access your Git repository (git/ssh/http/https)?"
+		echo "Protocol to access your Git repository (git|ssh|http|https) [ssh]?"
 		read GIT_PROTOCOL
+		if [ "$GIT_PROTOCOL" == "" ]; then
+			GIT_PROTOCOL="ssh"
+		fi
 		# Write GIT_PROTOCOL
 		sed -i.ori "s/GIT_PROTOCOL=.*$/GIT_PROTOCOL=\"${GIT_PROTOCOL}\"/g" "${APP_NAME}.profile"
 	fi
 	
 	if [ "$GIT_SERVER" == "" ]; then
-		echo "Git server name where your Drupal website is?"
+		echo "Git server? [github.com]"
 		read GIT_SERVER
+		if [ "$GIT_SERVER" == "" ]; then
+			GIT_SERVER="github.com"
+		fi
 		# Write GIT_SERVER
 		sed -i.ori "s/GIT_SERVER=.*$/GIT_SERVER=\"${GIT_SERVER}\"/g" "${APP_NAME}.profile"
 	fi
 	
-	if [ "$GIT_USER" == "" ]; then
-		echo "Git username who will be cloning the Drupal repository?"
-		read GIT_USER
-		# Write GIT_USER
-		sed -i.ori "s/GIT_USER=.*$/GIT_USER=\"${GIT_USER}\"/g" "${APP_NAME}.profile"
-	fi
-	
 	if [ "$GIT_PATH" == "" ]; then
-		echo "Git path of your Drupal repository? (ie. mbarcia/drupsible-project.git)"
+		echo "Path of your Git repository? (ie. someuser/somerepo.git)"
 		read GIT_PATH
 		# Write GIT_PATH
 		sed -i.ori "s/GIT_PATH=.*$/GIT_PATH=\"${GIT_PATH//./\\.}\"/g" "${APP_NAME}.profile"
 	fi
 	
+	if [ "$GIT_USER" == "" ]; then
+<<<<<<< HEAD
+		echo "Git username who will be cloning the Drupal repository?"
+=======
+		echo "User who will be cloning the Drupal repository? [$USERNAME]"
+>>>>>>> 86c5a477510a7a96ddcf9e20928ec89fa8c30527
+		read GIT_USER
+		if [ "$GIT_USER" == "" ]; then
+			GIT_USER="$USERNAME"
+		fi
+		# Write GIT_USER
+		sed -i.ori "s/GIT_USER=.*$/GIT_USER=\"${GIT_USER}\"/g" "${APP_NAME}.profile"
+	fi
+	
+<<<<<<< HEAD
+	if [ "$GIT_PATH" == "" ]; then
+		echo "Git path of your Drupal repository? (ie. mbarcia/drupsible-project.git)"
+		read GIT_PATH
+		# Write GIT_PATH
+		sed -i.ori "s|GIT_PATH=.*$|GIT_PATH=\"${GIT_PATH}\"|g" "${APP_NAME}.profile"
+	fi
+	
+=======
+>>>>>>> 86c5a477510a7a96ddcf9e20928ec89fa8c30527
 	if [ "$GIT_PASS" == "" ]; then
-		echo "Git password? (leave it empty if you use a SSH key)"
+		echo "Password of your user? (leave it empty if you use a SSH key)"
 		read -s GIT_PASS
 		# Write GIT_PASS
 		if [ ! "$GIT_PASS" == "" ]; then
@@ -307,7 +381,7 @@ if [ "$CODEBASE_TARBALL" == "" ] && [ "$INSTALL_PROFILE" == "" ]; then
 		echo "Branch/version of your codebase? [master]"
 		read GIT_BRANCH
 		# Write GIT_BRANCH
-		sed -i.ori "s/GIT_BRANCH=.*$/GIT_BRANCH=\"${GIT_BRANCH}\"/g" "${APP_NAME}.profile"
+		sed -i.ori "s|GIT_BRANCH=.*$|GIT_BRANCH=\"${GIT_BRANCH}\"|g" "${APP_NAME}.profile"
 	fi
 
 	cd ansible/inventory/group_vars
@@ -315,9 +389,9 @@ if [ "$CODEBASE_TARBALL" == "" ] && [ "$INSTALL_PROFILE" == "" ]; then
 	sed -i.ori "s/git_repo_protocol:.*$/git_repo_protocol: \"${GIT_PROTOCOL}\"/g" drupsible_deploy.yml
 	sed -i.ori "s/git_repo_server:.*$/git_repo_server: \"${GIT_SERVER}\"/g" drupsible_deploy.yml
 	sed -i.ori "s/git_repo_user:.*$/git_repo_user: \"${GIT_USER}\"/g" drupsible_deploy.yml
-	sed -i.ori "s/git_repo_path:.*$/git_repo_path: \"${GIT_PATH}\"/g" drupsible_deploy.yml
+	sed -i.ori "s|git_repo_path:.*$|git_repo_path: \"${GIT_PATH}\"|g" drupsible_deploy.yml
 	sed -i.ori "s/git_repo_pass:.*$/git_repo_pass: \"${GIT_PASS}\"/g" drupsible_deploy.yml
-	sed -i.ori "s/git_version:.*$/git_version: \"${GIT_BRANCH}\"/g" drupsible_deploy.yml
+	sed -i.ori "s|git_version:.*$|git_version: \"${GIT_BRANCH}\"|g" drupsible_deploy.yml
 	
 	cd - > /dev/null
 
@@ -325,7 +399,7 @@ fi
 
 # Connect to a new or existing ssh-agent
 # Then add/load your SSH key
-if [ "$GIT_PASS" == "" ] && [ "$KEY_FILENAME" == "" ] && [ "$INSTALL_PROFILE" == "" ]; then
+if [ "$GIT_PASS" == "" ] && [ "$KEY_FILENAME" == "" ]; then
 	echo "SSH key filename? (~/.ssh/id_rsa)"
 	read KEY_FILENAME
 	if [ "$KEY_FILENAME" == "" ]; then
@@ -336,7 +410,7 @@ if [ "$GIT_PASS" == "" ] && [ "$KEY_FILENAME" == "" ] && [ "$INSTALL_PROFILE" ==
 	sed -i.ori "s|KEY_FILENAME=.*$|KEY_FILENAME=\"${KEY_FILENAME}\"|g" "${APP_NAME}.profile"
 fi
 
-if [ "$GIT_PASS" == "" ] && [ "$INSTALL_PROFILE" == "" ]; then
+if [ "$GIT_PASS" == "" ] && [[ ! $OSTYPE = "darwin"* ]]; then
 	# Invoke ssh-agent script, applying bash expansion to the tilde
 	./bin/ssh-agent.sh "${KEY_FILENAME/#\~/$HOME}"
 	# Connect to ssh-agent launched by ssh-agent.sh
