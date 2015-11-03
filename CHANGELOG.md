@@ -1,3 +1,18 @@
+# Release Notes - Drupsible - Version 0.9.5
+
+## Bugs
+
+*  [[DRUPSIBLE-75](https://drupsible.atlassian.net/browse/DRUPSIBLE-75)] - Avoid New Relic PHP Agent being skipped
+
+## Stories
+
+*  [[DRUPSIBLE-52](https://drupsible.atlassian.net/browse/DRUPSIBLE-52)] - Support drush make in custom profiles
+*  [[DRUPSIBLE-76](https://drupsible.atlassian.net/browse/DRUPSIBLE-76)] - Customize max_execution_time
+*  [[DRUPSIBLE-88](https://drupsible.atlassian.net/browse/DRUPSIBLE-88)] - Provide a random private IP to avoid conflict with other Drupsible projects in the local environment
+*  [[DRUPSIBLE-89](https://drupsible.atlassian.net/browse/DRUPSIBLE-89)] - Configure a VM with a larger disk size
+*  [[DRUPSIBLE-90](https://drupsible.atlassian.net/browse/DRUPSIBLE-90)] - Reduce VM default disk size to 5G
+*  [[DRUPSIBLE-91](https://drupsible.atlassian.net/browse/DRUPSIBLE-91)] - Update VBox Guest Additions ISO version
+
 # Release Notes - Drupsible - Version 0.9.4
 
 ## Bugs
