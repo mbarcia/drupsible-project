@@ -1,3 +1,12 @@
+# Release Notes - Drupsible - Version 0.9.6
+
+## Stories
+
+*  [[DRUPSIBLE-93](https://drupsible.atlassian.net/browse/DRUPSIBLE-93)] - Ability to specify a Git password as a secret
+*  [[DRUPSIBLE-95](https://drupsible.atlassian.net/browse/DRUPSIBLE-95)] - Use ControlPersist and pipelining
+*  [[DRUPSIBLE-96](https://drupsible.atlassian.net/browse/DRUPSIBLE-96)] - Enable pipelining default
+*  [[DRUPSIBLE-98](https://drupsible.atlassian.net/browse/DRUPSIBLE-98)] - Update apache vhost common definition, as per new .htaccess in D7.40
+
 # Release Notes - Drupsible - Version 0.9.5
 
 ## Bugs
