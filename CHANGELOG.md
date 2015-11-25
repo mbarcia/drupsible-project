@@ -1,3 +1,9 @@
+# Release Notes - Drupsible - Version 0.9.7
+
+## Bugs
+
+*  [[DRUPSIBLE-99](https://drupsible.atlassian.net/browse/DRUPSIBLE-99)] - New handling of dependencies in debops locked me out of the VM
+
 # Release Notes - Drupsible - Version 0.9.6
 
 ## Stories
