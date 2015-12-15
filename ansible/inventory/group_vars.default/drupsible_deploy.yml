@@ -55,10 +55,8 @@ deploy_proxy_user_agent: ''
 deploy_proxy_exceptions: 
   - '127.0.0.1'
   - 'localhost'
-deploy_reverse_proxy_header: 'X-Forwarded-For'
 deploy_container_base_class: '\Drupal\Core\DependencyInjection\Container'
 
 config_dirs: []
 deploy_identifier: '\Drupal::VERSION'
 drush_min_version: 7.*
-
