@@ -1,3 +1,15 @@
+# Release Notes - Drupsible - Version 0.9.8
+
+## Bugs
+
+*  [[DRUPSIBLE-61](https://drupsible.atlassian.net/browse/DRUPSIBLE-61)] - Samba does not work after a reboot. ferm service needs to be flushed.
+*  [[DRUPSIBLE-100](https://drupsible.atlassian.net/browse/DRUPSIBLE-100)] - Reverse proxy header not properly set
+*  [[DRUPSIBLE-101](https://drupsible.atlassian.net/browse/DRUPSIBLE-101)] - Skip full backups setup if not in PROD
+
+## Stories
+
+*  [[DRUPSIBLE-42](https://drupsible.atlassian.net/browse/DRUPSIBLE-42)] - I want to be able to add custom code to Drupal settings.php
+
 # Release Notes - Drupsible - Version 0.9.7
 
 ## Bugs
