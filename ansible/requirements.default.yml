@@ -3,7 +3,7 @@
   version: v0.1.2
   name: debops.core
 - src: https://github.com/debops/ansible-users
-  version: v0.1.4
+  version: v0.1.5
   name: debops.users
 - src: https://github.com/debops/ansible-pki
   version: bdf77c8f8cc2a82fef56cdbe6347576946466f2d
