@@ -14,7 +14,7 @@ Drupsible project is the starting point of Drupsible, and it is the only thing y
   * [Virtualbox](https://www.virtualbox.org/wiki/Downloads), or
   * VMWare Fusion or VMWare Workstation, or 
   * Parallels Desktop 10+ for Mac
-* [Vagrant](http://www.vagrantup.com/downloads) 1.7.2+
+* [Vagrant](http://www.vagrantup.com/downloads) 1.8.1+
   * requires commercial plug-in for VMWare
 * [Git Bash](https://git-scm.com/download/win) (only if you are on Windows)
 * [Check your BIOS](http://www.howtogeek.com/213795/how-to-enable-intel-vt-x-in-your-computers-bios-or-uefi-firmware/) for virtualization, it must be enabled
@@ -141,7 +141,4 @@ eval $(<~/.ssh-agent)
 Drupsible will, from where the codebase needs to be cloned/checked-out, automatically present the credentials to the Git server.
 ### Note to OSX users
 Make sure your private key is in the keychain before trying to clone from a secured git repo.
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/mbarcia/drupsible-project/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
