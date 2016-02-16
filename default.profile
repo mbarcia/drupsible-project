@@ -10,6 +10,8 @@ DOMAIN=""
 #
 DRUPAL_VERSION="7"
 #
+DRUSH_MAKEFILE=""
+#
 INSTALL_PROFILE=""
 #
 # This is the codebase tarball of your drupal site.

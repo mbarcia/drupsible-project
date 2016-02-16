@@ -46,6 +46,8 @@ git_version: ''
 deploy_site_install: no
 deploy_install_profile: ''
 
+deploy_make: no
+
 deploy_drupal_fast_404: no
 deploy_proxy_server: ''
 deploy_proxy_port: 8080
