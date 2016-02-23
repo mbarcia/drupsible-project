@@ -5,6 +5,9 @@
 - src: https://github.com/debops/ansible-users
   version: v0.1.5
   name: debops.users
+- src: https://github.com/debops/ansible-apt
+  version: 87a6b9a7cdcca11cee6518f574f678d429ed5a69
+  name: debops.users
 - src: https://github.com/debops/ansible-pki
   version: bdf77c8f8cc2a82fef56cdbe6347576946466f2d
   name: debops.pki
@@ -18,29 +21,29 @@
   version: v0.2.1
   name: debops.sshd
 - src: https://github.com/mbarcia/drupsible-apache
-  version: 0.9.7
+  version: 0.9.8
   name: drupsible.apache2
 - src: https://github.com/mbarcia/drupsible-memcached
-  version: 0.9.7
+  version: 0.9.8
   name: drupsible.memcached
 - src: https://github.com/mbarcia/drupsible-samba
-  version: 0.9.7
+  version: 0.9.8
   name: drupsible.samba
 - src: https://github.com/mbarcia/drupsible-newrelic
-  version: 0.9.7
+  version: 0.9.8
   name: drupsible.newrelic
 - src: https://github.com/mbarcia/drupsible-composer
-  version: 0.9.7
+  version: 0.9.8
   name: drupsible.composer
 - src: https://github.com/mbarcia/drupsible-drush
-  version: 0.9.7
+  version: 0.9.8
   name: drupsible.drush
 - src: https://github.com/mbarcia/drupsible-mysql
-  version: 0.9.7
+  version: 0.9.8
   name: drupsible.mysql
 - src: https://github.com/mbarcia/drupsible-deploy
-  version: 0.9.7
+  version: 0.9.8
   name: drupsible.deploy
 - src: https://github.com/mbarcia/drupsible-varnish
-  version: 0.9.7
+  version: 0.9.8
   name: drupsible.varnish
