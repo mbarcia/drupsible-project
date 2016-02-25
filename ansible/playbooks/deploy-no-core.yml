@@ -3,7 +3,11 @@
   hosts: drupsible_deploy
 
   pre_tasks:
-  - name: Add New Relic PHP5 pkg
+  - name: Put PHP5 packages in a parameter for calling debops.php5
+    set_fact:
+      deploy_php5_packages: "{{ php5_packages}}"
+
+  - name: Add New Relic PHP5 pkg if needed
     set_fact:
       deploy_php5_packages: "{{ [ 'newrelic-php5' ] + php5_packages}}"
     when: provision_new_relic|default(False)|bool
@@ -30,7 +34,7 @@
   - role: debops.php5
     when: apache2_mpm != 'prefork'
     sudo: yes
-    php5_packages: "{{ deploy_php5_packages|default(php5_packages) }}"
+    php5_packages: "{{ deploy_php5_packages }}"
     php5_app_pool:
       enabled: True
       name: "{{ app_name }}"
