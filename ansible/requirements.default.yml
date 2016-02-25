@@ -20,6 +20,9 @@
 - src: https://github.com/debops/ansible-sshd
   version: v0.2.1
   name: debops.sshd
+- src: https://github.com/debops/ansible-php5
+  version: c0391381facab1ee8098875703a819b6b7566229
+  name: debops.php5
 - src: https://github.com/mbarcia/drupsible-apache
   version: 0.9.8
   name: drupsible.apache2
