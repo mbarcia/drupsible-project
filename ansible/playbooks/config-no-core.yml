@@ -1,0 +1,113 @@
+---
+- name: Gather default and custom facts
+  hosts: 'all:!localhost'
+  gather_facts: True
+
+- name: Configure default user account mgmt
+  hosts: 'all:!localhost'
+  roles: 
+    - debops.users
+
+- name: ferm
+  hosts: debops_ferm
+  roles:
+    - { role: debops.ferm, tags: ferm, sudo: yes }
+
+- name: sshd
+  hosts: debops_sshd
+  roles:
+    - { role: debops.sshd, tags: sshd, sudo: yes }
+
+- name: APT
+  hosts: debops_apt
+  roles:
+    - { role: debops.apt, tags: apt, sudo: yes }
+
+- name: tcpwrappers
+  hosts: debops_tcpwrappers
+  roles:
+    - { role: debops.tcpwrappers, tags: tcpwrappers, sudo: yes }
+
+- name: pki
+  hosts: debops_pki
+  roles:
+    - role: debops.pki
+      tags: pki
+      sudo: yes
+      when: app_env['https_enabled']|bool or (smtp_server is defined and smtp_port is defined and smtp_user is defined)
+
+- name: postfix
+  hosts: debops_postfix
+  roles:
+    - role: debops.postfix
+      tags: postfix
+      sudo: yes
+      when: smtp_server is defined and smtp_port is defined and smtp_user is defined
+
+- name: MySQL
+  hosts: drupsible_mysql
+  roles:
+    - role: drupsible.mysql
+      sudo: yes
+      tags: mysql
+      mysql_users:
+        - name: "{{ app_env['db_user'] }}"
+          host: "%"
+          state: 'present'
+          password: '{{ app_env["db_password"] | default(lookup("password", secret + "/credentials/" + ansible_fqdn + "/mysql/" + app_env.db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
+          priv: '{{ app_env["db_name"] }}.*:ALL'
+        - name: "{{ app_env['db_user'] }}"
+          host: localhost
+          state: 'present'
+          password: '{{ app_env["db_password"] | default(lookup("password", secret + "/credentials/" + ansible_fqdn + "/mysql/" + app_env.db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
+          priv: '{{ app_env["db_name"] }}.*:ALL'
+        - name: "{{ app_env['db_user'] }}"
+          host: "{{ groups.drupsible_mysql.0 }}"
+          state: 'present'
+          password: '{{ app_env["db_password"] | default(lookup("password", secret + "/credentials/" + ansible_fqdn + "/mysql/" + app_env.db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
+          priv: '{{ app_env["db_name"] }}.*:ALL'
+
+- name: MySQL (for cloned DB mode)
+  hosts: drupsible_mysql
+  roles:
+    - role: drupsible.mysql
+      tags: mysql-clone
+      sudo: yes
+      when: app_env.db_clone|bool
+      vars:
+        mysql_databases:
+          - name: "{{ app_name }}_{{ build }}"
+            state: 'present'
+  
+- name: PHP-FPM
+  hosts: debops_php5
+  roles:
+    - { role: debops.php5, tags: php5, sudo: yes, when: "apache2_mpm != 'prefork'" }
+
+- name: Apache
+  hosts: drupsible_apache2
+  roles:
+    - role: drupsible.apache2
+      tags: apache2
+      sudo: yes
+      apache2_pki_crt: "/etc/pki/host/certs/{{ app_webhost }}.{{ webdomain }}.crt"
+      apache2_pki_key: "/etc/pki/host/private/{{ app_webhost }}.{{ webdomain }}.key"
+      apache2_port: "{{ (app_env['varnish_enabled'] is not defined or not app_env['varnish_enabled']) | ternary(80, app_env['app_apache2_alt_port']) }}"
+      apache2_https_enabled: "{{ app_env['https_enabled'] }}"
+      apache2_fpm_server_status_path: "{{ app_fpm_status_path | default('/fpm-status') }}"
+      apache2_fpm_ping_path: "{{ app_fpm_ping_path | default('/ping') }}"
+      apache2_webhost: "{{ app_webhost }}"
+
+- name: Varnish
+  hosts: drupsible_varnish
+  roles:
+    - role: drupsible.varnish
+      tags: varnish
+      sudo: yes
+      trusted_hosts: "{{ app_env['aliases'] }}"
+      varnish_pipe_timeout: 600
+      varnish_apache2_port: "{{ app_env['app_apache2_alt_port'] }}"
+      varnish_management_console_listen_on: "{{ app_env['varnish_mgmt_port'] }}"
+      varnish_fpm_ping_path: "{{ app_fpm_ping_path | default('/ping') }}"
+      varnish_webhost: "{{ app_webhost }}"
+      when: app_env['varnish_enabled']|bool
