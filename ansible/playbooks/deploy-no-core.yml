@@ -15,7 +15,7 @@
   roles:
   - role: debops.users
     sudo: yes
-    users: True
+    users_enabled: True
     users_list:
     - name: "{{ app_env['user'] }}"
       forward: "{{ app_env['admin_email'] }}"
