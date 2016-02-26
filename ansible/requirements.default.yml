@@ -1,4 +1,7 @@
 ---
+- src: https://github.com/debops/ansible-ntp
+  version: v0.1.0
+  name: debops.ntp
 - src: https://github.com/debops/ansible-apt
   version: 87a6b9a7cdcca11cee6518f574f678d429ed5a69
   name: debops.apt

@@ -43,6 +43,9 @@
       tcpwrappers_dependent_allow:
         - '{{ sshd__tcpwrappers__dependent_allow }}'
 
+    - role: debops.ntp
+      tags: [ 'role::ntp' ]
+
     - role: debops.postfix
       tags: [ 'role::postfix' ]
 
