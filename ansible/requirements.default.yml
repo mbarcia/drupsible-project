@@ -1,28 +1,55 @@
 ---
-- src: https://github.com/debops/ansible-core
+- src: https://github.com/debops/ansible-ntp
+  version: v0.1.0
+  name: debops.ntp
+- src: https://github.com/debops/ansible-apt
+  version: 87a6b9a7cdcca11cee6518f574f678d429ed5a69
+  name: debops.apt
+- src: https://github.com/debops/ansible-secret
+  version: v0.2.3
+  name: debops.secret
+- src: https://github.com/debops/ansible-apt_preferences
+  version: v0.1.3
+  name: debops.apt_preferences
+- src: https://github.com/debops/ansible-ferm
+  version: v0.1.5
+  name: debops.ferm
+- src: https://github.com/debops/ansible-bootstrap
   version: v0.1.2
+  name: debops.bootstrap
+- src: https://github.com/debops/ansible-tcpwrappers
+  version: v0.1.0
+  name: debops.tcpwrappers
+- src: https://github.com/debops/ansible-core
+  version: v0.1.4
   name: debops.core
 - src: https://github.com/debops/ansible-users
   version: v0.1.5
   name: debops.users
-- src: https://github.com/debops/ansible-apt
-  version: 87a6b9a7cdcca11cee6518f574f678d429ed5a69
-  name: debops.users
 - src: https://github.com/debops/ansible-pki
-  version: bdf77c8f8cc2a82fef56cdbe6347576946466f2d
+  version: v0.2.4
   name: debops.pki
-- src: https://github.com/debops/ansible-bootstrap
-  version: v0.1.1
-  name: debops.bootstrap
 - src: https://github.com/debops/ansible-postfix
-  version: v0.1.0
+  version: v0.1.1
   name: debops.postfix
+- src: https://github.com/debops/ansible-sshkeys
+  version: 52e8497a37c764b79efd97ee31a38974620a27f1
+  name: debops.sshkeys
 - src: https://github.com/debops/ansible-sshd
-  version: v0.2.1
+  version: v0.2.3
   name: debops.sshd
 - src: https://github.com/debops/ansible-php5
   version: c0391381facab1ee8098875703a819b6b7566229
   name: debops.php5
+- src: https://github.com/debops/ansible-etc_services
+  version: 9cde2a0c287d485dee73d705c4c95170cc4b6070
+  name: debops.etc_services
+- src: https://github.com/debops/ansible-dhparam
+  version: v0.1.2
+  name: debops.dhparam
+- src: https://github.com/debops/ansible-unattended_upgrades
+  version: v0.1.2
+  name: debops.unattended_upgrades
 - src: https://github.com/mbarcia/drupsible-apache
   version: 0.9.8
   name: drupsible.apache2
