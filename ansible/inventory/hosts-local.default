@@ -23,4 +23,4 @@ local.example.com ansible_connection=local
 local.example.com ansible_connection=local
 
 [ansible_controllers]
-localhost ansible_connection=local
+local.example.com ansible_connection=local
