@@ -107,18 +107,40 @@ Your Drupal website will need to send emails to notify the admin (and the regist
 
 In order to do that, a SMTP service must be made available to PHP. The default behavior is to relay all email to the MX host of the domain. But what if that's not what you want?
 
-Say you would like to send emails trough Gmail. Simply add something like this to ansible/playbooks/group_vars/drupsible_deploy.yml
-
+Say you would like to send emails trough Gmail. You can do so by following these steps:
+#### Setup Gmail SMTP server
+By creating
 ```
-# SMTP settings
+ansible/playbooks/group_vars/drupsible_deploy.yml
+```
+with
+```
+---
 smtp_server: 'smtp.gmail.com'
 smtp_port: 587
 smtp_user: '<username>@gmail.com'
 ```
-and Drupsible will automatically configure everything so the web server is ready to send out notification emails.
 
-*Important* - Your admin_email (under app_env) must be accepted by your SMTP service. Most likely, your admin_email and your smtp_user will have to match.
-And, if you want to use the Gmail SMTP service, you will have to [relax the security measures of your Gmail account]
+#### Specify your Gmail password
+Create a file with your password under the secret folder (properly replacing mypassword, mydomain and myusername below):
+```
+echo "mypassword" > "/home/vagrant/ansible/secret/credentials/local.mydomain/postfix/smtp_sasl_password_map/[smtp.gmail.com]:587/myusername@gmail.com"
+```
+and delete a .lock file to regenerate the .db
+```
+sudo rm /etc/postfix/private_hash_tables/smtp_sasl_password_map.lock
+```
+
+#### Run Drupsible config playbook
+Finally, from /home/vagrant, run
+```
+ansible-playbook -i ansible/inventory/hosts-local ansible/playbooks/config.yml
+```
+and Drupsible will automatically configure Postfix through DebOps.
+
+Now your web server is ready to send out notification emails through Google Mail. YAY!
+
+*Important* - If you want to use the Gmail SMTP service, you will have to [relax the security measures of your Gmail account]
 (https://support.google.com/accounts/answer/6010255) to let Drupsible send emails via Gmail.
 
 ## Git keys and SSH-agent forwarding
