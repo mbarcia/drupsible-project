@@ -109,7 +109,7 @@ In order to do that, a SMTP service must be made available to PHP. The default b
 
 Say you would like to send emails trough Gmail. You can do so by following these steps:
 #### Setup Gmail SMTP server
-By creating
+By creating (or editing)
 ```
 ansible/playbooks/group_vars/drupsible_deploy.yml
 ```
