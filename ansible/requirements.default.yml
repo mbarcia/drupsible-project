@@ -77,3 +77,6 @@
 - src: https://github.com/mbarcia/drupsible-uploadprogress
   version: master
   name: drupsible.uploadprogress
+- src: https://github.com/mbarcia/drupsible-xdebug
+  version: master
+  name: drupsible.xdebug
