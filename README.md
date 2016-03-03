@@ -111,7 +111,7 @@ Say you would like to send emails trough Gmail. You can do so by following these
 #### Setup Gmail SMTP server
 By creating (or editing)
 ```
-ansible/playbooks/group_vars/drupsible_deploy.yml
+ansible/playbooks/host_vars/local.<mydomain>.yml
 ```
 with
 ```
