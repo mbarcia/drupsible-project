@@ -28,13 +28,18 @@
     php5_pools: [ '{{ php5_app_pool }}' ]
     tags: config.php5
 
+  - role: drupsible.xdebug
+    become: yes
+    tags: [ 'role::xdebug' ]
+    when: "app_target in deploy_xdebug_targets"
+
   - role: drupsible.composer
     become: yes
     tags: composer
 
   - role: drupsible.drush
     tags: drush
-  
+
   - role: drupsible.newrelic
     when: provision_new_relic|default(False)|bool
     become: yes
