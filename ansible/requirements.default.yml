@@ -74,3 +74,6 @@
 - src: https://github.com/mbarcia/drupsible-varnish
   version: 0.9.8
   name: drupsible.varnish
+- src: https://github.com/mbarcia/drupsible-uploadprogress
+  version: master
+  name: drupsible.uploadprogress

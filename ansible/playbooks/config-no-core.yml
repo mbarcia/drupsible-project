@@ -137,6 +137,13 @@
       apache2_fpm_ping_path: "{{ app_fpm_ping_path | default('/ping') }}"
       apache2_webhost: "{{ app_webhost }}"
 
+- name: PECL uploadprogress
+  hosts: drupsible_apache2
+  become: True
+  tags: [ 'role::uploadprogress']
+  roles:
+    - role: drupsible.uploadprogress
+
 - name: Varnish
   hosts: drupsible_varnish
   become: True
