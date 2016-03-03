@@ -75,10 +75,13 @@ fi
 # Download Drupsible roles
 echo "Installing Drupsible roles and its dependencies..."
 if [ -f ~/ansible/requirements.yml ]; then
-	ansible-galaxy install --ignore-errors -f -r ~/ansible/requirements.yml
+	ansible-galaxy install -r ~/ansible/requirements.yml
 elif [ -f /etc/ansible/requirements.yml ]; then
-	ansible-galaxy install --ignore-errors -f -r /etc/ansible/requirements.yml
+	ansible-galaxy install -r /etc/ansible/requirements.yml
 else
 	echo "Drupsible requirements not found"
 	exit -1
 fi
+
+# Workaround to Ansible bug https://github.com/ansible/ansible-modules-core/issues/2585 
+sed -i "s|errno.EEXISTS|errno.EEXIST|g" /usr/local/lib/python2.7/dist-packages/ansible/modules/core/files/file.py

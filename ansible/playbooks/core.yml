@@ -1,8 +1,8 @@
 ---
 - name: Prepare DebOps core environment
   hosts: 'all:!localhost'
-  sudo: False
+  become: False
   roles:
     - role: debops.core
       tags: [ 'role::core' ]
-      sudo: True
+      become: True

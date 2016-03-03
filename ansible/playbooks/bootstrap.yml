@@ -7,7 +7,7 @@
 
   roles:
     - role: debops.bootstrap
-      sudo: yes
+      become: yes
       bootstrap_raw: False
       bootstrap_domain: "{{ webdomain }}"
       bootstrap_base_packages: [ 'lsb-release' ]

@@ -1,22 +1,4 @@
-[debops_ferm]
-local.example.com ansible_connection=local
-
-[debops_sshd]
-local.example.com ansible_connection=local
-
-[debops_apt]
-local.example.com ansible_connection=local
-
-[debops_tcpwrappers]
-local.example.com ansible_connection=local
-
-[debops_pki]
-local.example.com ansible_connection=local
-
-[debops_postfix]
-local.example.com ansible_connection=local
-
-[debops_users]
+[debops_all_hosts]
 local.example.com ansible_connection=local
 
 [drupsible_mysql]
@@ -41,4 +23,4 @@ local.example.com ansible_connection=local
 local.example.com ansible_connection=local
 
 [ansible_controllers]
-localhost ansible_connection=local
+local.example.com ansible_connection=local

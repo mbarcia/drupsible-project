@@ -1,13 +1,3 @@
 ---
 - include: core.yml
-
-- name: Deploy
-  hosts: drupsible_deploy
-  roles:
-    - role: drupsible.deploy
-      tags: deploy
-      deploy_varnish_enabled: "{{ app_env['varnish_enabled'] }}"
-      deploy_varnish_mgmt_port: "{{ app_env['varnish_mgmt_port'] }}"
-      deploy_target: "{{ app_target }}"
-      deploy_webhost: "{{ app_webhost }}"
-      trusted_host_patterns: [ "(?i)^.+\\.{{ webdomain|regex_replace('[.]', '\\.') }}$" ]
+- include: deploy-no-core.yml
