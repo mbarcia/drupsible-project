@@ -67,8 +67,11 @@
   hosts: drupsible_mysql
   become: True
   roles:
+    - role: debops.secret
+      tags: [ 'role::secret', 'role::mysql:secret' ]
+
     - role: drupsible.mysql
-      tags: [ 'role::mysql', 'role::mysql:config' ]
+      tags: [ 'role::mysql' ]
       mysql_users:
         - name: "{{ app_env['db_user'] }}"
           host: "%"
@@ -91,7 +94,7 @@
   become: True
   roles:
     - role: drupsible.mysql
-      tags: [ 'role::mysql-clone', 'role::mysql-clone:config' ]
+      tags: [ 'role::mysql-clone' ]
       when: app_env.db_clone|bool
       vars:
         mysql_databases:
@@ -102,19 +105,20 @@
   hosts: drupsible_deploy
   become: True
   roles:
+    - role: debops.secret
+      tags: [ 'role::secret', 'role::deploy:secret' ]
+
     - role: debops.ferm
-      tags: [ 'role::ferm' ]
+      tags: [ 'role::ferm:deploy' ]
       ferm_dependent_rules:
       - '{{ postfix_ferm_dependent_rules }}'
       - '{{ apache2_ferm_dependent_rules }}'
-      - '{{ varnish_ferm_dependent_rules }}'
       when: smtp_server is defined and smtp_port is defined and smtp_user is defined
 
     - role: debops.ferm
-      tags: [ 'role::ferm' ]
+      tags: [ 'role::ferm:deploy' ]
       ferm_dependent_rules:
       - '{{ apache2_ferm_dependent_rules }}'
-      - '{{ varnish_ferm_dependent_rules }}'
       when: smtp_server is not defined or smtp_port is not defined or smtp_user is not defined
 
     - role: debops.postfix
@@ -125,14 +129,15 @@
       when: smtp_server is defined and smtp_port is defined and smtp_user is defined
 
     - role: debops.php5
-      tags: [ 'role::php5', 'role::php5:config' ]
+      tags: [ 'role::php5' ]
       when: apache2_mpm != 'prefork'
 
     - role: drupsible.newrelic
+      tags: [ 'role::newrelic' ]
       when: "'newrelic-php5' in php5_packages_ontop and apache2_mpm == 'prefork'"
 
     - role: drupsible.apache2
-      tags: [ 'role::apache2', 'role::apache2:config' ]
+      tags: [ 'role::apache2' ]
       apache2_pki_crt: "{{ deploy_pki_crt|default('/etc/pki/realms/domain/default.crt') }}"
       apache2_pki_key: "{{ deploy_pki_key|default('/etc/pki/realms/domain/default.key') }}"
       apache2_port: "{{ (app_env['varnish_enabled'] is not defined or not app_env['varnish_enabled']) | ternary(80, app_env['app_apache2_alt_port']) }}"
@@ -142,14 +147,45 @@
       apache2_webhost: "{{ app_webhost }}"
 
     - role: drupsible.uploadprogress
-      tags: [ 'role::uploadprogress']
+      tags: [ 'role::uploadprogress' ]
+
+    - role: drupsible.xdebug
+      tags: [ 'role::xdebug' ]
+      when: "app_target in deploy_xdebug_targets"
+
+    - role: drupsible.composer
+      tags: [ 'role::composer' ]
+
+    - role: drupsible.memcached
+      when: app_env.memcached|bool
+      tags: [ 'role::memcached' ]
+
+    - role: drupsible.newrelic
+      when: provision_new_relic|default(False)|bool
+      tags: [ 'role::newrelic' ]
+
+    - role: drupsible.drush
+      tags: [ 'role::drush' ]
+
+    - role: drupsible.samba
+      samba_webhost: "{{ deploy_webhost }}"
+      when: app_target == 'local'
+      tags: [ 'role::samba' ]
 
 - name: Varnish
   hosts: drupsible_varnish
   become: True
   roles:
+    - role: debops.secret
+      tags: [ 'role::secret', 'role::varnish:secret' ]
+
+    - role: debops.ferm
+      tags: [ 'role::ferm:varnish' ]
+      ferm_dependent_rules:
+      - '{{ varnish_ferm_dependent_rules }}'
+
     - role: drupsible.varnish
-      tags: [ 'role::varnish', 'role::varnish:config' ]
+      tags: [ 'role::varnish' ]
       trusted_hosts: "{{ app_env['aliases'] }}"
       varnish_pipe_timeout: 600
       varnish_apache2_port: "{{ app_env['app_apache2_alt_port'] }}"
