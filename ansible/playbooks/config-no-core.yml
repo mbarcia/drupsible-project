@@ -106,7 +106,7 @@
   become: True
   roles:
     - role: debops.secret
-      tags: [ 'role::secret', 'role::deploy:secret' ]
+      tags: [ 'role::secret', 'role::config:secret' ]
 
     - role: debops.ferm
       tags: [ 'role::ferm:deploy' ]

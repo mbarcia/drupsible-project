@@ -3,6 +3,9 @@
   hosts: drupsible_deploy
 
   roles:
+  - role: debops.secret
+    tags: [ 'role::secret', 'role::deploy:secret' ]
+
   - role: debops.php5
     when: apache2_mpm != 'prefork'
     become: yes
