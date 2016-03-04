@@ -151,7 +151,7 @@
 
     - role: drupsible.xdebug
       tags: [ 'role::xdebug' ]
-      when: "app_target in deploy_xdebug_targets"
+      when: "app_target|default('local') in deploy_xdebug_targets|default([ 'local', 'test', 'uat' ])"
 
     - role: drupsible.composer
       tags: [ 'role::composer' ]
@@ -168,7 +168,7 @@
       tags: [ 'role::drush' ]
 
     - role: drupsible.samba
-      samba_webhost: "{{ deploy_webhost }}"
+      samba_webhost: "{{ app_webhost }}"
       when: app_target == 'local'
       tags: [ 'role::samba' ]
 
