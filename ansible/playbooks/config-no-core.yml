@@ -1,6 +1,6 @@
 ---
 - name: Common configuration (DebOps) for all hosts
-  hosts: [ 'all' ]
+  hosts: [ 'drupsible_all_hosts' ]
   gather_facts: True
   become: True
 
