@@ -6,7 +6,6 @@
   - role: debops.php5
     when: apache2_mpm != 'prefork'
     become: yes
-    php5_packages: "{{ provision_new_relic|default(False)|bool|ternary([ 'newrelic-php5' ], [] ) }}"
     php5_app_pool:
       enabled: True
       name: "{{ app_name }}"
@@ -17,34 +16,6 @@
       php_value: "{{ php_value }}"
     php5_pools: [ '{{ php5_app_pool }}' ]
     tags: config.php5
-
-  - role: drupsible.xdebug
-    become: yes
-    tags: [ 'role::xdebug' ]
-    when: "app_target in deploy_xdebug_targets"
-
-  - role: drupsible.composer
-    become: yes
-    tags: composer
-
-  - role: drupsible.drush
-    tags: drush
-
-  - role: drupsible.newrelic
-    when: provision_new_relic|default(False)|bool
-    become: yes
-    tags: newrelic
-
-  - role: drupsible.memcached
-    when: app_env.memcached|bool
-    become: yes
-    tags: [ 'role::memcached' ]
-
-  - role: drupsible.samba
-    samba_webhost: "{{ deploy_webhost }}"
-    when: deploy_target is defined and deploy_target == 'local'
-    become: yes
-    tags: samba
 
   - role: drupsible.deploy
     tags: deploy
