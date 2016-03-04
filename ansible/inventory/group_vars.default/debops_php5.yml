@@ -5,7 +5,6 @@ php5_packages:
   - php5-gd
   - php5-gmp
   - php5-mcrypt
-  - php5-memcached
   - php5-mysql
 
 php5_post_max_size: '32M'

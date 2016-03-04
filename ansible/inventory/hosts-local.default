@@ -10,9 +10,6 @@ local.example.com ansible_connection=local
 [drupsible_apache2]
 local.example.com ansible_connection=local
 
-[drupsible_memcached]
-local.example.com ansible_connection=local
-
 [drupsible_newrelic]
 local.example.com ansible_connection=local
 
