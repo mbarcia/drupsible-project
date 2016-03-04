@@ -1,5 +1,5 @@
 ---
-- name: Common configuration for all hosts
+- name: Common configuration (DebOps) for all hosts
   hosts: [ 'all' ]
   gather_facts: True
   become: True
@@ -48,14 +48,20 @@
     - role: debops.unattended_upgrades
       tags: [ 'role::unattended_upgrades' ]
 
-    - role: debops.users
-      tags: [ 'role::users' ]
-
     - role: debops.sshkeys
       tags: [ 'role::sshkeys' ]
 
     - role: debops.sshd
       tags: [ 'role::sshd' ]
+
+    - role: debops.users
+      users_enabled: True
+      users_list:
+      - name: "{{ app_env['user'] }}"
+        forward: "{{ app_env['admin_email'] }}"
+        state: 'present'
+      users_admins: [ "{{ app_env['user'] }}" ]
+      tags: [ 'role::users' ]
 
 - name: MySQL
   hosts: drupsible_mysql
@@ -92,29 +98,23 @@
           - name: "{{ app_name }}_{{ build }}"
             state: 'present'
   
-- name: PHP-FPM
-  hosts: debops_php5
-  become: True
-  roles:
-    - role: debops.php5
-      tags: [ 'role::php5', 'role::php5:config' ]
-      when: apache2_mpm != 'prefork'
-
-- name: Apache
-  hosts: drupsible_apache2
+- name: Ferm/Postfix/PHP/Composer/New Relic/Apache/uploadprogress
+  hosts: drupsible_deploy
   become: True
   roles:
     - role: debops.ferm
       tags: [ 'role::ferm' ]
       ferm_dependent_rules:
-        - '{{ postfix_ferm_dependent_rules }}'
-        - '{{ apache2_ferm_dependent_rules }}'
+      - '{{ postfix_ferm_dependent_rules }}'
+      - '{{ apache2_ferm_dependent_rules }}'
+      - '{{ varnish_ferm_dependent_rules }}'
       when: smtp_server is defined and smtp_port is defined and smtp_user is defined
 
     - role: debops.ferm
       tags: [ 'role::ferm' ]
       ferm_dependent_rules:
-        - '{{ apache2_ferm_dependent_rules }}'
+      - '{{ apache2_ferm_dependent_rules }}'
+      - '{{ varnish_ferm_dependent_rules }}'
       when: smtp_server is not defined or smtp_port is not defined or smtp_user is not defined
 
     - role: debops.postfix
@@ -123,6 +123,10 @@
       postfix_relayhost: "[{{ smtp_server }}]:{{ smtp_port }}"
       postfix_smtp_sasl_password_map: "{ '[{{ smtp_server }}]:{{ smtp_port }}': '{{ smtp_user }}' }"
       when: smtp_server is defined and smtp_port is defined and smtp_user is defined
+
+    - role: debops.php5
+      tags: [ 'role::php5', 'role::php5:config' ]
+      when: apache2_mpm != 'prefork'
 
     - role: drupsible.newrelic
       when: "'newrelic-php5' in php5_packages_ontop and apache2_mpm == 'prefork'"
@@ -137,12 +141,8 @@
       apache2_fpm_ping_path: "{{ app_fpm_ping_path | default('/ping') }}"
       apache2_webhost: "{{ app_webhost }}"
 
-- name: PECL uploadprogress
-  hosts: drupsible_apache2
-  become: True
-  tags: [ 'role::uploadprogress']
-  roles:
     - role: drupsible.uploadprogress
+      tags: [ 'role::uploadprogress']
 
 - name: Varnish
   hosts: drupsible_varnish
