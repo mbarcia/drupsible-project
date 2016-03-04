@@ -48,7 +48,7 @@
   - role: drupsible.memcached
     when: app_env.memcached|bool
     become: yes
-    tags: memcached
+    tags: [ 'role::memcached' ]
 
   - role: drupsible.samba
     samba_webhost: "{{ deploy_webhost }}"
