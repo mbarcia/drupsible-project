@@ -1,4 +1,4 @@
-[debops_all_hosts]
+[drupsible_all_hosts]
 local.example.com ansible_connection=local
 
 [drupsible_mysql]
