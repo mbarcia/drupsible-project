@@ -3,16 +3,6 @@
   hosts: drupsible_deploy
 
   roles:
-  - role: debops.users
-    become: yes
-    users_enabled: True
-    users_list:
-    - name: "{{ app_env['user'] }}"
-      forward: "{{ app_env['admin_email'] }}"
-      state: 'present'
-    users_admins: [ "{{ app_env['user'] }}" ]
-    tags: config.users
-
   - role: debops.php5
     when: apache2_mpm != 'prefork'
     become: yes
