@@ -1,3 +1,0 @@
----
-# Self-signed certs
-pki_ca_domain: "{{ webdomain }}"
