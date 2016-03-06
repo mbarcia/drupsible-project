@@ -1,7 +1,33 @@
 ---
+webdomain: "example.com"
+
+app_name: example-project
+
+drupal_version: '7'
+
+#
+# APT defaults
+#
+
 apt_base_packages: [ 'ed', 'python', 'python-apt', 'lsb-release', 'make', 'gnupg-curl', 'git', 'wget', 'curl', 'rsync', 'netcat-openbsd', 'bridge-utils', 'vlan', 'openssh-server', 'bsdutils', 'python-pycurl', 'python-httplib2', 'apt-transport-https', 'acl', 'python-pip' ]
 
 apt_packages:
   - vim
   - cowsay
   - htop
+
+#
+# PKI defaults
+#
+
+# Self-signed certs
+pki_ca_domain: "{{ webdomain }}"
+
+#
+# sshd defaults
+#
+
+sshd__custom_options: |
+  # Drupsible - disable DNS lookups and negotiation of slow GSSAPI
+  UseDNS no
+  GSSAPIAuthentication no

@@ -123,11 +123,14 @@ smtp_user: '<username>@gmail.com'
 
 #### Specify your Gmail password
 Create a file with your password under the secret folder (properly replacing mypassword, mydomain and myusername below):
+
 ```
 mkdir -p "/home/vagrant/ansible/secret/credentials/local.mydomain/postfix/smtp_sasl_password_map/[smtp.gmail.com]:587" && touch "/home/vagrant/ansible/secret/credentials/local.mydomain/postfix/smtp_sasl_password_map/[smtp.gmail.com]:587/myusername@gmail.com"
 echo "mypassword" > "/home/vagrant/ansible/secret/credentials/local.mydomain/postfix/smtp_sasl_password_map/[smtp.gmail.com]:587/myusername@gmail.com"
 ```
-and delete a .lock file to regenerate the .db
+
+Now in your TARGET server (the same server, when in local/Vagrant), delete a .lock file to regenerate the .db
+
 ```
 sudo rm /etc/postfix/private_hash_tables/smtp_sasl_password_map.lock
 ```

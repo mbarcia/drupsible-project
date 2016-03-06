@@ -1,6 +1,6 @@
 ---
 - name: Prepare DebOps core environment
-  hosts: 'all:!localhost'
+  hosts: 'drupsible_all_hosts:!localhost'
   become: False
   roles:
     - role: debops.core

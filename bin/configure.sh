@@ -215,11 +215,11 @@ rm -fr ansible/inventory/group_vars 2>/dev/null
 #
 cp -pr ansible/inventory/group_vars.default ansible/inventory/group_vars
 cd ansible/inventory/group_vars
-sed -i.ori "s/example\.com/${DOMAIN}/g" all.yml
+sed -i.ori "s/example\.com/${DOMAIN}/g" drupsible_all_hosts.yml
 sed -i.ori "s/example\.com/${DOMAIN}/g" drupsible_deploy.yml
-sed -i.ori "s/example-project/${APP_NAME}/g" all.yml
+sed -i.ori "s/example-project/${APP_NAME}/g" drupsible_all_hosts.yml
 sed -i.ori "s/example-project/${APP_NAME}/g" drupsible_deploy.yml
-sed -i.ori "s/drupal_version:.*/drupal_version: '${DRUPAL_VERSION}'/g" all.yml
+sed -i.ori "s/drupal_version:.*/drupal_version: '${DRUPAL_VERSION}'/g" drupsible_all_hosts.yml
 
 if [ "$DRUPAL_VERSION" == "8" ]; then
 	sed -i.ori "s/drush_min_version:.*/drush_min_version: \"dev-master\"/g" drupsible_deploy.yml

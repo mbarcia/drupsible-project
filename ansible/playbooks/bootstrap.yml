@@ -2,7 +2,7 @@
 - include: core.yml
 
 - name: Bootstrap hosts for Drupsible
-  hosts: 'all:!localhost'
+  hosts: 'drupsible_all_hosts:!localhost'
   gather_facts: True
 
   roles:
