@@ -43,10 +43,12 @@ git_repo_path: ''
 git_repo_pass: ''
 git_version: ''
 
-deploy_site_install: no
-deploy_install_profile: ''
+deploy_install_profile_enabled: False
+deploy_custom_install_profile: ''
+deploy_d_o_install_profile: ''
 
-deploy_make: no
+deploy_drush_make_enabled: False
+deploy_drush_makefile: "{{ app_name }}.make"
 
 deploy_drupal_fast_404: no
 deploy_proxy_server: ''

@@ -9,6 +9,7 @@ app_env:
   admin_email: admin@{{ webdomain }}
   fpm_listen: '/var/run/php5-fpm-{{ app_name }}.sock'
   files_tarball_filename: '{{ app_name }}-files.tar.gz'
+  site_install: False
   db_dump_filename: '{{ app_name }}.sql.gz'
   db_name: "{{ app_name }}"
   db_user: drupsible
