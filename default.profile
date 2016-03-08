@@ -10,9 +10,15 @@ DOMAIN=""
 #
 DRUPAL_VERSION="7"
 #
+USE_INSTALL_PROFILE="no"
+D_O_INSTALL_PROFILE=""
+CUSTOM_INSTALL_PROFILE=""
+#
+# Some install profiles already have all the code
+USE_DRUSH_MAKE="no"
 DRUSH_MAKEFILE=""
 #
-INSTALL_PROFILE=""
+USE_SITE_INSTALL="no"
 #
 # This is the codebase tarball of your drupal site.
 CODEBASE_TARBALL=""
