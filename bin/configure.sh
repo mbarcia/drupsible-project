@@ -175,13 +175,31 @@ if [ "$DRUPAL_VERSION" == "" ] || [ "$FIRST_TIME" == 'yes' ]; then
 	echo "Drupal version? (7|8) [7])"
 	read -r DRUPAL_VERSION
 	if [ "$DRUPAL_VERSION" == "" ]; then
-		DRUPAL_VERSION=7
+		DRUPAL_VERSION="7"
 	fi
 	# Write DRUPAL_VERSION
 	sed -i.ori "s|DRUPAL_VERSION=.*$|DRUPAL_VERSION=\"${DRUPAL_VERSION}\"|g" "${APP_NAME}.profile"
 fi
 
 if [ "$FIRST_TIME" == 'yes' ]; then
+	if [ "$MULTILINGUAL" == "" ]; then
+		echo "Will you setup a multilingual website? (y|n)"
+		if askyesno; then
+			MULTILINGUAL='yes'
+		else
+			MULTILINGUAL='no'
+		fi
+		# Write MULTILINGUAL
+		sed -i.ori "s|MULTILINGUAL=.*$|MULTILINGUAL=\"${MULTILINGUAL}\"|g" "${APP_NAME}.profile"
+	fi
+
+	if [ "$MULTILINGUAL" == "yes" ]; then
+		echo "Enumerate the languages, comma-separated, starting with the default language:"
+		read -r LANGUAGES
+		# Write LANGUAGES
+		sed -i.ori "s|LANGUAGES=.*$|LANGUAGES=\"${LANGUAGES}\"|g" "${APP_NAME}.profile"
+	fi
+	
 	if [ "$USE_INSTALL_PROFILE" == "" ]; then
 		echo "Will you be using a distribution or install profile? (y|n)"
 		if askyesno; then
@@ -212,8 +230,30 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 		echo "======="
 	fi
 	
+	if [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$USE_DRUSH_MAKE" == "" ]; then
+		if [ "$D_O_INSTALL_PROFILE" != "" ] && [ "$D_O_INSTALL_PROFILE" != "standard" ] && [ "$D_O_INSTALL_PROFILE" != "minimal" ] && [ "$D_O_INSTALL_PROFILE" != "testing" ]; then
+			echo "Want to drush make <yourmakefile>? (y|n)"
+			if askyesno; then
+				USE_DRUSH_MAKE='yes'
+			else
+				USE_DRUSH_MAKE='no'
+			fi
+			# Write USE_DRUSH_MAKE
+			sed -i.ori "s|USE_DRUSH_MAKE=.*$|USE_DRUSH_MAKE=\"${USE_DRUSH_MAKE}\"|g" "${APP_NAME}.profile"
+			if [ "$DRUSH_MAKEFILE" == "" ] && [ "$USE_DRUSH_MAKE" == "yes" ]; then
+				echo "Makefile? [build-${APP_NAME}.make]"
+				read -r DRUSH_MAKEFILE
+				if [ "$DRUSH_MAKEFILE" == "" ]; then
+					DRUSH_MAKEFILE="build-${APP_NAME}.make"
+				fi
+				# Write DRUSH_MAKEFILE
+				sed -i.ori "s|DRUSH_MAKEFILE=.*$|DRUSH_MAKEFILE=\"${DRUSH_MAKEFILE}\"|g" "${APP_NAME}.profile"
+			fi
+		fi
+	fi
+	
 	if [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$USE_SITE_INSTALL" == "" ]; then
-		echo "Will you be using drush site-install? (y|n)"
+		echo "Want to drush site-install? (y|n)"
 		if askyesno; then
 			USE_SITE_INSTALL='yes'
 		else
@@ -223,35 +263,14 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 		sed -i.ori "s|USE_SITE_INSTALL=.*$|USE_SITE_INSTALL=\"${USE_SITE_INSTALL}\"|g" "${APP_NAME}.profile"
 	fi
 	
-	if [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$USE_DRUSH_MAKE" == "" ]; then
-		echo "Will you be using drush make? (y|n)"
-		if askyesno; then
-			USE_DRUSH_MAKE='yes'
-		else
-			USE_DRUSH_MAKE='no'
-		fi
-		# Write USE_DRUSH_MAKE
-		sed -i.ori "s|USE_DRUSH_MAKE=.*$|USE_DRUSH_MAKE=\"${USE_DRUSH_MAKE}\"|g" "${APP_NAME}.profile"
-	fi
-	
-	if [ "$DRUSH_MAKEFILE" == "" ] && [ "$USE_DRUSH_MAKE" == "yes" ]; then
-		echo "Makefile? [build-${APP_NAME}.make]"
-		read -r DRUSH_MAKEFILE
-		if [ "$DRUSH_MAKEFILE" == "" ]; then
-			DRUSH_MAKEFILE="build-${APP_NAME}.make"
-		fi
-		# Write DRUSH_MAKEFILE
-		sed -i.ori "s|DRUSH_MAKEFILE=.*$|DRUSH_MAKEFILE=\"${DRUSH_MAKEFILE}\"|g" "${APP_NAME}.profile"
-	fi
-	
-	if [ "$DBDUMP" == "" ] && [ "$USE_SITE_INSTALL" == "no" ]; then
+	if [ "$DBDUMP" == "" ] && [ "$USE_SITE_INSTALL" != "yes" ]; then
 		echo "DB dump filename? (ie. example.sql.gz, must be in ansible/playbooks/dbdumps)"
 		read -r DBDUMP
 		# Write DBDUMP
 		sed -i.ori "s|DBDUMP=.*$|DBDUMP=\"${DBDUMP}\"|g" "${APP_NAME}.profile"
 	fi
 	
-	if [ "$FILES_TARBALL" == "" ] && [ "$USE_SITE_INSTALL" == "no" ]; then
+	if [ "$FILES_TARBALL" == "" ] && [ "$USE_SITE_INSTALL" != "yes" ]; then
 		echo "Files tarball? (ie. example-files.tar.gz, must be in ansible/playbooks/files-tarballs)"
 		read -r FILES_TARBALL
 		# Write FILES_TARBALL
@@ -286,7 +305,7 @@ cp -pr ansible/playbooks/deploy.default ansible/playbooks/deploy
 rm -fr ansible/inventory/group_vars 2>/dev/null
 
 #
-# groups_vars
+# group_vars
 #
 cp -pr ansible/inventory/group_vars.default ansible/inventory/group_vars
 cd ansible/inventory/group_vars || exit 2
@@ -296,8 +315,15 @@ sed -i.ori "s/example-project/${APP_NAME}/g" drupsible_all_hosts.yml
 sed -i.ori "s/example-project/${APP_NAME}/g" drupsible_deploy.yml
 sed -i.ori "s/drupal_version:.*/drupal_version: '${DRUPAL_VERSION}'/g" drupsible_all_hosts.yml
 
-sed -i.ori "s/drush_min_version:.*/drush_min_version: \"${DRUPAL_VERSION}\.*\"/g" drupsible_deploy.yml
+sed -i.ori "s/drush_min_version:.*/drush_min_version: \"${DRUPAL_VERSION}\.*\"/g" drupsible_all_hosts.yml
 
+if [ "$MULTILINGUAL" == "yes" ]; then
+	sed -i.ori "s|app_i18n:.*$|app_i18n: yes|g" drupsible_all_hosts.yml
+	if [ "$LANGUAGES" != "" ]; then
+		sed -i.ori "s|app_languages:.*$|app_languages: [ ${LANGUAGES} ]|g" drupsible_all_hosts.yml
+	fi
+fi
+	
 if [ "$USE_INSTALL_PROFILE" == "yes" ]; then
 	sed -i.ori "s/deploy_install_profile_enabled:.*$/deploy_install_profile_enabled: '${USE_INSTALL_PROFILE}'/g" drupsible_deploy.yml
 	if [ "$D_O_INSTALL_PROFILE" != "" ]; then
@@ -335,7 +361,7 @@ sed -i.ori "s/example\.com/${DOMAIN}/g" "local.$DOMAIN.yml"
 
 sed -i.ori "s|site_install:.*$|site_install: '${USE_SITE_INSTALL}'|g" "local.$DOMAIN.yml"
 
-if [ "$USE_SITE_INSTALL" == "no" ]; then
+if [ "$USE_SITE_INSTALL" != "yes" ]; then
 	if [ ! "$DBDUMP" == "" ]; then 
 		sed -i.ori "s|db_dump_filename:.*$|db_dump_filename: '${DBDUMP}'|g" "local.$DOMAIN.yml"
 		sed -i.ori "s|db_import:.*$|db_import: yes|g" "local.$DOMAIN.yml"
@@ -354,7 +380,7 @@ fi
 cd - > /dev/null || exit 2
 
 if [ "$CODEBASE_TARBALL" == "" ]; then
-	if [ "$USE_INSTALL_PROFILE" == "no" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$CUSTOM_INSTALL_PROFILE" != "" ]); then
+	if [ "$USE_INSTALL_PROFILE" != "yes" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$CUSTOM_INSTALL_PROFILE" != "" ]); then
 		#
 		# GIT config values
 		#
@@ -422,7 +448,7 @@ fi
 
 # Connect to a new or existing ssh-agent
 # Then add/load your SSH key
-if [ "$GIT_PASS" == "" ] && [ "$KEY_FILENAME" == "" ] && [ "$USE_INSTALL_PROFILE" == "no" ]; then
+if [ "$GIT_PASS" == "" ] && [ "$KEY_FILENAME" == "" ] && [ "$USE_INSTALL_PROFILE" != "yes" ]; then
 	echo "SSH key filename? (~/.ssh/id_rsa)"
 	read -r KEY_FILENAME
 	if [ "$KEY_FILENAME" == "" ]; then
