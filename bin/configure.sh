@@ -235,8 +235,11 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 	fi
 	
 	if [ "$DRUSH_MAKEFILE" == "" ] && [ "$USE_DRUSH_MAKE" == "yes" ]; then
-		echo "Makefile? (ie. ${APP_NAME}.make)"
+		echo "Makefile? [build-${APP_NAME}.make]"
 		read -r DRUSH_MAKEFILE
+		if [ "$DRUSH_MAKEFILE" == "" ]; then
+			DRUSH_MAKEFILE="build-${APP_NAME}.make"
+		fi
 		# Write DRUSH_MAKEFILE
 		sed -i.ori "s|DRUSH_MAKEFILE=.*$|DRUSH_MAKEFILE=\"${DRUSH_MAKEFILE}\"|g" "${APP_NAME}.profile"
 	fi
