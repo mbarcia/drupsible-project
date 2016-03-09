@@ -20,7 +20,7 @@ askyesno ()
 #
 if [ -f "../default.profile" ]; then
 	echo "Changed current dir to the project's top level folder, for your convenience."
-	cd .. || exit
+	cd .. || exit 2
 fi
 
 #
@@ -286,7 +286,7 @@ rm -fr ansible/inventory/group_vars 2>/dev/null
 # groups_vars
 #
 cp -pr ansible/inventory/group_vars.default ansible/inventory/group_vars
-cd ansible/inventory/group_vars || exit
+cd ansible/inventory/group_vars || exit 2
 sed -i.ori "s/example\.com/${DOMAIN}/g" drupsible_all_hosts.yml
 sed -i.ori "s/example\.com/${DOMAIN}/g" drupsible_deploy.yml
 sed -i.ori "s/example-project/${APP_NAME}/g" drupsible_all_hosts.yml
@@ -322,11 +322,11 @@ else
 	sed -i.ori "s|codebase_import:.*$|codebase_import: no|g" drupsible_deploy.yml
 fi
 
-cd - > /dev/null || exit
+cd - > /dev/null || exit 2
 
 rm -fr ansible/inventory/host_vars 2>/dev/null
 cp -pr ansible/inventory/host_vars.default ansible/inventory/host_vars
-cd ansible/inventory/host_vars || exit
+cd ansible/inventory/host_vars || exit 2
 cp local.example.com.yml "local.$DOMAIN.yml"
 sed -i.ori "s/example\.com/${DOMAIN}/g" "local.$DOMAIN.yml"
 
@@ -348,7 +348,7 @@ if [ "$USE_SITE_INSTALL" == "no" ]; then
 	fi
 fi
 
-cd - > /dev/null || exit
+cd - > /dev/null || exit 2
 
 if [ "$CODEBASE_TARBALL" == "" ]; then
 	if [ "$USE_INSTALL_PROFILE" == "no" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$CUSTOM_INSTALL_PROFILE" != "" ]); then
@@ -404,7 +404,7 @@ if [ "$CODEBASE_TARBALL" == "" ]; then
 			fi
 		fi
 
-		cd ansible/inventory/group_vars || exit
+		cd ansible/inventory/group_vars || exit 2
 		
 		sed -i.ori "s/git_repo_protocol:.*$/git_repo_protocol: \"${GIT_PROTOCOL}\"/g" drupsible_deploy.yml
 		sed -i.ori "s/git_repo_server:.*$/git_repo_server: \"${GIT_SERVER}\"/g" drupsible_deploy.yml
@@ -413,7 +413,7 @@ if [ "$CODEBASE_TARBALL" == "" ]; then
 		sed -i.ori "s/git_repo_pass:.*$/git_repo_pass: \"${GIT_PASS}\"/g" drupsible_deploy.yml
 		sed -i.ori "s|git_version:.*$|git_version: \"${GIT_BRANCH}\"|g" drupsible_deploy.yml
 		
-		cd - > /dev/null || exit
+		cd - > /dev/null || exit 2
 	fi
 fi
 
