@@ -314,8 +314,7 @@ sed -i.ori "s/example\.com/${DOMAIN}/g" drupsible_deploy.yml
 sed -i.ori "s/example-project/${APP_NAME}/g" drupsible_all_hosts.yml
 sed -i.ori "s/example-project/${APP_NAME}/g" drupsible_deploy.yml
 sed -i.ori "s/drupal_version:.*/drupal_version: '${DRUPAL_VERSION}'/g" drupsible_all_hosts.yml
-
-sed -i.ori "s/drush_min_version:.*/drush_min_version: \"${DRUPAL_VERSION}\.*\"/g" drupsible_all_hosts.yml
+sed -i.ori "s/drush_min_version:.*/drush_min_version: \"${DRUPAL_VERSION}\.*\"/g" drupsible_deploy.yml
 
 if [ "$MULTILINGUAL" == "yes" ]; then
 	sed -i.ori "s|app_i18n:.*$|app_i18n: yes|g" drupsible_all_hosts.yml
