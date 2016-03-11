@@ -2,7 +2,7 @@
 #
 # Make backup of the current configuration
 #
-BACKUP_DIR_RAW="~/drupsible-backups"
+BACKUP_DIR_RAW="$HOME/drupsible-backups"
 BACKUP_DIR=${BACKUP_DIR_RAW/#\~/$HOME}
 DATE=$(date +%Y%m%d_%H%M%S)
 BACKUP_FILENAME="$1-$DATE.tar.gz"
