@@ -48,31 +48,31 @@
   version: v0.1.2
   name: debops.unattended_upgrades
 - src: https://github.com/mbarcia/drupsible-apache
-  version: 0.9.8
+  version: master
   name: drupsible.apache2
 - src: https://github.com/mbarcia/drupsible-memcached
-  version: 0.9.8
+  version: master
   name: drupsible.memcached
 - src: https://github.com/mbarcia/drupsible-samba
-  version: 0.9.8
+  version: master
   name: drupsible.samba
 - src: https://github.com/mbarcia/drupsible-newrelic
-  version: 0.9.8
+  version: master
   name: drupsible.newrelic
 - src: https://github.com/mbarcia/drupsible-composer
-  version: 0.9.8
+  version: master
   name: drupsible.composer
 - src: https://github.com/mbarcia/drupsible-drush
-  version: 0.9.8
+  version: master
   name: drupsible.drush
 - src: https://github.com/mbarcia/drupsible-mysql
-  version: 0.9.8
+  version: master
   name: drupsible.mysql
 - src: https://github.com/mbarcia/drupsible-deploy
-  version: 0.9.8
+  version: master
   name: drupsible.deploy
 - src: https://github.com/mbarcia/drupsible-varnish
-  version: 0.9.8
+  version: master
   name: drupsible.varnish
 - src: https://github.com/mbarcia/drupsible-uploadprogress
   version: master
