@@ -6,13 +6,17 @@
 
   roles:
 
-    - role: debops.pki/env
-      tags: [ 'role::pki', 'role::pki:secret', 'role::secret' ]
+    - role: debops.secret
+      tags: [ 'role::secret', 'role::pki', 'role::pki:secret' ]
 
     - role: debops.secret
       tags: [ 'role::secret', 'role::pki', 'role::pki:secret' ]
       secret_directories:
-        - '{{ pki_env_secret_directories }}'
+        - "{{ pki_env_secret_directories|default('') }}"
+      when: app_env['https_enabled'] or 
+        (smtp_server is defined and 
+        smtp_port is defined and 
+        smtp_user is defined)
 
     - role: debops.apt_preferences
       tags: [ 'apt_preferences', 'role::apt_preferences' ]
@@ -24,6 +28,10 @@
 
     - role: debops.dhparam
       tags: [ 'role::dhparam' ]
+      when: app_env['https_enabled'] or 
+        (smtp_server is defined and 
+        smtp_port is defined and 
+        smtp_user is defined)
 
     - role: debops.pki
       tags: [ 'role::pki' ]
