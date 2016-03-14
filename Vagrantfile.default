@@ -110,7 +110,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Install Ansible only on the controller machine
       machine.vm.provision "shell" do |sh|
         sh.path = "scripts/drupsible-provision.sh"
-        sh.args = ["vagrant", install_windows_param.to_s]
+      end
+
+      # Scaffold directories and symlinks
+      machine.vm.provision "shell" do |sh|
+        sh.path = "scripts/scaffold.sh"
+        sh.args = [app['name'], install_windows_param.to_s]
       end
 
       machine.vm.provision "shell", 
