@@ -3,14 +3,15 @@
 export PYTHONUNBUFFERED=1 
 export ANSIBLE_FORCE_COLOR=true 
 
-APP_NAME=$1
-APP_TARGET=$2
-EXTRA_VARS=$3
-TAGS="$4 app_name=${APP_NAME} app_target=${APP_TARGET}"
-SKIP_TAGS=$5
+APP_NAME="$1"
+APP_TARGET="$2"
+DEPLOY_ARGS="$3"
+TAGS="$4"
+SKIP_TAGS="$5"
 
 ANSIBLE_PLAYBOOK="$HOME/ansible/playbooks/config-deploy.yml"
 ANSIBLE_INVENTORY="$HOME/ansible/inventory/${APP_NAME}-${APP_TARGET}"
+EXTRA_VARS="${DEPLOY_ARGS} app_name=${APP_NAME} app_target=${APP_TARGET}"
 
 if [ ! -f $ANSIBLE_PLAYBOOK ]; then
 	echo "Cannot find Ansible playbook at $ANSIBLE_PLAYBOOK."
