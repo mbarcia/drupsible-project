@@ -1,0 +1,7 @@
+---
+#
+# Global deployment configuration file
+#
+# These values take effect globally in the app, and are PROD-oriented
+#
+# app_env needs to be specified in its entirety

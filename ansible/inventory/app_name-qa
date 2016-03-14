@@ -1,0 +1,24 @@
+#
+# Test (QA)
+#
+[app_name:children]
+app_name-qa
+
+[app_name-qa:children]
+app_name-qa_varnish
+app_name-qa_deploy
+app_name-qa_mysql
+
+[app_name-qa_varnish]
+www.qa.example.com
+
+[app_name-qa_deploy]
+web.qa.example.com
+
+[app_name-qa_mysql]
+mysql.qa.example.com
+
+[app_name:vars]
+app_target=qa
+app_webhost=www
+webdomain=qa.example.com

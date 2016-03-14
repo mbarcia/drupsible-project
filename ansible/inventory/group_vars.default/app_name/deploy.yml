@@ -1,7 +1,10 @@
 ---
-app_target: prod
-app_webhost: www
-
+#
+# Global deployment configuration file
+#
+# These values take effect globally in the app, and are PROD-oriented
+#
+# app_env needs to be specified in its entirety
 app_env:
   aliases:
     - "{{ webdomain }}"
@@ -71,6 +74,10 @@ deploy_pki_key: '/etc/pki/realms/domain/default.key'
 #
 # apache2 defaults
 #
+
+# Here's the list of all IP's from Cloudflare
+# https://www.cloudflare.com/ips/
+apache2_allowed_hosts: [ "127.0.0.1" ]
 
 # worker, event or prefork
 apache2_mpm: "worker"

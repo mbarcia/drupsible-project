@@ -2,7 +2,7 @@
 /.vagrant/
 /vagrant.yml
 /Vagrantfile
-/ansible/inventory/hosts-local
+/ansible/inventory/app_name-*
 /ansible/requirements.yml
 /ansible/group_vars
 /ansible/group_vars/*

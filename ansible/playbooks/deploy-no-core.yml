@@ -1,6 +1,6 @@
 ---
 - name: Deploy
-  hosts: drupsible_deploy
+  hosts: [ '{{ app_name }}-{{ app_target }}_deploy' ]
 
   roles:
   - role: debops.secret

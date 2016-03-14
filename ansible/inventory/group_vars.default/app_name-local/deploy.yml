@@ -1,7 +1,7 @@
 ---
-app_target: local
-app_webhost: local
+# This file is for overriding vars in ../app_name/deploy.yml with LOCAL-specific values
 
+# app_env needs to be specified in its entirety
 app_env:
   aliases: []
   user: 'vagrant'
@@ -33,12 +33,15 @@ app_env:
   varnish_mgmt_port: 6082
   app_apache2_alt_port: 8080
 
-# License key
+# New Relic License key (not enabled in local)
 newrelic_license_key: False
 
 # Add vagrant to the default groups defined in debops.sshd
 sshd__allow_groups: [ 'vagrant' , 'root', 'admins', 'sshusers', 'sftponly' ]
 
-# PHP Development settings
+# PHP development settings, YAY!
 php5_max_execution_time: '0'
 php5_max_input_time: '-1'
+
+# Also allow Vagrant-host
+apache2_allowed_hosts: [ "127.0.0.1", "10.0.2.2" ]

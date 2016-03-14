@@ -1,6 +1,6 @@
 ---
 - name: Common configuration (DebOps) for all hosts
-  hosts: [ 'drupsible_all_hosts' ]
+  hosts: [ '{{ app_name }}' ]
   gather_facts: True
   become: True
 
@@ -72,7 +72,7 @@
       tags: [ 'role::users' ]
 
 - name: MySQL
-  hosts: drupsible_mysql
+  hosts: [ '{{ app_name }}-{{ app_target }}_mysql' ]
   become: True
   roles:
     - role: debops.secret
@@ -98,7 +98,7 @@
           priv: '{{ app_env["db_name"] }}.*:ALL'
 
 - name: MySQL (for cloned DB mode)
-  hosts: drupsible_mysql
+  hosts: [ '{{ app_name }}-{{ app_target }}_mysql' ]
   become: True
   roles:
     - role: drupsible.mysql
@@ -110,7 +110,7 @@
             state: 'present'
   
 - name: Ferm/Postfix/PHP/Composer/New Relic/Apache/uploadprogress
-  hosts: drupsible_deploy
+  hosts: [ '{{ app_name }}-{{ app_target }}_deploy' ]
   become: True
   roles:
     - role: debops.secret
@@ -119,15 +119,9 @@
     - role: debops.ferm
       tags: [ 'role::ferm:deploy' ]
       ferm_dependent_rules:
-      - '{{ postfix_ferm_dependent_rules }}'
+      - '{{ postfix_ferm_dependent_rules|default([]) }}'
       - '{{ apache2_ferm_dependent_rules }}'
-      when: smtp_server is defined and smtp_port is defined and smtp_user is defined
-
-    - role: debops.ferm
-      tags: [ 'role::ferm:deploy' ]
-      ferm_dependent_rules:
-      - '{{ apache2_ferm_dependent_rules }}'
-      when: smtp_server is not defined or smtp_port is not defined or smtp_user is not defined
+      - '{{ samba_ferm_dependent_rules|default([]) }}'
 
     - role: debops.postfix
       tags: [ 'role::postfix' ]
@@ -159,7 +153,7 @@
 
     - role: drupsible.xdebug
       tags: [ 'role::xdebug' ]
-      when: "app_target|default('local') in deploy_xdebug_targets|default([ 'local', 'test', 'uat' ])"
+      when: "app_target|default('local') in deploy_xdebug_targets|default([ 'local', 'ci', 'qa' ])"
 
     - role: drupsible.composer
       tags: [ 'role::composer' ]
@@ -181,7 +175,7 @@
       tags: [ 'role::samba' ]
 
 - name: Varnish
-  hosts: drupsible_varnish
+  hosts: [ '{{ app_name }}-{{ app_target }}_varnish' ]
   become: True
   roles:
     - role: debops.secret

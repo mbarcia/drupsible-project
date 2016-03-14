@@ -70,12 +70,11 @@ Once your Drupal website is working on your local, you can proceed to deploy to 
 1. In your controller, make sure you have your public key in ~/.ssh/id_rsa.pub. This key will authorize your Drupsible SSH connections to all the hosts.
 
 ### Example
-Say you are deploying your app to the live/prod environment from the VM. First, edit your new inventory (use hosts-local as a starting point). Second and last step, run the deploy playbook.
+Say you are deploying your app to the live/prod environment, using the VM as the Ansible controller. Simply run the bootstrap-deploy playbook.
 ```
 $ vagrant ssh
 ...
-vagrant@local:~$ nano ansible/inventory/hosts-prod
-vagrant@local:~$ ansible-playbook -i ansible/inventory/hosts-prod ansible/playbooks/bootstrap-deploy.yml
+vagrant@local:~$ ansible-playbook -i ansible/inventory/<app_name>-prod ansible/playbooks/bootstrap-deploy.yml
 ```
 Once you ran that, subsequent deployments will be simpler, taking this form:
 ```
@@ -138,7 +137,7 @@ sudo rm /etc/postfix/private_hash_tables/smtp_sasl_password_map.lock
 #### Run Drupsible config playbook
 Finally, from /home/vagrant, run
 ```
-ansible-playbook -i ansible/inventory/hosts-local ansible/playbooks/config.yml
+ansible-playbook -i ansible/inventory/<app_name>-<target_env> ansible/playbooks/config.yml
 ```
 and Drupsible will automatically configure Postfix through DebOps.
 
