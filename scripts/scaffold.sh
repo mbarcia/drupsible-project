@@ -1,15 +1,8 @@
 #!/bin/bash
 APP_NAME=$1
 export PYTHONUNBUFFERED=1
-echo "Vagrant scaffolding (general)..."
-if [ ! -d /etc/ansible ]; then
-	mkdir /etc/ansible
-fi
-if [ ! -L /etc/ansible/requirements.yml ]; then
-	ln -s /vagrant/ansible/requirements.yml /etc/ansible/requirements.yml
-fi
-echo "Vagrant scaffolding (Windows only)..."
 if [ "$2" == "is_windows" ]; then
+	echo "Vagrant scaffolding (Windows)..."
 	# Create symlinks to keep the configuration in sync with the Vagrant host system
 	if [ ! -d /home/vagrant/ansible ]; then
 		mkdir /home/vagrant/ansible
@@ -34,8 +27,10 @@ if [ "$2" == "is_windows" ]; then
 	# Change owner (this cannot be done on a synced folder in Windows)
 	chown -R vagrant:vagrant /home/vagrant/
 else
-	echo "Vagrant scaffolding (Linux only)..."
+	echo "Vagrant scaffolding (Linux)..."
 	if [ ! -L /home/vagrant/ansible ]; then
 		ln -s /vagrant/ansible /home/vagrant/ansible
 	fi
 fi
+echo "Done with the scaffolding."
+echo

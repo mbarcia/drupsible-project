@@ -19,8 +19,8 @@ echo "Installing Debops support..."
 pip install debops
 # Download Drupsible roles
 echo "Installing Drupsible roles and its dependencies..."
-if [ -f ~/ansible/requirements.yml ]; then
-	ansible-galaxy install -r ~/ansible/requirements.yml
+if [ -f /vagrant/ansible/requirements.yml ]; then
+	ansible-galaxy install -r /vagrant/ansible/requirements.yml
 elif [ -f /etc/ansible/requirements.yml ]; then
 	ansible-galaxy install -r /etc/ansible/requirements.yml
 else
