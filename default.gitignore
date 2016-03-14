@@ -6,5 +6,3 @@
 /ansible/requirements.yml
 /ansible/group_vars
 /ansible/group_vars/*
-/ansible/host_vars
-/ansible/host_vars/*

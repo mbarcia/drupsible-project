@@ -153,16 +153,16 @@ done
 # Prompt for values not yet assigned.
 #
 if [ "$DOMAIN" == "" ]; then
-	echo "Domain name? (ie. $APP_NAME.com)"
+	echo "Internet domain of the web application?"
 	read -r DOMAIN
 	# Write DOMAIN
 	sed -i "s/DOMAIN=.*$/DOMAIN=\"${DOMAIN}\"/g" "${APP_NAME}.profile"
 fi
 if [ "$DRUPAL_VERSION" == "" ] || [ "$FIRST_TIME" == 'yes' ]; then
-	echo "Drupal version? (7|8) [7])"
+	echo "Drupal version? (7|8) [8])"
 	read -r DRUPAL_VERSION
 	if [ "$DRUPAL_VERSION" == "" ]; then
-		DRUPAL_VERSION="7"
+		DRUPAL_VERSION="8"
 	fi
 	# Write DRUPAL_VERSION
 	sed -i "s|DRUPAL_VERSION=.*$|DRUPAL_VERSION=\"${DRUPAL_VERSION}\"|g" "${APP_NAME}.profile"
@@ -392,7 +392,8 @@ do
 	# Group vars in playbooks directory
 	#
 	# Copy/create the group vars directory with empty config files for reference
-	cp -pr "ansible/playbooks/group_vars.default/app_name${ENV}" "ansible/playbooks/group_vars/${APP_NAME}${ENV}/"
+	mkdir -p "ansible/playbooks/group_vars/${APP_NAME}${ENV}/"
+	cp -pr "ansible/playbooks/group_vars.default/app_name${ENV}/*.*" "ansible/playbooks/group_vars/${APP_NAME}${ENV}/"
 done
 #
 # Loop through local + the default, doing the regexp replacements
@@ -403,7 +404,8 @@ do
 	# Group vars
 	#
 	# Copy/create the group vars directory with the final config files in it
-	cp -pr "ansible/inventory/group_vars.default/app_name${ENV}" "ansible/inventory/group_vars/${APP_NAME}${ENV}/"
+	mkdir -p "ansible/inventory/group_vars/${APP_NAME}${ENV}/"
+	cp -pr "ansible/inventory/group_vars.default/app_name${ENV}/*.*" "ansible/inventory/group_vars/${APP_NAME}${ENV}/"
 	cd "ansible/inventory/group_vars/${APP_NAME}${ENV}" || exit 2
 	# Perform the regexp replacements in the final config files
 	sed -i "s/example\.com/${DOMAIN}/g" all.yml
