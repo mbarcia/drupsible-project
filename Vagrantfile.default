@@ -89,6 +89,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         machine.vm.hostname = host['name'] + '.' + host['domain']
         # Add .bak host to /etc/hosts. 
         config.hostsupdater.aliases = [ host['name'] + '.bak.' + host['domain'] ]
+      else
+        machine.vm.hostname = 'drupsible.multi.app'
       end
 
       # Prevent annoying "stdin: not a tty" errors
@@ -115,6 +117,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       machine.vm.provision "shell", 
         inline: 'cat /vagrant/scripts/shortcuts.sh >> /home/vagrant/.profile'
 
+      # Config-deploy each of the apps
       APPS.each do |app|
         # Scaffold directories and symlinks
         machine.vm.provision "shell" do |sh|
@@ -122,10 +125,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           sh.args = [app['name'], install_windows_param.to_s]
         end
 
-        # Run deploy playbook
+        # Run config-deploy.yml playbook
         machine.vm.provision "shell" do |sh|
           sh.path = "scripts/drupsible-deploy.sh"
-          sh.args = ["/home/vagrant/ansible/inventory/" + app['name'] + "-local", ENV['DEPLOY_ARGS'].to_s, ENV['TAGS'].to_s,  ENV['SKIP_TAGS'].to_s]
+          sh.args = [app['name'], "-local", ENV['DEPLOY_ARGS'].to_s, ENV['TAGS'].to_s,  ENV['SKIP_TAGS'].to_s]
           sh.privileged = false
           sh.keep_color = true
         end

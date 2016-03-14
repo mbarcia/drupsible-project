@@ -3,11 +3,14 @@
 export PYTHONUNBUFFERED=1 
 export ANSIBLE_FORCE_COLOR=true 
 
-ANSIBLE_INVENTORY=$1
-EXTRA_VARS=$2
-TAGS=$3
-SKIP_TAGS=$4
-ANSIBLE_PLAYBOOK=~/ansible/playbooks/config-deploy.yml
+APP_NAME=$1
+APP_TARGET=$2
+EXTRA_VARS=$3
+TAGS="$4 app_name=${APP_NAME} app_target=${APP_TARGET}"
+SKIP_TAGS=$5
+
+ANSIBLE_PLAYBOOK="$HOME/ansible/playbooks/config-deploy.yml"
+ANSIBLE_INVENTORY="$HOME/ansible/inventory/${APP_NAME}-${APP_TARGET}"
 
 if [ ! -f $ANSIBLE_PLAYBOOK ]; then
 	echo "Cannot find Ansible playbook at $ANSIBLE_PLAYBOOK."
@@ -23,7 +26,9 @@ if [ -z "$TAGS" ]; then
 	TAGS="all"
 fi
 
-echo "Running Drupsible configure and deploy..."
+echo "Running Drupsible configure and deploy playbook..."
+echo "Inventory file: $ANSIBLE_INVENTORY"
+
 if [ -z "$EXTRA_VARS" ]; then
 	if [ -z "$SKIP_TAGS" ]; then
 		ansible-playbook -i $ANSIBLE_INVENTORY $ANSIBLE_PLAYBOOK --tags "$TAGS"
