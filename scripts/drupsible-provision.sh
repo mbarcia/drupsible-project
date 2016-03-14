@@ -1,7 +1,5 @@
 #!/bin/bash
-
 export PYTHONUNBUFFERED=1
-
 # Install Ansible and its dependencies if it's not installed already.
 if [ -f /usr/bin/ansible ] || [ -f /usr/local/bin/ansible ]; then
 	echo "Ansible is installed ($(ansible --version))"
@@ -15,16 +13,13 @@ else
 	echo "Installing required python modules..."
 	pip install paramiko pyyaml jinja2 markupsafe
 fi
-
 echo "Installing Ansible scripts in /usr/local/bin..."
 pip install ansible
 echo "Installing Debops support..."
 pip install debops
-
 #
 # Vagrant-specific
 #
-
 if [ "$1" == 'vagrant' ]; then
 	echo "Vagrant scaffolding (general)..."
 	if [ ! -d /etc/ansible ]; then
@@ -45,20 +40,17 @@ if [ "$1" == 'vagrant' ]; then
 		if [ ! -L /home/vagrant/ansible/playbooks ]; then
 			ln -s /vagrant/ansible/playbooks /home/vagrant/ansible/playbooks
 		fi
-		if [ ! -L /home/vagrant/ansible/inventory/host_vars ]; then
-			ln -s /vagrant/ansible/inventory/host_vars /home/vagrant/ansible/inventory/host_vars
+		if [ ! -L /home/vagrant/ansible/playbooks/group_vars ]; then
+			ln -s /vagrant/ansible/playbooks/group_vars /home/vagrant/ansible/playbooks/group_vars
 		fi
 		if [ ! -L /home/vagrant/ansible/inventory/group_vars ]; then
 			ln -s /vagrant/ansible/inventory/group_vars /home/vagrant/ansible/inventory/group_vars
 		fi
-	
-		# Copy inventory file, as Ansible chokes on its permissions when synced 
+		# Copy inventory files, as Ansible chokes on its permissions when synced 
 		# with a Windows host
-		cp "/vagrant/ansible/inventory/${APP_NAME}" /home/vagrant/ansible/inventory/
-		
+		cp "/vagrant/ansible/inventory/${APP_NAME}*" /home/vagrant/ansible/inventory/
 		# Change owner (this cannot be done on a synced folder in Windows)
 		chown -R vagrant:vagrant /home/vagrant/
-	
 		# Remove exec permission on the inventory file (Ansible does not allow it)
 		chmod -x "/home/vagrant/ansible/inventory/${APP_NAME}"
 	else
@@ -71,7 +63,6 @@ fi
 #
 # End Vagrant-specific
 #
-
 # Download Drupsible roles
 echo "Installing Drupsible roles and its dependencies..."
 if [ -f ~/ansible/requirements.yml ]; then
@@ -82,6 +73,5 @@ else
 	echo "Drupsible requirements not found"
 	exit -1
 fi
-
 # Workaround to Ansible bug https://github.com/ansible/ansible-modules-core/issues/2585 
 sed -i "s|errno.EEXISTS|errno.EEXIST|g" /usr/local/lib/python2.7/dist-packages/ansible/modules/core/files/file.py

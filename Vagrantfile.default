@@ -85,7 +85,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         machine.vm.network 'public_network', type: 'dhcp'
       end
 
-      if len(APPS) < 2
+      if APPS.length < 2
         machine.vm.hostname = host['name'] + '.' + host['domain']
         # Add .bak host to /etc/hosts. 
         config.hostsupdater.aliases = [ host['name'] + '.bak.' + host['domain'] ]
@@ -115,7 +115,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       machine.vm.provision "shell", 
         inline: 'cat /vagrant/scripts/shortcuts.sh >> /home/vagrant/.profile'
-      end 
 
       APPS.each do |app|
         # Run deploy playbook
