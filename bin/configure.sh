@@ -354,9 +354,12 @@ cp Vagrantfile.default Vagrantfile
 #
 # vagrant.yml
 #
-cp vagrant.default.yml vagrant.yml
+if [ ! -f vagrant.yml ]; then
+	cp vagrant.default.yml vagrant.yml
+fi
 sed -i "s/example\.com/${DOMAIN}/g" vagrant.yml
-sed -i "/\[apps\]\:/ a - name: '${APP_NAME}'" vagrant.yml
+sed -i "/apps\:/a\
+- name: '${APP_NAME}'" vagrant.yml
 #
 # Assign a random private IP address to minimize collision with other Drupsible projects.
 #
@@ -393,7 +396,7 @@ do
 	#
 	# Copy/create the group vars directory with empty config files for reference
 	mkdir -p "ansible/playbooks/group_vars/${APP_NAME}${ENV}/"
-	cp -pr "ansible/playbooks/group_vars.default/app_name${ENV}/*.*" "ansible/playbooks/group_vars/${APP_NAME}${ENV}/"
+	cp -pr "ansible/playbooks/group_vars.default/app_name${ENV}/." "ansible/playbooks/group_vars/${APP_NAME}${ENV}/"
 done
 #
 # Loop through local + the default, doing the regexp replacements
@@ -405,7 +408,7 @@ do
 	#
 	# Copy/create the group vars directory with the final config files in it
 	mkdir -p "ansible/inventory/group_vars/${APP_NAME}${ENV}/"
-	cp -pr "ansible/inventory/group_vars.default/app_name${ENV}/*.*" "ansible/inventory/group_vars/${APP_NAME}${ENV}/"
+	cp -pr "ansible/inventory/group_vars.default/app_name${ENV}/." "ansible/inventory/group_vars/${APP_NAME}${ENV}/"
 	cd "ansible/inventory/group_vars/${APP_NAME}${ENV}" || exit 2
 	# Perform the regexp replacements in the final config files
 	sed -i "s/example\.com/${DOMAIN}/g" all.yml
@@ -465,9 +468,9 @@ do
 	sed -i "s|git_repo_path:.*$|git_repo_path: \"${GIT_PATH}\"|g" deploy.yml
 	sed -i "s/git_repo_pass:.*$/git_repo_pass: \"${GIT_PASS}\"/g" deploy.yml
 	sed -i "s|git_version:.*$|git_version: \"${GIT_BRANCH}\"|g" deploy.yml
+	# Change directory out of group vars
+	cd - > /dev/null || exit 2
 done
-# Change directory out of group vars
-cd - > /dev/null || exit 2
 # Append last-mod
 DATE_LEGEND=$(date +"%c %Z")
 PHRASE="Last reconfigured on"

@@ -152,7 +152,7 @@ php_value:
   opcache.memory_consumption: 64 # MB, adjust to your needs
   opcache.max_accelerated_files: 6000 # Adjust to your needs
   opcache.max_wasted_percentage: 10 # Adjust to your needs
-  
+
 php_flag:
   cgi.fix_path_info: 1
   # The following settings for PHP 5.5 are based on https://goo.gl/AsDmgt
