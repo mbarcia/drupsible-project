@@ -112,16 +112,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         sh.path = "scripts/drupsible-provision.sh"
       end
 
-      # Scaffold directories and symlinks
-      machine.vm.provision "shell" do |sh|
-        sh.path = "scripts/scaffold.sh"
-        sh.args = [app['name'], install_windows_param.to_s]
-      end
-
       machine.vm.provision "shell", 
         inline: 'cat /vagrant/scripts/shortcuts.sh >> /home/vagrant/.profile'
 
       APPS.each do |app|
+        # Scaffold directories and symlinks
+        machine.vm.provision "shell" do |sh|
+          sh.path = "scripts/scaffold.sh"
+          sh.args = [app['name'], install_windows_param.to_s]
+        end
+
         # Run deploy playbook
         machine.vm.provision "shell" do |sh|
           sh.path = "scripts/drupsible-deploy.sh"
