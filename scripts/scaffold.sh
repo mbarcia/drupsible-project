@@ -25,7 +25,10 @@ if [ "$2" == "is_windows" ]; then
 	fi
 	# Copy inventory files, as Ansible chokes on its permissions when synced 
 	# with a Windows host
-	cp "/vagrant/ansible/inventory/${APP_NAME}*" /home/vagrant/ansible/inventory/
+	for ENV in "-local" "-ci" "-qa" "-uat" "-prod"
+	do
+		cp "/vagrant/ansible/inventory/${APP_NAME}${ENV}" /home/vagrant/ansible/inventory/
+	done
 	# Change owner (this cannot be done on a synced folder in Windows)
 	chown -R vagrant:vagrant /home/vagrant/
 	# Remove exec permission on the inventory file (Ansible does not allow it)
