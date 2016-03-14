@@ -128,7 +128,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # Run config-deploy.yml playbook
         machine.vm.provision "shell" do |sh|
           sh.path = "scripts/drupsible-deploy.sh"
-          sh.args = [app['name'], "-local", ENV['DEPLOY_ARGS'].to_s, ENV['TAGS'].to_s,  ENV['SKIP_TAGS'].to_s]
+          sh.args = [ app['name'], "local", ENV['DEPLOY_ARGS'].to_s, ENV['TAGS'].to_s,  ENV['SKIP_TAGS'].to_s ]
           sh.privileged = false
           sh.keep_color = true
         end
