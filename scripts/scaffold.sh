@@ -23,16 +23,16 @@ if [ "$2" == "is_windows" ]; then
 	if [ ! -L /home/vagrant/ansible/playbooks ]; then
 		ln -s /vagrant/ansible/playbooks /home/vagrant/ansible/playbooks
 	fi
-	# Copy inventory files, as Ansible chokes on its permissions when synced 
-	# with a Windows host
+	# Copy inventory files
 	for ENV in "-local" "-ci" "-qa" "-uat" "-prod"
 	do
+		# Ansible chokes on its permissions when synced with a Windows host
 		cp "/vagrant/ansible/inventory/${APP_NAME}${ENV}" /home/vagrant/ansible/inventory/
+		# Remove exec permission on the inventory file (Ansible does not allow it)
+		chmod -x "/home/vagrant/ansible/inventory/${APP_NAME}${ENV}"
 	done
 	# Change owner (this cannot be done on a synced folder in Windows)
 	chown -R vagrant:vagrant /home/vagrant/
-	# Remove exec permission on the inventory file (Ansible does not allow it)
-	chmod -x "/home/vagrant/ansible/inventory/${APP_NAME}"
 else
 	echo "Vagrant scaffolding (Linux only)..."
 	if [ ! -L /home/vagrant/ansible ]; then
