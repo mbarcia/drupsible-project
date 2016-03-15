@@ -442,13 +442,15 @@ do
 			sed -i "s|deploy_drush_makefile:.*$|deploy_drush_makefile: '${DRUSH_MAKEFILE}'|g" deploy.yml
 		fi		
 	fi
-	if [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$CUSTOM_INSTALL_PROFILE" != "" ] && [ ! "$CODEBASE_TARBALL" == "" ]; then
+	if [ ! "$CODEBASE_TARBALL" == "" ] && [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$CUSTOM_INSTALL_PROFILE" != "" ]; then
 		sed -i "s|codebase_tarball_filename:.*$|codebase_tarball_filename: '${CODEBASE_TARBALL}'|g" deploy.yml
 		sed -i "s|codebase_import:.*$|codebase_import: yes|g" deploy.yml
 	else
 		sed -i "s|codebase_import:.*$|codebase_import: no|g" deploy.yml
 	fi
-	if [ "$USE_SITE_INSTALL" != "yes" ]; then
+	if [ "$USE_SITE_INSTALL" == "yes" ]; then
+		sed -i "s|site_install:.*$|site_install: yes|g" deploy.yml
+	else
 		if [ ! "$DBDUMP" == "" ]; then 
 			sed -i "s|db_dump_filename:.*$|db_dump_filename: '${DBDUMP}'|g" deploy.yml
 			sed -i "s|db_import:.*$|db_import: yes|g" deploy.yml
