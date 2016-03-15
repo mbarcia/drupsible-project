@@ -10,7 +10,7 @@ app_env:
   site_install: False
   db_dump_filename: '{{ app_name }}.sql.gz'
   db_name: "{{ app_name }}"
-  db_user: drupsible
+  db_user: "{{ app_name|truncate(16) }}"
   # Set to True if the target env has memcached available
   memcached: True
   # True clones the cur database
