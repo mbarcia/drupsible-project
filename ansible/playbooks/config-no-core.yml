@@ -14,10 +14,6 @@
       (smtp_server is defined and 
       smtp_port is defined and 
       smtp_user is defined)
-  - role: debops.apt_preferences
-    tags: [ 'apt_preferences', 'role::apt_preferences' ]
-    apt_preferences_dependent_list:
-    - '{{ sshd__apt_preferences__dependent_list }}'
   - role: debops.etc_services
     tags: [ 'role::etc_services' ]
   - role: debops.dhparam
@@ -32,8 +28,6 @@
       (smtp_server is defined and 
       smtp_port is defined and 
       smtp_user is defined)
-  - role: debops.apt
-    tags: [ 'role::apt' ]
   - role: debops.ferm
     tags: [ 'role::ferm' ]
     ferm_dependent_rules:
@@ -42,8 +36,6 @@
     tags: [ 'role::tcpwrappers' ]
     tcpwrappers_dependent_allow:
     - '{{ sshd__tcpwrappers__dependent_allow }}'
-  - role: debops.unattended_upgrades
-    tags: [ 'role::unattended_upgrades' ]
   - role: debops.sshkeys
     tags: [ 'role::sshkeys' ]
   - role: debops.sshd
@@ -60,8 +52,6 @@
   hosts: [ '{{ app_name }}-{{ app_target }}_mysql' ]
   become: True
   roles:
-  - role: debops.secret
-    tags: [ 'role::secret', 'role::mysql:secret' ]
   - role: drupsible.mysql
     tags: [ 'role::mysql' ]
     mysql_users:
@@ -100,8 +90,6 @@
   hosts: [ '{{ app_name }}-{{ app_target }}_deploy' ]
   become: True
   roles:
-  - role: debops.secret
-    tags: [ 'role::secret', 'role::config:secret' ]
   - role: debops.ferm
     tags: [ 'role::ferm:deploy' ]
     ferm_dependent_rules:
