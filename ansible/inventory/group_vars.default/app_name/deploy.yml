@@ -1,9 +1,10 @@
 ---
 #
-# Global deployment configuration file
+# Deployment configuration file for all the target environments
 #
 # These values take effect globally in the app, and are PROD-oriented
 #
+
 # app_env needs to be specified in its entirety
 app_env:
   aliases:

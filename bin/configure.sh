@@ -399,7 +399,7 @@ done
 #
 # Loop through local + the default, doing the regexp replacements
 #
-for ENV in "-local" ""
+for ENV in "-local" "-prod" ""
 do
 	#
 	# Group vars

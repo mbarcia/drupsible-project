@@ -1,0 +1,10 @@
+---
+#
+# Deployment configuration file only for the PROD environment
+#
+
+# Modules to enable/disable/uninstall per app environment
+# Always enable devel
+deploy_modules_present_env: []
+# Always disable/uninstall cdn
+deploy_modules_absent_env: [ 'devel' ]
