@@ -1,7 +1,7 @@
 #
 # Local
 #
-local.example.com ansible_connection=local
+localhost ansible_connection=local
 
 [app_name:children]
 app_name-local
@@ -12,13 +12,13 @@ app_name-local_deploy
 app_name-local_varnish
 
 [app_name-local_varnish]
-local.example.com
+localhost
 
 [app_name-local_deploy]
-local.example.com
+localhost
 
 [app_name-local_mysql]
-local.example.com
+localhost
 
 [app_name:vars]
 app_target=local

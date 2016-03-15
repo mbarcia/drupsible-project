@@ -373,18 +373,16 @@ cp ansible/requirements.default.yml ansible/requirements.yml
 #
 # Loop through all the 5 environments + the default, creating the inventory files
 #
-for ENV in "-local" "-ci" "-qa" "-uat" "-prod" ""
+for ENV in "-local" "-ci" "-qa" "-uat" "-prod"
 do
 	#
 	# Inventory files
 	#
-	if [ ! "${ENV}" == "" ]; then
-		cp "ansible/inventory/app_name${ENV}" "ansible/inventory/${APP_NAME}${ENV}"
-		# Replace example.com by the proper hostname
-		sed -i "s/example\.com/${DOMAIN}/g" "ansible/inventory/${APP_NAME}${ENV}"
-		# Replace app_name by the actual app name
-		sed -i "s/app_name/${APP_NAME}/g" "ansible/inventory/${APP_NAME}${ENV}"
-	fi
+	cp "ansible/inventory/app_name${ENV}" "ansible/inventory/${APP_NAME}${ENV}"
+	# Replace example.com by the proper hostname
+	sed -i "s/example\.com/${DOMAIN}/g" "ansible/inventory/${APP_NAME}${ENV}"
+	# Replace app_name by the actual app name
+	sed -i "s/app_name/${APP_NAME}/g" "ansible/inventory/${APP_NAME}${ENV}"
 done
 #
 # Loop through all the 5 environments + the default, creating the placeholder for reference

@@ -1,6 +1,6 @@
 ---
 - name: Prepare DebOps core environment
-  hosts: [ '{{ app_name }}:!localhost' ]
+  hosts: [ '{{ app_name }}' ]
   become: False
   roles:
     - role: debops.core
