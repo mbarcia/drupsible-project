@@ -1,6 +1,8 @@
+apps:
+
 hosts:
-  - name: local
-    domain: 'example.com'
+- name: local
+  domain: 'example.com'
 #
 # Comment out ip_adddr and netmask to use DHCP assignment instead. Then
 # 1. vagrant reload
@@ -12,13 +14,13 @@ hosts:
 # 6. Open your browser at http://local.mydomain.com
 #
 # This fixed IP will be added automatically to your /etc/hosts
-    ip_addr: '192.168.50.10'
-    netmask: '255.255.255.0'
+  ip_addr: '192.168.50.10'
+  netmask: '255.255.255.0'
 #
-    ram: 1024
-    gui: false
-    box: 'mbarcia/drupsible'
-    pae: 'on'
-    acpi: 'on'
-    ioapic: 'on'
-    chipset: 'ich9'
+  ram: 1024
+  gui: false
+  box: 'mbarcia/drupsible'
+  pae: 'on'
+  acpi: 'on'
+  ioapic: 'on'
+  chipset: 'ich9'

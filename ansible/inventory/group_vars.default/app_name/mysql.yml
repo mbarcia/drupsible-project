@@ -1,4 +1,7 @@
 ---
+#
+# MySQL
+#
 mysql_mysqld_bind_address: '0.0.0.0'
 
 mysql_databases:

@@ -33,6 +33,7 @@ end
 
 settings = YAML.load_file 'vagrant.yml'
 HOSTS = settings['hosts']
+APPS = settings['apps']
 
 #
 # Vagrant configuration main
@@ -78,52 +79,61 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         p.update_guest_tools = true
       end
 
-      machine.vm.hostname = host['name'] + '.' + host['domain']
       if host['ip_addr'] && host['netmask']
         machine.vm.network 'private_network', ip: host['ip_addr'], netmask: host['netmask']
       else
         machine.vm.network 'public_network', type: 'dhcp'
       end
 
-      # Add aliases of each host to /etc/hosts
-      config.hostsupdater.aliases = [ host['name'] + '.bak.' + host['domain'] ]
+      if APPS.length < 2
+        machine.vm.hostname = host['name'] + '.' + host['domain']
+        # Add .bak host to /etc/hosts. 
+        config.hostsupdater.aliases = [ host['name'] + '.bak.' + host['domain'] ]
+      else
+        machine.vm.hostname = 'drupsible.multi.app'
+      end
 
       # Prevent annoying "stdin: not a tty" errors
       config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
-      
-      if host['name'].eql?'local' 
-        # SSH setup
-        # Vagrant >= 1.7.0 defaults to using a randomly generated RSA key.
-        # We need to disable this in order to pass the correct identity from host to guest.
-        config.ssh.insert_key = false
-    
-        if ARGV[0].eql?'up' or ARGV[0].eql?'provision'
-          system("bin/ssh-agent.sh ~/.vagrant.d/insecure_private_key")
-        end
-                
-        # Allow identities to be passed from host to guest.
-        # ssh-agent must be running on the host, the private keys loaded with ssh-add
-        config.ssh.forward_agent = true
-          
-        # Install Ansible only on the controller machine
+
+      # SSH setup
+      # Vagrant >= 1.7.0 defaults to using a randomly generated RSA key.
+      # We need to disable this in order to pass the correct identity from host to guest.
+      config.ssh.insert_key = false
+
+      if ARGV[0].eql?'up' or ARGV[0].eql?'provision'
+        system("bin/ssh-agent.sh ~/.vagrant.d/insecure_private_key")
+      end
+
+      # Allow identities to be passed from host to guest.
+      # ssh-agent must be running on the host, the private keys loaded with ssh-add
+      config.ssh.forward_agent = true
+
+      # Install Ansible only on the controller machine
+      machine.vm.provision "shell" do |sh|
+        sh.path = "scripts/drupsible-provision.sh"
+      end
+
+      machine.vm.provision "shell", 
+        inline: 'cat /vagrant/scripts/shortcuts.sh >> /home/vagrant/.profile'
+
+      # Config-deploy each of the apps
+      APPS.each do |app|
+        # Scaffold directories and symlinks
         machine.vm.provision "shell" do |sh|
-          sh.path = "scripts/drupsible-provision.sh"
-          sh.args = ["vagrant", install_windows_param.to_s]
+          sh.path = "scripts/scaffold.sh"
+          sh.args = [app['name'], install_windows_param.to_s]
         end
 
-        machine.vm.provision "shell", 
-          inline: 'cat /vagrant/scripts/shortcuts.sh >> /home/vagrant/.profile'
-        end 
-
-        # Run deploy playbook
+        # Run config-deploy.yml playbook
         machine.vm.provision "shell" do |sh|
           sh.path = "scripts/drupsible-deploy.sh"
-          sh.args = ["/home/vagrant/ansible/inventory/hosts-local", ENV['DEPLOY_ARGS'].to_s, ENV['TAGS'].to_s,  ENV['SKIP_TAGS'].to_s]
+          sh.args = [ app['name'], "local", ENV['DEPLOY_ARGS'].to_s, ENV['TAGS'].to_s,  ENV['SKIP_TAGS'].to_s ]
           sh.privileged = false
           sh.keep_color = true
         end
-    end
-
+      end # APPS-each
+    end # config machine
   end # HOSTS-each
 
   # Allow caching to be used (see the vagrant-cachier plugin)

@@ -1,0 +1,24 @@
+#
+# User Acceptance Test (UAT)
+#
+[app_name:children]
+app_name-uat
+
+[app_name-uat:children]
+app_name-uat_varnish
+app_name-uat_deploy
+app_name-uat_mysql
+
+[app_name-uat_varnish]
+www.uat.example.com
+
+[app_name-uat_deploy]
+web.uat.example.com
+
+[app_name-uat_mysql]
+mysql.uat.example.com
+
+[app_name:vars]
+app_target=uat
+app_webhost=www
+webdomain=uat.example.com

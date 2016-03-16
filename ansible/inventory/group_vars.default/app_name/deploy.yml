@@ -1,7 +1,11 @@
 ---
-app_target: prod
-app_webhost: www
+#
+# Deployment configuration file for all the target environments
+#
+# These values take effect globally in the app, and are PROD-oriented
+#
 
+# app_env needs to be specified in its entirety
 app_env:
   aliases:
     - "{{ webdomain }}"
@@ -10,9 +14,10 @@ app_env:
   fpm_listen: '/var/run/php5-fpm-{{ app_name }}.sock'
   admin_email: "admin@{{ webdomain }}"
   files_tarball_filename: '{{ app_name }}-files.tar.gz'
+  site_install: False
   db_dump_filename: '{{ app_name }}.sql.gz'
   db_name: "{{ app_name }}"
-  db_user: drupsible
+  db_user: "{{ app_name|truncate(16) }}"
   # Set to True if the target env has memcached available
   memcached: True
   # True clones the cur database
@@ -71,6 +76,10 @@ deploy_pki_key: '/etc/pki/realms/domain/default.key'
 #
 # apache2 defaults
 #
+
+# Here's the list of all IP's from Cloudflare
+# https://www.cloudflare.com/ips/
+apache2_allowed_hosts: [ "127.0.0.1" ]
 
 # worker, event or prefork
 apache2_mpm: "worker"
@@ -145,7 +154,7 @@ php_value:
   opcache.memory_consumption: 64 # MB, adjust to your needs
   opcache.max_accelerated_files: 6000 # Adjust to your needs
   opcache.max_wasted_percentage: 10 # Adjust to your needs
-  
+
 php_flag:
   cgi.fix_path_info: 1
   # The following settings for PHP 5.5 are based on https://goo.gl/AsDmgt

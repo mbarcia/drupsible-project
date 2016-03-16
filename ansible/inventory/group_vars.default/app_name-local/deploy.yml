@@ -1,7 +1,15 @@
 ---
-app_target: local
-app_webhost: local
+#
+# Deployment configuration file for the LOCAL environment
+#
 
+# Modules to enable/disable/uninstall per app environment
+# Always enable devel
+deploy_modules_present_env: [ 'devel' ]
+# Always disable/uninstall cdn
+deploy_modules_absent_env: [ 'cdn' ]
+
+# app_env needs to be specified in its entirety
 app_env:
   aliases: []
   user: 'vagrant'
@@ -12,7 +20,7 @@ app_env:
   site_install: False
   db_dump_filename: '{{ app_name }}.sql.gz'
   db_name: "{{ app_name }}"
-  db_user: drupsible
+  db_user: "{{ app_name|truncate(16) }}"
   # Set to True if the target env has memcached available
   memcached: True
   # True clones the cur database
@@ -33,12 +41,15 @@ app_env:
   varnish_mgmt_port: 6082
   app_apache2_alt_port: 8080
 
-# License key
+# New Relic License key (not enabled in local)
 newrelic_license_key: False
 
 # Add vagrant to the default groups defined in debops.sshd
 sshd__allow_groups: [ 'vagrant' , 'root', 'admins', 'sshusers', 'sftponly' ]
 
-# PHP Development settings
+# PHP development settings, YAY!
 php5_max_execution_time: '0'
 php5_max_input_time: '-1'
+
+# Also allow Vagrant-host
+apache2_allowed_hosts: [ "127.0.0.1", "10.0.2.2" ]

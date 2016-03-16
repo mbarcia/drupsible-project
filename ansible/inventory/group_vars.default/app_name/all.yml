@@ -1,9 +1,7 @@
 ---
 #
-# Global app vars
+# Global app vars.
 #
-webdomain: "example.com"
-
 app_name: example-project
 
 # Drupal major version, 7 or 8
@@ -13,17 +11,6 @@ drupal_version: '7'
 app_i18n: False
 # Please place default language first in this list
 app_languages: []
-
-#
-# APT defaults
-#
-
-apt_base_packages: [ 'ed', 'python', 'python-apt', 'lsb-release', 'make', 'gnupg-curl', 'git', 'wget', 'curl', 'rsync', 'netcat-openbsd', 'bridge-utils', 'vlan', 'openssh-server', 'bsdutils', 'python-pycurl', 'python-httplib2', 'apt-transport-https', 'acl', 'python-pip' ]
-
-apt_packages:
-  - vim
-  - cowsay
-  - htop
 
 #
 # PKI defaults
