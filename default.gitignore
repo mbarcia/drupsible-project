@@ -2,7 +2,12 @@
 /.vagrant/
 /vagrant.yml
 /Vagrantfile
-/ansible/inventory/app_name-*
 /ansible/requirements.yml
-/ansible/group_vars
-/ansible/group_vars/*
+/ansible/inventory/*-*
+/ansible/inventory/group_vars
+/ansible/inventory/group_vars/*
+/ansible/playbooks/
+/ansible/playbooks/*
+/*.profile
+/*.tmp
+
