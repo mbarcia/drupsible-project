@@ -358,6 +358,9 @@ if [ ! -f vagrant.yml ]; then
 	cp vagrant.default.yml vagrant.yml
 fi
 sed -i "s/example\.com/${DOMAIN}/g" vagrant.yml
+# Remove any possible app duplicates
+sed -i "s|^- name\: '${APP_NAME}'$||g" vagrant.yml
+# Add app name to the list
 sed -i "/apps\:/a\
 - name: '${APP_NAME}'" vagrant.yml
 #
