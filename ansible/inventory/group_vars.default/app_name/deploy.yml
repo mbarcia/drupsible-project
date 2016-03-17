@@ -68,7 +68,7 @@ deploy_container_base_class: '\Drupal\Core\DependencyInjection\Container'
 
 config_dirs: []
 deploy_identifier: '\Drupal::VERSION'
-drush_min_version: 8.*
+drush_min_version: 8.0.5
 
 deploy_pki_crt: '/etc/pki/realms/domain/default.crt'
 deploy_pki_key: '/etc/pki/realms/domain/default.key'
