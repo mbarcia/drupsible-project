@@ -363,6 +363,8 @@ sed -i "s|^- name\: '${APP_NAME}'$||g" vagrant.yml
 # Add app name to the list
 sed -i "/apps\:/a\
 - name: '${APP_NAME}'" vagrant.yml
+# Remove empty lines
+sed -i '/^$/d' vagrant.yml
 #
 # Assign a random private IP address to minimize collision with other Drupsible projects.
 #
