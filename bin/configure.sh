@@ -418,7 +418,6 @@ do
 	sed -i "s/example-project/${APP_NAME}/g" deploy.yml
 	sed -i "s/example-project/${APP_NAME}/g" mysql.yml
 	sed -i "s/drupal_version:.*/drupal_version: '${DRUPAL_VERSION}'/g" all.yml
-	sed -i "s/drush_min_version:.*/drush_min_version: \"${DRUPAL_VERSION}\.*\"/g" deploy.yml
 	if [ "$MULTILINGUAL" == "yes" ]; then
 		sed -i "s|app_i18n:.*$|app_i18n: yes|g" all.yml
 		if [ "$LANGUAGES" != "" ]; then
