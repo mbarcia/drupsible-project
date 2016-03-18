@@ -58,22 +58,22 @@
     - name: "{{ app_env['db_user'] }}"
       host: "%"
       state: 'present'
-      password: '{{ app_env["db_password"] | default(lookup("password", secret + "/credentials/" + ansible_fqdn + "/mysql/" + app_env.db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
+      password: '{{ app_env["db_password"] | default(lookup("password", secret + "/credentials/" + app_name + "/mysql/" + app_env.db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
       priv: '{{ app_env["db_name"] }}.*:ALL'
     - name: "{{ app_env['db_user'] }}"
       host: localhost
       state: 'present'
-      password: '{{ app_env["db_password"] | default(lookup("password", secret + "/credentials/" + ansible_fqdn + "/mysql/" + app_env.db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
+      password: '{{ app_env["db_password"] | default(lookup("password", secret + "/credentials/" + app_name + "/mysql/" + app_env.db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
       priv: '{{ app_env["db_name"] }}.*:ALL'
     - name: "{{ app_env['db_user'] }}"
       host: "{{ ansible_hostname }}"
       state: 'present'
-      password: '{{ app_env["db_password"] | default(lookup("password", secret + "/credentials/" + ansible_fqdn + "/mysql/" + app_env.db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
+      password: '{{ app_env["db_password"] | default(lookup("password", secret + "/credentials/" + app_name + "/mysql/" + app_env.db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
       priv: '{{ app_env["db_name"] }}.*:ALL'
     - name: "{{ app_env['db_user'] }}"
       host: "10.0.2.2"
       state: 'present'
-      password: '{{ app_env["db_password"] | default(lookup("password", secret + "/credentials/" + ansible_fqdn + "/mysql/" + app_env.db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
+      password: '{{ app_env["db_password"] | default(lookup("password", secret + "/credentials/" + app_name + "/mysql/" + app_env.db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
       priv: '{{ app_env["db_name"] }}.*:ALL'
 - name: MySQL (for cloned DB mode)
   hosts: [ '{{ app_name }}-{{ app_target }}_mysql' ]
