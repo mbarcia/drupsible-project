@@ -348,6 +348,11 @@ fi
 cp default.gitignore .gitignore
 sed -i "s/app_name/${APP_NAME}/g" .gitignore
 #
+if [ ! -f ansible.cfg ]; then
+	cp ansible.cfg.default ansible.cfg
+else
+	echo "Skipped copy of ansible.cfg: it already exists."
+fi
 # Vagrantfile
 #
 cp Vagrantfile.default Vagrantfile
@@ -356,6 +361,8 @@ cp Vagrantfile.default Vagrantfile
 #
 if [ ! -f vagrant.yml ]; then
 	cp vagrant.default.yml vagrant.yml
+else
+	echo "Skipped copy of vagrant.yml: it already exists."
 fi
 sed -i "s/example\.com/${DOMAIN}/g" vagrant.yml
 # Remove any possible app duplicates
