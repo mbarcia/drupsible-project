@@ -10,6 +10,6 @@
       become: yes
       bootstrap_raw: False
       bootstrap_domain: "{{ webdomain }}"
-      bootstrap_base_packages: [ 'lsb-release' ]
+      bootstrap_base_packages: [ 'python', 'python-apt', 'python-pip', 'lsb-release', 'sudo' ]
       bootstrap_admin_name: "{{ app_env['user'] }}"
       bootstrap_admin_comment: "{{ app_name }}/Drupsible administrator"
