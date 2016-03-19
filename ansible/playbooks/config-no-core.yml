@@ -6,24 +6,10 @@
   roles:
   - role: debops.secret
     tags: [ 'role::secret', 'role::pki', 'role::pki:secret' ]
-  - role: debops.secret
-    tags: [ 'role::secret', 'role::pki', 'role::pki:secret' ]
-    secret_directories:
-    - "{{ pki_env_secret_directories|default('') }}"
-    when: app_env['https_enabled'] or 
-      (smtp_server is defined and 
-      smtp_port is defined and 
-      smtp_user is defined)
   - role: debops.etc_services
     tags: [ 'role::etc_services' ]
   - role: debops.dhparam
     tags: [ 'role::dhparam' ]
-    when: app_env['https_enabled'] or 
-      (smtp_server is defined and 
-      smtp_port is defined and 
-      smtp_user is defined)
-  - role: debops.pki
-    tags: [ 'role::pki' ]
     when: app_env['https_enabled'] or 
       (smtp_server is defined and 
       smtp_port is defined and 
@@ -90,6 +76,20 @@
   hosts: [ '{{ app_name }}-{{ app_target }}_deploy' ]
   become: True
   roles:
+  - role: debops.secret
+    tags: [ 'role::secret', 'role::pki', 'role::pki:secret' ]
+    secret_directories:
+    - "{{ pki_env_secret_directories|default('') }}"
+    when: app_env['https_enabled'] or 
+      (smtp_server is defined and 
+      smtp_port is defined and 
+      smtp_user is defined)
+  - role: debops.pki
+    tags: [ 'role::pki' ]
+    when: app_env['https_enabled'] or 
+      (smtp_server is defined and 
+      smtp_port is defined and 
+      smtp_user is defined)
   - role: debops.ferm
     tags: [ 'role::ferm:deploy' ]
     ferm_dependent_rules:
