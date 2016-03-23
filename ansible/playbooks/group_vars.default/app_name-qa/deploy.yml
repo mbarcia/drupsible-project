@@ -1,3 +1,0 @@
----
-# This file is for overriding vars in ../app_name/deploy.yml with QA-specific values
-# app_env needs to be specified in its entirety

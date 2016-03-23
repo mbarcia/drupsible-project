@@ -1,3 +1,5 @@
 ---
-# Varnish settings with the Vagrant-host added
+#
+# Configuration file for the Varnish group of the LOCAL environment.
+#
 varnish_allowed_hosts: [ "127.0.0.1", "10.0.2.2" ]

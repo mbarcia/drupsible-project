@@ -1,15 +1,46 @@
 ---
 #
-# Global app vars.
+# Configuration file for ALL servers in ALL the environments.
 #
+# The web application name, used as identifier in many contexts
+# Set by configure.sh
 app_name: example-project
-
 # Drupal major version, 7 or 8
-drupal_version: '7'
+# Set by configure.sh
+app_drupal_version: '8'
+# OS username
+# Set by configure.sh
+app_user: example-project
+# OS group. This group needs to match apache2 group
+app_group: www-data
+# Add the website's other internet domains, as needed
+app_server_aliases:
+- "{{ webdomain }}"
+# Listen socket for PHP-FPM to communicate with Apache2
+app_fpm_listen_uds: '/var/run/php5-fpm-{{ app_name }}.sock'
+# Listen port for PHP-FPM to communicate with Apache2. Socket is faster, but 
+# only available on Apache 2.4.10+
+app_fpm_listen: '127.0.0.1:9000'
+# Website administrator's email
+app_admin_email: "admin@{{ webdomain }}"
+# DB name
+app_db_name: "{{ app_name }}"
+# DU username. MySQL limits this value to 16 chars.
+app_db_user: "{{ app_name|truncate(16) }}"
+# Should Drupsible setup and configure memcached?
+app_memcached_enabled: True
+# Should Drupsible setup everything for the website to be accessed with https?
+app_https_enabled: no
+# Should Drupsible setup everything for the website to have a Varnish front-end?
+app_varnish_enabled: yes
+# Alternative http port, used by Apache2 when Varnish is enabled
+app_apache2_alt_port: 8080
 
 # Is your app multilingual?
-app_i18n: False
+# Set by configure.sh
+app_i18n_enabled: False
 # Please place default language first in this list
+# Set by configure.sh
 app_languages: []
 
 #

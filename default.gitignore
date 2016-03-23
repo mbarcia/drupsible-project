@@ -1,5 +1,6 @@
 /.gitignore
 /.vagrant/
+/ansible.cfg
 /vagrant.yml
 /Vagrantfile
 /ansible/requirements.yml

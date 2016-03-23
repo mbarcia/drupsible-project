@@ -18,7 +18,7 @@
   version: v0.1.5
   name: debops.users
 - src: https://github.com/debops/ansible-pki
-  version: v0.2.4
+  version: v0.2.5
   name: debops.pki
 - src: https://github.com/debops/ansible-postfix
   version: v0.1.1

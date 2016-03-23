@@ -23,13 +23,15 @@ Drupsible project is the starting point of Drupsible, and it is the only thing y
   * Optionally, have a SSH key setup for your Git repository.
   * Have a DB dump of your Drupal website.
   * Optionally, have a separate files tarball/archive of sites/default/files.
+  * If your project is a distibution with a Makefile, you can also use Drupsible to manage it.
 * If you want to try a Drupal distribution, 
   * you will be able to type its name (interactively) and 
   * run it locally in no time.
+* Since v0.9.9, you can run multiple applications in the same VM/server.
 
 ## Remote servers
 All remote target servers must be Debian (wheezy/jessie) or Ubuntu (trusty/vivid) stock boxes (although currently testing Jessie only). 
-In the future, Drupsible may run on other platforms. In the future, Drupsible may share the server with other webapps.
+In the future, Drupsible may run on other platforms.
 
 # Basic usage
 
@@ -74,17 +76,17 @@ Say you are deploying your app to the live/prod environment, using the VM as the
 ```
 $ vagrant ssh
 ...
-vagrant@local:~$ ansible-playbook -i ansible/inventory/<app_name>-prod ansible/playbooks/bootstrap-deploy.yml
+vagrant@local:~$ ansible-playbook -i ansible/inventory/<app_name>-prod ansible/playbooks/bootstrap-deploy.yml --extra-vars "app_name=<app_name> app_target=prod"
 ```
-Once you ran that, subsequent deployments will be simpler, taking this form:
+Once you've run that, subsequent deployments will be simpler, taking this form:
 ```
 $ vagrant ssh
 ...
-vagrant@local:~$ ansible-playbook -i ansible/inventory/hosts-prod ansible/playbooks/deploy.yml
+vagrant@local:~$ ansible-playbook -i ansible/inventory/<app_name>-prod ansible/playbooks/deploy.yml --extra-vars "app_name=<app_name> app_target=prod"
 ```
 If you just want to re-configure, say a parameter in Varnish, you would just run the config playbook:
 ```
-vagrant@local:~$ ansible-playbook -i ansible/inventory/hosts-prod ansible/playbooks/config.yml
+vagrant@local:~$ ansible-playbook -i ansible/inventory/<app_name>-prod ansible/playbooks/config.yml --extra-vars "app_name=<app_name> app_target=prod"
 ```
 This will reconfigure Varnish, without triggering a new deployment of you Drupal webapp. 
 
@@ -96,36 +98,44 @@ $ vagrant up
 in your myproject directory.
 # Advanced usage
 ## Advanced customization
-In line with Ansible's best practices, you can customize and override any value of your Drupsible stock/default by creating and editing any of the following:
-* ```ansible/playbooks/group_vars/<role>.yml```
-* ```ansible/playbooks/host_vars/<host>.yml```
+In line with Ansible's best practices, you can customize and override any value of your Drupsible stock/default by creating/editing any of the following:
+* ```ansible/playbooks/group_vars/<app_name>-<app_target>/all.yml```
+* ```ansible/playbooks/group_vars/<app_name>-<app_target>/deploy.yml```
+* ```ansible/playbooks/group_vars/<app_name>-<app_target>/varnish.yml```
+* ```ansible/playbooks/group_vars/<app_name>-<app_target>/mysql.yml```
+
+You can also configure parameters which maybe global to the application under
+```ansible/playbooks/group_vars/<app_name>/all.yml```
+or to the webservers group, no matter in which environment they are in
+```ansible/playbooks/group_vars/<app_name>/deploy.yml```
 
 A good example (SMTP) follows.
 ### Email sending capability ###
-Your Drupal website will need to send emails to notify the admin (and the registered users, if any) of several important events.
+Your Drupal webservers will need to send emails to notify the admin (and the registered users, if any) of several important events.
 
 In order to do that, a SMTP service must be made available to PHP. The default behavior is to relay all email to the MX host of the domain. But what if that's not what you want?
 
 Say you would like to send emails trough Gmail. You can do so by following these steps:
 #### Setup Gmail SMTP server
-By creating (or editing)
+Edit
 ```
-ansible/playbooks/host_vars/local.<mydomain>.yml
+ansible/playbooks/group_vars/<app_name>-prod/deploy.yml
 ```
-with
+adding this:
 ```
----
+# This below is smtp.gmail.com IPv4 address
+#smtp_server: '74.125.136.108'
 smtp_server: 'smtp.gmail.com'
 smtp_port: 587
-smtp_user: '<username>@gmail.com'
+smtp_user: 'someusername@gmail.com'
 ```
 
 #### Specify your Gmail password
-Create a file with your password under the secret folder (properly replacing mypassword, mydomain and myusername below):
+Create a file with your password under the secret folder (properly replacing <smtp_host>, <smtp_port>, <smtp_user>, <mypassword> and <ansible_fqdn> below):
 
 ```
-mkdir -p "/home/vagrant/ansible/secret/credentials/local.mydomain/postfix/smtp_sasl_password_map/[smtp.gmail.com]:587" && touch "/home/vagrant/ansible/secret/credentials/local.mydomain/postfix/smtp_sasl_password_map/[smtp.gmail.com]:587/myusername@gmail.com"
-echo "mypassword" > "/home/vagrant/ansible/secret/credentials/local.mydomain/postfix/smtp_sasl_password_map/[smtp.gmail.com]:587/myusername@gmail.com"
+mkdir -p "$HOME/ansible/secret/credentials/<ansible_fqdn>/postfix/smtp_sasl_password_map/[<smtp_host>]:<smtp_port>" && touch "$HOME/ansible/secret/credentials/<ansible_fqdn>/postfix/smtp_sasl_password_map/[<smtp_host>]:<smtp_port>/<smtp_user>"
+echo "<mypassword>" > "$HOME/ansible/secret/credentials/<ansible_fqdn>/postfix/smtp_sasl_password_map/[<smtp_host>]:<smtp_port>/<smtp_user>"
 ```
 
 Now in your TARGET server (the same server, when in local/Vagrant), delete a .lock file to regenerate the .db
@@ -134,10 +144,14 @@ Now in your TARGET server (the same server, when in local/Vagrant), delete a .lo
 sudo rm /etc/postfix/private_hash_tables/smtp_sasl_password_map.lock
 ```
 
+Notes:
+* There is no need to install the [SMTP drupal module](https://drupal.org/project/smtp), which also requires software installed in the server to connect to Gmail. 
+* Some hosting companies, like DigitalOcean, block outgoing SMTP traffic in IPv6. You can workaround that external restriction by setting smtp_port to a IPv4 address.
+
 #### Run Drupsible config playbook
 Finally, from /home/vagrant, run
 ```
-ansible-playbook -i ansible/inventory/<app_name>-<target_env> ansible/playbooks/config.yml
+ansible-playbook -i ansible/inventory/<app_name>-prod ansible/playbooks/config.yml --extra-vars "app_name=<app_name> app_target=prod"
 ```
 and Drupsible will automatically configure Postfix through DebOps.
 
