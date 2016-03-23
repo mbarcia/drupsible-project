@@ -8,7 +8,7 @@ APP_NAME="default"
 # This is your web domain, like example.com
 DOMAIN=""
 #
-DRUPAL_VERSION="7"
+DRUPAL_VERSION="8"
 #
 MULTILINGUAL=""
 LANGUAGES=""
