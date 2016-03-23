@@ -1,11 +1,11 @@
 ---
 #
-# Global app vars.
+# Configuration file for ALL servers in ALL the environments.
 #
 app_name: example-project
 
 # Drupal major version, 7 or 8
-drupal_version: '7'
+drupal_version: '8'
 
 # Is your app multilingual?
 app_i18n: False
