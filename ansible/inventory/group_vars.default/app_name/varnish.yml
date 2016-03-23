@@ -1,2 +1,5 @@
 ---
+#
+# Configuration file for the Varnish group of ALL the environments.
+#
 varnish_allowed_hosts: [ "127.0.0.1" ]

@@ -1,6 +1,6 @@
 ---
 #
-# Deployment configuration file for the LOCAL environment
+# Configuration file for the deploy/webserver group of the LOCAL environment.
 #
 
 # Modules to enable/disable/uninstall per app environment

@@ -1,6 +1,6 @@
 ---
 #
-# MySQL
+# Configuration file for the mysql group of ALL the environments.
 #
 mysql_mysqld_bind_address: '0.0.0.0'
 
