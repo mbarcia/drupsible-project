@@ -242,21 +242,93 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 		# Write USE_SITE_INSTALL
 		sed -i "s|USE_SITE_INSTALL=.*$|USE_SITE_INSTALL=\"${USE_SITE_INSTALL}\"|g" "${APP_NAME}.profile"
 	fi
-	
-	if [ "$DBDUMP" == "" ] && [ "$USE_SITE_INSTALL" != "yes" ]; then
-		echo "DB dump filename? (ie. example.sql.gz, must be in ansible/playbooks/dbdumps)"
-		read -r DBDUMP
-		# Write DBDUMP
-		sed -i "s|DBDUMP=.*$|DBDUMP=\"${DBDUMP}\"|g" "${APP_NAME}.profile"
+	if [ "$USE_UPSTREAM_SITE" != "yes" ]; then
+		echo "Want to use an upstream site to sync the DB and/or files with? (y|n)"
+		if askyesno; then
+			USE_UPSTREAM_SITE='yes'
+		else
+			USE_UPSTREAM_SITE='no'
+		fi
+		# Write USE_UPSTREAM_SITE
+		sed -i "s|USE_UPSTREAM_SITE=.*$|USE_UPSTREAM_SITE=\"${USE_UPSTREAM_SITE}\"|g" "${APP_NAME}.profile"
+		if [ "$USE_UPSTREAM_SITE" == "yes" ]; then
+			#
+			echo "Remote upstream host?"
+			read -r REMOTE_UPSTREAM_HOST
+			# Write REMOTE_UPSTREAM_HOST
+			sed -i "s|REMOTE_UPSTREAM_HOST=.*$|REMOTE_UPSTREAM_HOST=\"${REMOTE_UPSTREAM_HOST}\"|g" "${APP_NAME}.profile"
+			#
+			echo "Remote upstream port to SSH to (if not 22)? []"
+			read -r REMOTE_UPSTREAM_PORT
+			# Write REMOTE_UPSTREAM_PORT
+			sed -i "s|REMOTE_UPSTREAM_PORT=.*$|REMOTE_UPSTREAM_PORT=\"${REMOTE_UPSTREAM_PORT}\"|g" "${APP_NAME}.profile"
+			#
+			echo "Username to SSH into that remote host? []"
+			read -r REMOTE_UPSTREAM_USER
+			# Write REMOTE_UPSTREAM_USER
+			sed -i "s|REMOTE_UPSTREAM_USER=.*$|REMOTE_UPSTREAM_USER=\"${REMOTE_UPSTREAM_USER}\"|g" "${APP_NAME}.profile"
+			#
+			echo "Full site path in the remote host (docroot)?"
+			read -r REMOTE_UPSTREAM_DOCROOT
+			# Write REMOTE_UPSTREAM_DOCROOT
+			sed -i "s|REMOTE_UPSTREAM_DOCROOT=.*$|REMOTE_UPSTREAM_DOCROOT=\"${REMOTE_UPSTREAM_DOCROOT}\"|g" "${APP_NAME}.profile"
+			#
+			echo "If using a bastion host (as in ProxyCommand ssh), enter its credentials: []"
+			read -r REMOTE_UPSTREAM_PROXY_CREDENTIALS
+			# Write REMOTE_UPSTREAM_PROXY_CREDENTIALS
+			sed -i "s|REMOTE_UPSTREAM_PROXY_CREDENTIALS=.*$|REMOTE_UPSTREAM_PROXY_CREDENTIALS=\"${REMOTE_UPSTREAM_PROXY_CREDENTIALS}\"|g" "${APP_NAME}.profile"
+			#
+			echo "Bastion host port to SSH to (if not 22)? []"
+			read -r REMOTE_UPSTREAM_PROXY_PORT
+			# Write REMOTE_UPSTREAM_PROXY_PORT
+			sed -i "s|REMOTE_UPSTREAM_PROXY_PORT=.*$|REMOTE_UPSTREAM_PROXY_PORT=\"${REMOTE_UPSTREAM_PROXY_PORT}\"|g" "${APP_NAME}.profile"
+			#
+			echo "Enter any other SSH options needed: []"
+			read -r REMOTE_UPSTREAM_SSH_OPTIONS
+			# Write REMOTE_UPSTREAM_SSH_OPTIONS
+			sed -i "s|REMOTE_UPSTREAM_SSH_OPTIONS=.*$|REMOTE_UPSTREAM_SSH_OPTIONS=\"${REMOTE_UPSTREAM_SSH_OPTIONS}\"|g" "${APP_NAME}.profile"
+			#
+			echo "Want to sync files with the upstream site? (y|n)"
+			if askyesno; then
+				SYNC_FILES='yes'
+			else
+				SYNC_FILES='no'
+			fi
+			# Write SYNC_FILES
+			sed -i "s|SYNC_FILES=.*$|SYNC_FILES=\"${SYNC_FILES}\"|g" "${APP_NAME}.profile"
+			if [ "$SYNC_FILES" == "yes" ]; then
+				echo "Files path relative to the docroot? [sites/default/files]"
+				read -r REMOTE_UPSTREAM_FILES_PATH
+				if [ "$REMOTE_UPSTREAM_FILES_PATH" == "" ]; then
+					REMOTE_UPSTREAM_FILES_PATH='sites/default/files'
+				fi
+				# Write REMOTE_UPSTREAM_FILES_PATH
+				sed -i "s|REMOTE_UPSTREAM_FILES_PATH=.*$|REMOTE_UPSTREAM_FILES_PATH=\"${REMOTE_UPSTREAM_FILES_PATH}\"|g" "${APP_NAME}.profile"
+			fi
+			#
+			echo "Want to sync the DB with the upstream site? (y|n)"
+			if askyesno; then
+				SYNC_DB='yes'
+			else
+				SYNC_DB='no'
+			fi
+			# Write SYNC_DB
+			sed -i "s|SYNC_DB=.*$|SYNC_DB=\"${SYNC_DB}\"|g" "${APP_NAME}.profile"
+		else
+			if [ "$DBDUMP" == "" ]; then
+				echo "DB dump filename? (ie. example.sql.gz, must be in ansible/playbooks/dbdumps)"
+				read -r DBDUMP
+				# Write DBDUMP
+				sed -i "s|DBDUMP=.*$|DBDUMP=\"${DBDUMP}\"|g" "${APP_NAME}.profile"
+			fi
+			if [ "$FILES_TARBALL" == "" ]; then
+				echo "Files tarball? (ie. example-files.tar.gz, must be in ansible/playbooks/files-tarballs)"
+				read -r FILES_TARBALL
+				# Write FILES_TARBALL
+				sed -i "s|FILES_TARBALL=.*$|FILES_TARBALL=\"${FILES_TARBALL}\"|g" "${APP_NAME}.profile"
+			fi
+		fi
 	fi
-	
-	if [ "$FILES_TARBALL" == "" ] && [ "$USE_SITE_INSTALL" != "yes" ]; then
-		echo "Files tarball? (ie. example-files.tar.gz, must be in ansible/playbooks/files-tarballs)"
-		read -r FILES_TARBALL
-		# Write FILES_TARBALL
-		sed -i "s|FILES_TARBALL=.*$|FILES_TARBALL=\"${FILES_TARBALL}\"|g" "${APP_NAME}.profile"
-	fi
-	
 	if [ "$CODEBASE_TARBALL" == "" ]; then
 		if [ "$USE_INSTALL_PROFILE" == "no" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$CUSTOM_INSTALL_PROFILE" != "" ]); then
 			echo "Codebase tarball? (must be in ansible/playbooks/codebase-tarballs, leave empty if you have a Git repo.)"
@@ -320,8 +392,8 @@ if [ "$CODEBASE_TARBALL" == "" ]; then
 	fi
 fi
 # Connect to a new or existing ssh-agent
-if [ "$GIT_PASS" == "" ] && [ "$KEY_FILENAME" == "" ] && [ "$USE_INSTALL_PROFILE" != "yes" ]; then
-	echo "SSH key? [$HOME/.ssh/id_rsa]"
+if ([ "$GIT_PASS" == "" ] && [ "$KEY_FILENAME" == "" ] && [ "$USE_INSTALL_PROFILE" != "yes" ]) || [ "$USE_UPSTREAM_SITE" == "yes" ]; then
+	echo "SSH key filename (to git clone, and/or sync with the upstream host)? [$HOME/.ssh/id_rsa]"
 	read -r KEY_FILENAME
 	if [ "$KEY_FILENAME" == "" ]; then
 		# Set key to default: ~/.ssh/id_rsa
@@ -329,16 +401,16 @@ if [ "$GIT_PASS" == "" ] && [ "$KEY_FILENAME" == "" ] && [ "$USE_INSTALL_PROFILE
 	fi
 	# Write KEY_FILENAME
 	sed -i "s|KEY_FILENAME=.*$|KEY_FILENAME=\"${KEY_FILENAME}\"|g" "${APP_NAME}.profile"
-fi
-if [ "$GIT_PASS" == "" ] && [ "$USE_INSTALL_PROFILE" != "yes" ] && [ ! "$OSTYPE" = "darwin"* ]; then
-	# Invoke ssh-agent script, applying bash expansion to the tilde
-	./bin/ssh-agent.sh "${KEY_FILENAME/#\~/$HOME}"
-	# Connect to ssh-agent launched by ssh-agent.sh
-	SSH_AGENT_DATA="$HOME/.ssh-agent"
-	eval $(< "${SSH_AGENT_DATA/#\~/$HOME}")
-	# Report back
-	echo "SSH keys loaded:"
-	ssh-add -l
+	if [ ! "$OSTYPE" = "darwin"* ]; then
+		# Invoke ssh-agent script, applying bash expansion to the tilde
+		./bin/ssh-agent.sh "${KEY_FILENAME/#\~/$HOME}"
+		# Connect to ssh-agent launched by ssh-agent.sh
+		SSH_AGENT_DATA="$HOME/.ssh-agent"
+		eval $(< "${SSH_AGENT_DATA/#\~/$HOME}")
+		# Report back
+		echo "SSH key(s) loaded:"
+		ssh-add -l
+	fi
 fi
 #
 # Create configuration files, replacing with all the project-specific 
@@ -351,7 +423,7 @@ sed -i "s/app_name/${APP_NAME}/g" .gitignore
 if [ ! -f ansible.cfg ]; then
 	cp ansible.cfg.default ansible.cfg
 else
-	echo "Skipped copy of ansible.cfg: it already exists."
+	echo "Warning: skipped copy of ansible.cfg because it already exists. Check its contents before proceeding."
 fi
 # Vagrantfile
 #
@@ -362,7 +434,7 @@ cp Vagrantfile.default Vagrantfile
 if [ ! -f vagrant.yml ]; then
 	cp vagrant.default.yml vagrant.yml
 else
-	echo "Skipped copy of vagrant.yml: it already exists."
+	echo "Warning: skipped copy of vagrant.yml because it already exists. Check its contents before proceeding."
 fi
 sed -i "s/example\.com/${DOMAIN}/g" vagrant.yml
 # Remove any possible app duplicates
@@ -383,35 +455,35 @@ sed -i "s/ip_addr:.*/ip_addr: '${IP_ADDR_RANDOM}'/g" vagrant.yml
 #
 cp ansible/requirements.default.yml ansible/requirements.yml
 #
-# Loop through all the 5 environments + the default, creating the inventory files
+# Create the inventory file
 #
-for ENV in "-local" "-ci" "-qa" "-uat" "-prod"
+for ENV in "-local"
 do
 	#
-	# Inventory files
+	# Inventory file
 	#
-	cp "ansible/inventory/app_name${ENV}" "ansible/inventory/${APP_NAME}${ENV}"
-	# Replace example.com by the proper hostname
-	sed -i "s/example\.com/${DOMAIN}/g" "ansible/inventory/${APP_NAME}${ENV}"
-	# Replace app_name by the actual app name
-	sed -i "s/app_name/${APP_NAME}/g" "ansible/inventory/${APP_NAME}${ENV}"
+	if [ ! -f "ansible/inventory/${APP_NAME}${ENV}" ]; then
+		cp "ansible/inventory/app_name${ENV}" "ansible/inventory/${APP_NAME}${ENV}"
+		# Replace example.com by the proper hostname
+		sed -i "s/example\.com/${DOMAIN}/g" "ansible/inventory/${APP_NAME}${ENV}"
+		# Replace app_name by the actual app name
+		sed -i "s/app_name/${APP_NAME}/g" "ansible/inventory/${APP_NAME}${ENV}"
+	else
+		echo "Warning: skipped copy of ansible/inventory/${APP_NAME}${ENV} because it already exists. Check its contents before proceeding."
+	fi
 done
 #
-# Loop through all the 5 environments + the default, creating the placeholder for reference
+# Create env directories under playbooks/group_vars
 #
-for ENV in "-local" "-ci" "-qa" "-uat" "-prod" ""
+for ENV in "" "-local" "-ci" "-qa" "-uat" "-prod"
 do
-	#
-	# Group vars in playbooks directory
-	#
-	# Copy/create the group vars directory with empty config files for reference
+	# Copy/create the group vars directory under playbooks
 	mkdir -p "ansible/playbooks/group_vars/${APP_NAME}${ENV}/"
-	cp -pr "ansible/playbooks/group_vars.default/app_name${ENV}/." "ansible/playbooks/group_vars/${APP_NAME}${ENV}/"
 done
 #
-# Loop through local + the default, doing the regexp replacements
+# Loop through the local + the default, creating the default group vars
 #
-for ENV in "-local" "-prod" ""
+for ENV in "" "-local"
 do
 	#
 	# Group vars
@@ -457,21 +529,32 @@ do
 	else
 		sed -i "s|codebase_import:.*$|codebase_import: no|g" deploy.yml
 	fi
+	if [ "$USE_UPSTREAM_SITE" == "yes" ]; then
+		sed -i "s|  db_sync:.*$|  db_sync: '${SYNC_DB}'|g" deploy.yml
+		sed -i "s|  files_sync:.*$|  files_sync: '${SYNC_FILES}'|g" deploy.yml
+		sed -i "s|deploy_upstream_remote_host:.*$|deploy_upstream_remote_host: '${REMOTE_UPSTREAM_HOST}'|g" deploy.yml
+		sed -i "s|deploy_upstream_remote_port:.*$|deploy_upstream_remote_port: '${REMOTE_UPSTREAM_PORT}'|g" deploy.yml
+		sed -i "s|deploy_upstream_remote_user:.*$|deploy_upstream_remote_user: '${REMOTE_UPSTREAM_USER}'|g" deploy.yml
+		sed -i "s|deploy_upstream_docroot:.*$|deploy_upstream_docroot: '${REMOTE_UPSTREAM_DOCROOT}'|g" deploy.yml
+		sed -i "s|deploy_upstream_files_path:.*$|deploy_upstream_files_path: '${REMOTE_UPSTREAM_FILES_PATH}'|g" deploy.yml
+		sed -i "s|deploy_upstream_proxy_credentials:.*$|deploy_upstream_proxy_credentials: '${REMOTE_UPSTREAM_PROXY_CREDENTIALS}'|g" deploy.yml
+		sed -i "s|deploy_upstream_proxy_port:.*$|deploy_upstream_proxy_port: '${REMOTE_UPSTREAM_PROXY_PORT}'|g" deploy.yml
+		sed -i "s|deploy_upstream_ssh_options:.*$|deploy_upstream_ssh_options: '${REMOTE_UPSTREAM_SSH_OPTIONS}'|g" deploy.yml
+	fi
 	if [ "$USE_SITE_INSTALL" == "yes" ]; then
-		sed -i "s|site_install:.*$|site_install: yes|g" deploy.yml
+		sed -i "s|  site_install:.*$|  site_install: yes|g" deploy.yml
+	fi
+	if [ ! "$DBDUMP" == "" ] && [ "$USE_SITE_INSTALL" != "yes" ] && [ "$SYNC_DB" != "yes" ]; then 
+		sed -i "s|  db_dump_filename:.*$|  db_dump_filename: '${DBDUMP}'|g" deploy.yml
+		sed -i "s|  db_import:.*$|  db_import: yes|g" deploy.yml
 	else
-		if [ ! "$DBDUMP" == "" ]; then 
-			sed -i "s|db_dump_filename:.*$|db_dump_filename: '${DBDUMP}'|g" deploy.yml
-			sed -i "s|db_import:.*$|db_import: yes|g" deploy.yml
-		else
-			sed -i "s|db_import:.*$|db_import: no|g" deploy.yml
-		fi
-		if [ ! "$FILES_TARBALL" == "" ]; then
-			sed -i "s|files_tarball_filename:.*$|files_tarball_filename: '${FILES_TARBALL}'|g" deploy.yml
-			sed -i "s|files_import:.*$|files_import: yes|g" deploy.yml
-		else
-			sed -i "s|files_import:.*$|files_import: no|g" deploy.yml
-		fi
+		sed -i "s|  db_import:.*$|  db_import: no|g" deploy.yml
+	fi
+	if [ ! "$FILES_TARBALL" == "" ] && [ "$USE_SITE_INSTALL" != "yes" ] && [ "$SYNC_FILES" != "yes" ]; then
+		sed -i "s|  files_tarball_filename:.*$|  files_tarball_filename: '${FILES_TARBALL}'|g" deploy.yml
+		sed -i "s|  files_import:.*$|  files_import: yes|g" deploy.yml
+	else
+		sed -i "s|  files_import:.*$|  files_import: no|g" deploy.yml
 	fi
 	sed -i "s/git_repo_protocol:.*$/git_repo_protocol: \"${GIT_PROTOCOL}\"/g" deploy.yml
 	sed -i "s/git_repo_server:.*$/git_repo_server: \"${GIT_SERVER}\"/g" deploy.yml
