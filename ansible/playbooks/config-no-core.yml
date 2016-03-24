@@ -53,7 +53,7 @@
   roles:
   - role: drupsible.mysql
     tags: [ 'role::mysql-clone' ]
-    when: deploy_db_clone_enabled|bool
+    when: deploy_db_clone_enabled|default(False)|bool
     vars:
       mysql_databases:
       - name: "{{ app_name }}_{{ build }}"
