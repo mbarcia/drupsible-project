@@ -17,7 +17,7 @@ if [ "$2" == "is_windows" ]; then
 		ln -s /vagrant/ansible/playbooks /home/vagrant/ansible/playbooks
 	fi
 	# Copy inventory files
-	for ENV in "-local" "-ci" "-qa" "-uat" "-prod"
+	for ENV in "-local"
 	do
 		# Ansible chokes on its permissions when synced with a Windows host
 		cp "/vagrant/ansible/inventory/${APP_NAME}${ENV}" /home/vagrant/ansible/inventory/
