@@ -9,47 +9,21 @@ deploy_modules_present_env: [ 'devel' ]
 # Always disable/uninstall cdn
 deploy_modules_absent_env: [ 'cdn' ]
 
-# app_env needs to be specified in its entirety
-app_env:
-  aliases: []
-  user: 'vagrant'
-  group: 'www-data'
-  admin_email: admin@{{ webdomain }}
-  fpm_listen: '/var/run/php5-fpm-{{ app_name }}.sock'
-  files_tarball_filename: '{{ app_name }}-files.tar.gz'
-  site_install: False
-  db_dump_filename: '{{ app_name }}.sql.gz'
-  db_name: "{{ app_name }}"
-  db_user: "{{ app_name|truncate(16) }}"
-  # Set to True if the target env has memcached available
-  memcached: True
-  # True clones the cur database
-  db_clone: False
-  # True looks for a DB dump to upload and import
-  db_import: False
-  # True syncs with source DB
-  db_sync: False
-  # True looks for tarballs (files) to upload and import
-  files_import: False
-  files_sync: False
-  files_copy: False
-  do_cur_backup: False
-  adjust_db: False
-  syslog: True
-  https_enabled: no
-  varnish_enabled: yes
-  varnish_mgmt_port: 6082
-  app_apache2_alt_port: 8080
-
-# New Relic License key (not enabled in local)
-newrelic_license_key: False
-
-# Add vagrant to the default groups defined in debops.sshd
-sshd__allow_groups: [ 'vagrant' , 'root', 'admins', 'sshusers', 'sftponly' ]
-
 # PHP development settings, YAY!
 php5_max_execution_time: '0'
 php5_max_input_time: '-1'
+
+# No New Relic in local
+apache2_php5_packages_ontop:
+- php-pear
+- php-soap
+- php5-curl
+- php5-gd
+- php5-gmp
+- php5-mcrypt
+- php5-memcache
+- php5-mysql
+- imagemagick
 
 # Also allow Vagrant-host
 apache2_allowed_hosts: [ "127.0.0.1", "10.0.2.2" ]

@@ -10,17 +10,21 @@
     php5_app_pool:
       enabled: True
       name: "{{ app_name }}"
-      listen: "{{ app_env['fpm_listen'] }}"
-      user: "{{ app_env['user'] }}"
-      group: "{{ app_env['group'] }}"
+      listen: "{{ ansible_local.apache2.apache2_uds_available|default(True)|bool|ternary(app_fpm_listen_uds, app_fpm_listen) }}"
+      user: "{{ app_user }}"
+      group: "{{ app_group }}"
       php_flag: "{{ php_flag }}"
       php_value: "{{ php_value }}"
     php5_pools: [ '{{ php5_app_pool }}' ]
     tags: config.php5
   - role: drupsible.deploy
     tags: deploy
-    deploy_varnish_enabled: "{{ app_env['varnish_enabled'] }}"
-    deploy_varnish_mgmt_port: "{{ app_env['varnish_mgmt_port'] }}"
+    deploy_varnish_enabled: "{{ app_varnish_enabled }}"
+    deploy_varnish_mgmt_port: "{{ app_varnish_mgmt_port|default('6082') }}"
     deploy_target: "{{ app_target }}"
     deploy_webhost: "{{ app_webhost }}"
     trusted_host_patterns: [ "(?i)^.+\\.{{ webdomain|regex_replace('[.]', '\\.') }}$" ]
+    deploy_mysql_host: "{{ groups[ app_name + '-' + app_target + '_mysql' ][0] }}"
+    deploy_db_name: "{{ app_db_name }}"
+    deploy_db_user: "{{ app_db_user }}"
+    deploy_db_password: "{{ app_db_password|default(omit) }}"

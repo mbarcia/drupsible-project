@@ -3,68 +3,42 @@
 # Configuration file for the deploy/webserver group of ALL the environments.
 #
 
-# app_env needs to be specified in its entirety
-app_env:
-  aliases:
-    - "{{ webdomain }}"
-  user: example-project
-  group: www-data
-  fpm_listen: '/var/run/php5-fpm-{{ app_name }}.sock'
-  admin_email: "admin@{{ webdomain }}"
-  files_tarball_filename: '{{ app_name }}-files.tar.gz'
-  site_install: False
-  db_dump_filename: '{{ app_name }}.sql.gz'
-  db_name: "{{ app_name }}"
-  db_user: "{{ app_name|truncate(16) }}"
-  # Set to True if the target env has memcached available
-  memcached: True
-  # True clones the cur database
-  db_clone: False
-  # True looks for a DB dump to upload and import
-  db_import: False
-  # True syncs with source DB
-  db_sync: False
-  # True looks for tarballs (files) to upload and import
-  files_import: False
-  files_sync: False
-  files_copy: True
-  do_cur_backup: True
-  adjust_db: True
-  syslog: yes
-  https_enabled: no
-  varnish_enabled: yes
-  varnish_mgmt_port: 6082
-  app_apache2_alt_port: 8080
+#
+# drupsible.deploy defaults
+#
+# Set by configure.sh
+deploy_files_sync_enabled: False
+# Set by configure.sh
+deploy_files_tarball_filename: ''
 
-#
-# Codebase of the application
-#
-# Tarball option
-codebase_import: no
-codebase_tarball_filename: '{{ app_name }}-codebase.tar.gz'
-# Git repo configuration option
-git_repo_protocol: ''
-git_repo_server: ''
-git_repo_user: ''
-git_repo_path: ''
-git_repo_pass: ''
-git_version: ''
-# Install profile option
+# Set by configure.sh
 deploy_install_profile_enabled: False
-deploy_custom_install_profile: ''
 deploy_d_o_install_profile: ''
+deploy_custom_install_profile: ''
+
+# Set by configure.sh
 deploy_drush_make_enabled: False
-deploy_drush_makefile: "{{ app_name }}.make"
+deploy_drush_makefile: ''
+
+# Set by configure.sh
+deploy_codebase_tarball_filename: ''
+deploy_codebase_import_enabled: no
+
+# Set by configure.sh
+deploy_site_install_enabled: False
 
 #
 # Upstream host to sync db/files with
 #
+# Set by configure.sh
+deploy_db_sync_enabled: False
 deploy_upstream_remote_host: ""
 deploy_upstream_remote_port: ""
 deploy_upstream_remote_user: ""
 deploy_upstream_docroot: ""
 deploy_upstream_files_path: "sites/default/files"
 # Advanced upstream host configuration
+# Set by configure.sh
 deploy_upstream_proxy_port: ""
 deploy_upstream_proxy_credentials: ""
 deploy_upstream_ssh_options: ""
@@ -72,28 +46,24 @@ deploy_upstream_ssh_options: ""
 #
 # Drupal settings
 #
-deploy_drupal_fast_404: no
-deploy_proxy_server: ''
-deploy_proxy_port: 8080
-deploy_proxy_username: ''
-deploy_proxy_password: ''
-deploy_proxy_user_agent: ''
-deploy_proxy_exceptions: 
-  - '127.0.0.1'
-  - 'localhost'
-deploy_container_base_class: '\Drupal\Core\DependencyInjection\Container'
-config_dirs: []
-deploy_identifier: '\Drupal::VERSION'
-drush_min_version: 8.0.5
+# Set by configure.sh
+deploy_db_dump_filename: ''
+deploy_db_import_enabled:
+
+# Set by configure.sh
+deploy_files_tarball_filename:
+deploy_files_import_enabled:
+
+# Set by configure.sh
+deploy_git_repo_protocol: ''
+deploy_git_repo_server: ''
+deploy_git_repo_user: ''
+deploy_git_repo_path: ''
+deploy_git_repo_pass: ''
+deploy_git_repo_version: ''
 
 #
-# SSL self-signed certs
-#
-deploy_pki_crt: '/etc/pki/realms/domain/default.crt'
-deploy_pki_key: '/etc/pki/realms/domain/default.key'
-
-#
-# apache2 defaults
+# drupsible.apache2 defaults
 #
 
 # Here's the list of all IP's from Cloudflare
@@ -106,35 +76,35 @@ apache2_mpm: "worker"
 apache2_packages_ontop: []
 
 apache2_modules:
-  - alias
-  - auth_basic
-  - authn_file
-  - authz_host
-  - authz_user
-  - autoindex
-  - deflate
-  - dir
-  - env
-  - expires
-  - mime
-  - negotiation
-  - reqtimeout
-  - rewrite
-  - setenvif
-  - status
-  - ssl
+- alias
+- auth_basic
+- authn_file
+- authz_host
+- authz_user
+- autoindex
+- deflate
+- dir
+- env
+- expires
+- mime
+- negotiation
+- reqtimeout
+- rewrite
+- setenvif
+- status
+- ssl
 
-php5_packages_ontop:
-  - php-pear
-  - php-soap
-  - php5-curl
-  - php5-gd
-  - php5-gmp
-  - php5-mcrypt
-  - php5-memcache
-  - php5-mysql
-  - imagemagick
-  - newrelic-php5
+apache2_php5_packages_ontop:
+- php-pear
+- php-soap
+- php5-curl
+- php5-gd
+- php5-gmp
+- php5-mcrypt
+- php5-memcache
+- php5-mysql
+- imagemagick
+- newrelic-php5
 
 post_max_size: "32M"
 upload_max_filesize: "32M"
@@ -144,25 +114,24 @@ html_errors: "Off"
 allow_override_htaccess: None
 
 #
-# php5 defaults
+# debops.php5 defaults
 #
 
 php5_packages:
-  - php-pear
-  - php-soap
-  - php5-curl
-  - php5-gd
-  - php5-gmp
-  - php5-mcrypt
-  - php5-mysql
+- php-pear
+- php-soap
+- php5-curl
+- php5-gd
+- php5-gmp
+- php5-mcrypt
+- php5-mysql
 
 php5_post_max_size: '32M'
 
 php5_default_pm_status: True
 php5_default_pm_status_path: "{{ app_fpm_status_path | default('/fpm-status')}}"
 php5_default_ping_path: "{{ app_fpm_ping_path | default('/ping') }}"
-
-app_php5_production: "{{ (app_target is defined and app_target != 'prod') | ternary(False, True) }}"
+php5_production: "{{ (app_target|default('prod') == 'prod')|ternary(True, False) }}"
 
 php_value:
   memory_limit: 192M
@@ -177,5 +146,5 @@ php_value:
 php_flag:
   cgi.fix_path_info: 1
   # The following settings for PHP 5.5 are based on https://goo.gl/AsDmgt
-  opcache.validate_timestamps: "{{ (app_target is defined and app_target != 'prod') | ternary('True', 'False') }}"
+  opcache.validate_timestamps: "{{ (app_target|default('prod') != 'prod') | ternary('True', 'False') }}"
   opcache.fast_shutdown: 1

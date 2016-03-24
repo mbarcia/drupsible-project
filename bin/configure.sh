@@ -494,19 +494,20 @@ do
 	cd "ansible/inventory/group_vars/${APP_NAME}${ENV}" || exit 2
 	# Perform the regexp replacements in the final config files
 	sed -i "s/example\.com/${DOMAIN}/g" all.yml
-	sed -i "s/example\.com/${DOMAIN}/g" deploy.yml
 	sed -i "s/example-project/${APP_NAME}/g" all.yml
+	sed -i "s/example\.com/${DOMAIN}/g" deploy.yml
 	sed -i "s/example-project/${APP_NAME}/g" deploy.yml
-	sed -i "s/example-project/${APP_NAME}/g" mysql.yml
-	sed -i "s/drupal_version:.*/drupal_version: '${DRUPAL_VERSION}'/g" all.yml
+	sed -i "s/app_drupal_version:.*/app_drupal_version: '${DRUPAL_VERSION}'/g" all.yml
 	if [ "$MULTILINGUAL" == "yes" ]; then
-		sed -i "s|app_i18n:.*$|app_i18n: yes|g" all.yml
+		sed -i "s|app_i18n_enabled:.*$|app_i18n_enabled: yes|g" all.yml
 		if [ "$LANGUAGES" != "" ]; then
 			sed -i "s|app_languages:.*$|app_languages: [ ${LANGUAGES} ]|g" all.yml
 		fi
+	else
+		sed -i "s|app_i18n_enabled:.*$|app_i18n_enabled: no|g" all.yml
 	fi
 	if [ "$USE_INSTALL_PROFILE" == "yes" ]; then
-		sed -i "s/deploy_install_profile_enabled:.*$/deploy_install_profile_enabled: '${USE_INSTALL_PROFILE}'/g" deploy.yml
+		sed -i "s/deploy_install_profile_enabled:.*$/deploy_install_profile_enabled: 'yes'/g" deploy.yml
 		if [ "$D_O_INSTALL_PROFILE" != "" ]; then
 			sed -i "s/deploy_d_o_install_profile:.*$/deploy_d_o_install_profile: '${D_O_INSTALL_PROFILE}'/g" deploy.yml
 			sed -i "s/deploy_custom_install_profile:.*$/deploy_custom_install_profile: ''/g" deploy.yml
@@ -516,18 +517,34 @@ do
 		else 
 			sed -i "s/deploy_d_o_install_profile:.*$/deploy_d_o_install_profile: standard/g" deploy.yml
 		fi		
+	else
+		sed -i "s/deploy_install_profile_enabled:.*$/deploy_install_profile_enabled: 'no'/g" deploy.yml
 	fi
 	if [ "$USE_DRUSH_MAKE" == "yes" ]; then
-		sed -i "s|deploy_drush_make_enabled:.*$|deploy_drush_make_enabled: '${USE_DRUSH_MAKE}'|g" deploy.yml
+		sed -i "s|deploy_drush_make_enabled:.*$|deploy_drush_make_enabled: 'yes'|g" deploy.yml
 		if [ "$DRUSH_MAKEFILE" != "" ]; then
 			sed -i "s|deploy_drush_makefile:.*$|deploy_drush_makefile: '${DRUSH_MAKEFILE}'|g" deploy.yml
 		fi		
+	else
+		sed -i "s|deploy_drush_make_enabled:.*$|deploy_drush_make_enabled: 'no'|g" deploy.yml
 	fi
 	if [ ! "$CODEBASE_TARBALL" == "" ] && [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$CUSTOM_INSTALL_PROFILE" != "" ]; then
-		sed -i "s|codebase_tarball_filename:.*$|codebase_tarball_filename: '${CODEBASE_TARBALL}'|g" deploy.yml
-		sed -i "s|codebase_import:.*$|codebase_import: yes|g" deploy.yml
+		sed -i "s|deploy_codebase_tarball_filename:.*$|deploy_codebase_tarball_filename: '${CODEBASE_TARBALL}'|g" deploy.yml
+		sed -i "s|deploy_codebase_import_enabled:.*$|deploy_codebase_import_enabled: yes|g" deploy.yml
 	else
-		sed -i "s|codebase_import:.*$|codebase_import: no|g" deploy.yml
+		sed -i "s|deploy_codebase_import_enabled:.*$|deploy_codebase_import_enabled: no|g" deploy.yml
+	fi
+	if [ "$USE_UPSTREAM_SITE" == "yes" ]; then
+		sed -i "s|deploy_db_sync_enabled:.*$|deploy_db_sync_enabled: '${SYNC_DB}'|g" deploy.yml
+		sed -i "s|deploy_files_sync_enabled:.*$|deploy_files_sync_enabled: '${SYNC_FILES}'|g" deploy.yml
+		sed -i "s|deploy_upstream_remote_host:.*$|deploy_upstream_remote_host: '${REMOTE_UPSTREAM_HOST}'|g" deploy.yml
+		sed -i "s|deploy_upstream_remote_port:.*$|deploy_upstream_remote_port: '${REMOTE_UPSTREAM_PORT}'|g" deploy.yml
+		sed -i "s|deploy_upstream_remote_user:.*$|deploy_upstream_remote_user: '${REMOTE_UPSTREAM_USER}'|g" deploy.yml
+		sed -i "s|deploy_upstream_docroot:.*$|deploy_upstream_docroot: '${REMOTE_UPSTREAM_DOCROOT}'|g" deploy.yml
+		sed -i "s|deploy_upstream_files_path:.*$|deploy_upstream_files_path: '${REMOTE_UPSTREAM_FILES_PATH}'|g" deploy.yml
+		sed -i "s|deploy_upstream_proxy_credentials:.*$|deploy_upstream_proxy_credentials: '${REMOTE_UPSTREAM_PROXY_CREDENTIALS}'|g" deploy.yml
+		sed -i "s|deploy_upstream_proxy_port:.*$|deploy_upstream_proxy_port: '${REMOTE_UPSTREAM_PROXY_PORT}'|g" deploy.yml
+		sed -i "s|deploy_upstream_ssh_options:.*$|deploy_upstream_ssh_options: '${REMOTE_UPSTREAM_SSH_OPTIONS}'|g" deploy.yml
 	fi
 	if [ "$USE_UPSTREAM_SITE" == "yes" ]; then
 		sed -i "s|  db_sync:.*$|  db_sync: '${SYNC_DB}'|g" deploy.yml
@@ -542,26 +559,27 @@ do
 		sed -i "s|deploy_upstream_ssh_options:.*$|deploy_upstream_ssh_options: '${REMOTE_UPSTREAM_SSH_OPTIONS}'|g" deploy.yml
 	fi
 	if [ "$USE_SITE_INSTALL" == "yes" ]; then
-		sed -i "s|  site_install:.*$|  site_install: yes|g" deploy.yml
-	fi
-	if [ ! "$DBDUMP" == "" ] && [ "$USE_SITE_INSTALL" != "yes" ] && [ "$SYNC_DB" != "yes" ]; then 
-		sed -i "s|  db_dump_filename:.*$|  db_dump_filename: '${DBDUMP}'|g" deploy.yml
-		sed -i "s|  db_import:.*$|  db_import: yes|g" deploy.yml
+		sed -i "s|deploy_site_install_enabled:.*$|deploy_site_install_enabled: yes|g" deploy.yml
 	else
-		sed -i "s|  db_import:.*$|  db_import: no|g" deploy.yml
+		if [ ! "$DBDUMP" == "" ]; then 
+			sed -i "s|deploy_db_dump_filename:.*$|deploy_db_dump_filename: '${DBDUMP}'|g" deploy.yml
+			sed -i "s|deploy_db_import_enabled:.*$|deploy_db_import_enabled: yes|g" deploy.yml
+		else
+			sed -i "s|deploy_db_import_enabled:.*$|deploy_db_import_enabled: no|g" deploy.yml
+		fi
+		if [ ! "$FILES_TARBALL" == "" ]; then
+			sed -i "s|deploy_files_tarball_filename:.*$|deploy_files_tarball_filename: '${FILES_TARBALL}'|g" deploy.yml
+			sed -i "s|deploy_files_import_enabled:.*$|deploy_files_import_enabled: yes|g" deploy.yml
+		else
+			sed -i "s|deploy_files_import_enabled:.*$|deploy_files_import_enabled: no|g" deploy.yml
+		fi
 	fi
-	if [ ! "$FILES_TARBALL" == "" ] && [ "$USE_SITE_INSTALL" != "yes" ] && [ "$SYNC_FILES" != "yes" ]; then
-		sed -i "s|  files_tarball_filename:.*$|  files_tarball_filename: '${FILES_TARBALL}'|g" deploy.yml
-		sed -i "s|  files_import:.*$|  files_import: yes|g" deploy.yml
-	else
-		sed -i "s|  files_import:.*$|  files_import: no|g" deploy.yml
-	fi
-	sed -i "s/git_repo_protocol:.*$/git_repo_protocol: \"${GIT_PROTOCOL}\"/g" deploy.yml
-	sed -i "s/git_repo_server:.*$/git_repo_server: \"${GIT_SERVER}\"/g" deploy.yml
-	sed -i "s/git_repo_user:.*$/git_repo_user: \"${GIT_USER}\"/g" deploy.yml
-	sed -i "s|git_repo_path:.*$|git_repo_path: \"${GIT_PATH}\"|g" deploy.yml
-	sed -i "s/git_repo_pass:.*$/git_repo_pass: \"${GIT_PASS}\"/g" deploy.yml
-	sed -i "s|git_version:.*$|git_version: \"${GIT_BRANCH}\"|g" deploy.yml
+	sed -i "s/deploy_git_repo_protocol:.*$/deploy_git_repo_protocol: \"${GIT_PROTOCOL}\"/g" deploy.yml
+	sed -i "s/deploy_git_repo_server:.*$/deploy_git_repo_server: \"${GIT_SERVER}\"/g" deploy.yml
+	sed -i "s/deploy_git_repo_user:.*$/deploy_git_repo_user: \"${GIT_USER}\"/g" deploy.yml
+	sed -i "s|deploy_git_repo_path:.*$|deploy_git_repo_path: \"${GIT_PATH}\"|g" deploy.yml
+	sed -i "s/deploy_git_repo_pass:.*$/deploy_git_repo_pass: \"${GIT_PASS}\"/g" deploy.yml
+	sed -i "s|deploy_git_repo_version:.*$|deploy_git_repo_version: \"${GIT_BRANCH}\"|g" deploy.yml
 	# Change directory out of group vars
 	cd - > /dev/null || exit 2
 done
