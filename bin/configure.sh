@@ -408,7 +408,7 @@ if ([ "$GIT_PASS" == "" ] && [ "$KEY_FILENAME" == "" ] && [ "$USE_INSTALL_PROFIL
 fi
 # Gather input about https enabled
 # HTTPS is currently available only on D7, so don't bother asking in D8
-if [ ${DRUPAL_VERSION} == '7' ] && [ "$APP_HTTPS_ENABLED" == "" ]; then
+if [ "${DRUPAL_VERSION}" == '7' ] && [ "$APP_HTTPS_ENABLED" == "" ]; then
 	echo "Want your website deployed as https:// instead of just http://? (y|n)"
 	if askyesno; then
 		APP_HTTPS_ENABLED='yes'
