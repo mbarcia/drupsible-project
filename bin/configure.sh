@@ -407,7 +407,8 @@ if ([ "$GIT_PASS" == "" ] && [ "$KEY_FILENAME" == "" ] && [ "$USE_INSTALL_PROFIL
 	fi
 fi
 # Gather input about https enabled
-if [ "$APP_HTTPS_ENABLED" == "" ]; then
+# HTTPS is currently available only on D7, so don't bother asking in D8
+if [ ${DRUPAL_VERSION} == '7' ] && [ "$APP_HTTPS_ENABLED" == "" ]; then
 	echo "Want your website deployed as https:// instead of just http://? (y|n)"
 	if askyesno; then
 		APP_HTTPS_ENABLED='yes'
@@ -418,6 +419,7 @@ if [ "$APP_HTTPS_ENABLED" == "" ]; then
 	sed -i "s|APP_HTTPS_ENABLED=.*$|APP_HTTPS_ENABLED=\"${APP_HTTPS_ENABLED}\"|g" "${APP_NAME}.profile"
 fi
 # Gather input about varnish enabled
+# Varnish does not perform SSL termination, so don't ask if HTTPS is enabled
 if [ "$APP_HTTPS_ENABLED" != "yes" ] && [ "$APP_VARNISH_ENABLED" == "" ]; then
 	echo "Want your website deployed behind a Varnish front-end? (y|n)"
 	if askyesno; then
