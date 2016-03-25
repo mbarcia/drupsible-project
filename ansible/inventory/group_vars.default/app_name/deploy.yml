@@ -8,8 +8,6 @@
 #
 # Set by configure.sh
 deploy_files_sync_enabled: False
-# Set by configure.sh
-deploy_files_tarball_filename: ''
 
 # Set by configure.sh
 deploy_install_profile_enabled: False
