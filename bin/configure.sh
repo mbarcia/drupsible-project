@@ -527,7 +527,7 @@ do
 		# Varnish can only be enabled in http (not https)
 		sed -i "s|app_varnish_enabled:.*$|app_varnish_enabled: no|g" all.yml
 	else
-		if[ "$APP_VARNISH_ENABLED" == "yes" ]; then
+		if [ "$APP_VARNISH_ENABLED" == "yes" ]; then
 			sed -i "s|app_varnish_enabled:.*$|app_varnish_enabled: yes|g" all.yml
 		else
 			sed -i "s|app_varnish_enabled:.*$|app_varnish_enabled: no|g" all.yml
