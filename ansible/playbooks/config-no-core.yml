@@ -29,7 +29,7 @@
     mysql_databases:
     - name: "{{ app_name }}"
       state: 'present'
-    - name: "{{ app_name }}_{{ build }}"
+    - name: "{{ app_name }}_{{ app_build_id }}"
       state: "{{ app_db_create_for_build_enabled|default(False)|bool|ternary('present', 'absent') }}"
     mysql_users:
     - name: "{{ app_db_user }}"

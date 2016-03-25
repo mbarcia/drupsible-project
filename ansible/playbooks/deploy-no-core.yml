@@ -19,6 +19,7 @@
     tags: config.php5
   - role: drupsible.deploy
     tags: deploy
+    build: "{{ app_build_id }}"
     deploy_varnish_enabled: "{{ app_varnish_enabled }}"
     deploy_varnish_mgmt_port: "{{ app_varnish_mgmt_port|default('6082') }}"
     deploy_target: "{{ app_target }}"

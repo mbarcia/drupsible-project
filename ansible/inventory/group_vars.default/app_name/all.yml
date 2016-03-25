@@ -8,6 +8,10 @@ app_name: example-project
 # Drupal major version, 7 or 8
 # Set by configure.sh
 app_drupal_version: '8'
+
+# String to identify the build based on today's date like 20201224_1824
+app_build_id: "{{ ansible_date_time['year'] }}{{ ansible_date_time['month'] }}{{ ansible_date_time['day'] }}_{{ ansible_date_time['hour'] }}{{ ansible_date_time['minute'] }}"
+
 # OS username
 # Set by configure.sh
 app_user: example-project
