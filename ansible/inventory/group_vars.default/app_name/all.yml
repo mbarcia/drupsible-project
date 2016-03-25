@@ -27,6 +27,8 @@ app_admin_email: "admin@{{ webdomain }}"
 app_db_name: "{{ app_name }}"
 # DU username. MySQL limits this value to 16 chars.
 app_db_user: "{{ app_name|truncate(16) }}"
+# Should Drupsible create a new DB for the build DB
+app_db_create_for_build_enabled: False
 # Should Drupsible setup and configure memcached?
 app_memcached_enabled: True
 # Should Drupsible setup everything for the website to be accessed with https?
