@@ -58,5 +58,8 @@ GIT_PATH=""
 GIT_PASS=""
 #
 GIT_BRANCH="master"
+#
+APP_HTTPS_ENABLED=""
+APP_VARNISH_ENABLED=""
 
 # Last reconfigured on:

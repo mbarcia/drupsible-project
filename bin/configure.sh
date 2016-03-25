@@ -406,6 +406,28 @@ if ([ "$GIT_PASS" == "" ] && [ "$KEY_FILENAME" == "" ] && [ "$USE_INSTALL_PROFIL
 		./bin/ssh-agent.sh "${KEY_FILENAME/#\~/$HOME}"
 	fi
 fi
+# Gather input about https enabled
+if [ "$APP_HTTPS_ENABLED" == "" ]; then
+	echo "Want your website deployed as https:// instead of just http://? (y|n)"
+	if askyesno; then
+		APP_HTTPS_ENABLED='yes'
+	else
+		APP_HTTPS_ENABLED='no'
+	fi
+	# Write APP_HTTPS_ENABLED
+	sed -i "s|APP_HTTPS_ENABLED=.*$|APP_HTTPS_ENABLED=\"${APP_HTTPS_ENABLED}\"|g" "${APP_NAME}.profile"
+fi
+# Gather input about varnish enabled
+if [ "$APP_HTTPS_ENABLED" != "yes" ] && [ "$APP_VARNISH_ENABLED" == "" ]; then
+	echo "Want your website deployed behind a Varnish front-end? (y|n)"
+	if askyesno; then
+		APP_VARNISH_ENABLED='yes'
+	else
+		APP_VARNISH_ENABLED='no'
+	fi
+	# Write APP_VARNISH_ENABLED
+	sed -i "s|APP_VARNISH_ENABLED=.*$|APP_VARNISH_ENABLED=\"${APP_VARNISH_ENABLED}\"|g" "${APP_NAME}.profile"
+fi
 #
 # Create configuration files, replacing with all the project-specific 
 # config values gathered.
@@ -500,6 +522,17 @@ do
 	else
 		sed -i "s|app_i18n_enabled:.*$|app_i18n_enabled: no|g" all.yml
 	fi
+	if [ "$APP_HTTPS_ENABLED" == "yes" ]; then
+		sed -i "s|app_https_enabled:.*$|app_https_enabled: yes|g" all.yml
+		# Varnish can only be enabled in http (not https)
+		sed -i "s|app_varnish_enabled:.*$|app_varnish_enabled: no|g" all.yml
+	else
+		if[ "$APP_VARNISH_ENABLED" == "yes" ]; then
+			sed -i "s|app_varnish_enabled:.*$|app_varnish_enabled: yes|g" all.yml
+		else
+			sed -i "s|app_varnish_enabled:.*$|app_varnish_enabled: no|g" all.yml
+		fi
+	fi
 	if [ "$USE_INSTALL_PROFILE" == "yes" ]; then
 		sed -i "s/deploy_install_profile_enabled:.*$/deploy_install_profile_enabled: 'yes'/g" deploy.yml
 		if [ "$D_O_INSTALL_PROFILE" != "" ]; then
@@ -540,18 +573,6 @@ do
 		sed -i "s|deploy_upstream_proxy_port:.*$|deploy_upstream_proxy_port: '${REMOTE_UPSTREAM_PROXY_PORT}'|g" deploy.yml
 		sed -i "s|deploy_upstream_ssh_options:.*$|deploy_upstream_ssh_options: '${REMOTE_UPSTREAM_SSH_OPTIONS}'|g" deploy.yml
 	fi
-	if [ "$USE_UPSTREAM_SITE" == "yes" ]; then
-		sed -i "s|  db_sync:.*$|  db_sync: '${SYNC_DB}'|g" deploy.yml
-		sed -i "s|  files_sync:.*$|  files_sync: '${SYNC_FILES}'|g" deploy.yml
-		sed -i "s|deploy_upstream_remote_host:.*$|deploy_upstream_remote_host: '${REMOTE_UPSTREAM_HOST}'|g" deploy.yml
-		sed -i "s|deploy_upstream_remote_port:.*$|deploy_upstream_remote_port: '${REMOTE_UPSTREAM_PORT}'|g" deploy.yml
-		sed -i "s|deploy_upstream_remote_user:.*$|deploy_upstream_remote_user: '${REMOTE_UPSTREAM_USER}'|g" deploy.yml
-		sed -i "s|deploy_upstream_docroot:.*$|deploy_upstream_docroot: '${REMOTE_UPSTREAM_DOCROOT}'|g" deploy.yml
-		sed -i "s|deploy_upstream_files_path:.*$|deploy_upstream_files_path: '${REMOTE_UPSTREAM_FILES_PATH}'|g" deploy.yml
-		sed -i "s|deploy_upstream_proxy_credentials:.*$|deploy_upstream_proxy_credentials: '${REMOTE_UPSTREAM_PROXY_CREDENTIALS}'|g" deploy.yml
-		sed -i "s|deploy_upstream_proxy_port:.*$|deploy_upstream_proxy_port: '${REMOTE_UPSTREAM_PROXY_PORT}'|g" deploy.yml
-		sed -i "s|deploy_upstream_ssh_options:.*$|deploy_upstream_ssh_options: '${REMOTE_UPSTREAM_SSH_OPTIONS}'|g" deploy.yml
-	fi
 	if [ "$USE_SITE_INSTALL" == "yes" ]; then
 		sed -i "s|deploy_site_install_enabled:.*$|deploy_site_install_enabled: yes|g" deploy.yml
 	else
@@ -568,6 +589,7 @@ do
 			sed -i "s|deploy_files_import_enabled:.*$|deploy_files_import_enabled: no|g" deploy.yml
 		fi
 	fi
+	# Git config
 	sed -i "s/deploy_git_repo_protocol:.*$/deploy_git_repo_protocol: \"${GIT_PROTOCOL}\"/g" deploy.yml
 	sed -i "s/deploy_git_repo_server:.*$/deploy_git_repo_server: \"${GIT_SERVER}\"/g" deploy.yml
 	sed -i "s/deploy_git_repo_user:.*$/deploy_git_repo_user: \"${GIT_USER}\"/g" deploy.yml
