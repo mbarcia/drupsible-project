@@ -404,12 +404,6 @@ if ([ "$GIT_PASS" == "" ] && [ "$KEY_FILENAME" == "" ] && [ "$USE_INSTALL_PROFIL
 	if [ ! "$OSTYPE" = "darwin"* ]; then
 		# Invoke ssh-agent script, applying bash expansion to the tilde
 		./bin/ssh-agent.sh "${KEY_FILENAME/#\~/$HOME}"
-		# Connect to ssh-agent launched by ssh-agent.sh
-		SSH_AGENT_DATA="$HOME/.ssh-agent"
-		eval $(< "${SSH_AGENT_DATA/#\~/$HOME}")
-		# Report back
-		echo "SSH key(s) loaded:"
-		ssh-add -l
 	fi
 fi
 #
