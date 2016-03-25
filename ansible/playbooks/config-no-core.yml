@@ -26,6 +26,11 @@
   roles:
   - role: drupsible.mysql
     tags: [ 'role::mysql' ]
+    mysql_databases:
+    - name: "{{ app_name }}"
+      state: 'present'
+    - name: "{{ app_name }}_{{ build }}"
+      state: "{{ app_db_create_for_build_enabled|default(False)|bool|ternary('present', 'absent') }}"
     mysql_users:
     - name: "{{ app_db_user }}"
       host: "%"
@@ -47,17 +52,6 @@
       state: 'present'
       password: '{{ app_db_password | default(lookup("password", secret + "/credentials/" + app_name + "/mysql/" + app_db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
       priv: '{{ app_db_name }}.*:ALL'
-- name: MySQL (for cloned DB mode)
-  hosts: [ '{{ app_name }}-{{ app_target }}_mysql' ]
-  become: True
-  roles:
-  - role: drupsible.mysql
-    tags: [ 'role::mysql-clone' ]
-    when: deploy_db_clone_enabled|default(False)|bool
-    vars:
-      mysql_databases:
-      - name: "{{ app_name }}_{{ build }}"
-        state: 'present'
 - name: Ferm/Postfix/PHP/Composer/New Relic/Apache/uploadprogress
   hosts: [ '{{ app_name }}-{{ app_target }}_deploy' ]
   become: True

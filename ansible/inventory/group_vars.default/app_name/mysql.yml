@@ -4,10 +4,6 @@
 #
 mysql_mysqld_bind_address: '0.0.0.0'
 
-mysql_databases:
-- name: "{{ app_name }}"
-  state: 'present'
-
 # ---- MySQL server configuration ----
 # Use this hash variable to set additional mysqld options
 mysql_mysqld_options: {
