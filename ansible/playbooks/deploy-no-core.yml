@@ -27,4 +27,4 @@
     deploy_mysql_host: "{{ groups[ app_name + '-' + app_target + '_mysql' ][0] }}"
     deploy_db_name: "{{ app_db_name }}"
     deploy_db_user: "{{ app_db_user }}"
-    deploy_db_password: "{{ app_db_password|default(omit) }}"
+    deploy_db_password: '{{ app_db_password|default(lookup("password", secret + "/credentials/" + app_name + "/mysql/" + app_db_user + "/password chars=ascii_letters,digits,hexdigits")) }}'
