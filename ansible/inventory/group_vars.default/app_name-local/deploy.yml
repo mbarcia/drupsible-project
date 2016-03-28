@@ -14,7 +14,7 @@ php5_max_execution_time: '0'
 php5_max_input_time: '-1'
 
 # No New Relic in local
-apache2_php5_packages_ontop:
+apache2_mod_php5_packages_ontop:
 - php-pear
 - php-soap
 - php5-curl
