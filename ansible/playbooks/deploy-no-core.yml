@@ -10,7 +10,7 @@
     php5_app_pool:
       enabled: True
       name: "{{ app_name }}"
-      listen: "{{ ansible_local.apache2.apache2_uds_available|default(True)|bool|ternary(app_fpm_listen_uds, app_fpm_listen) }}"
+      listen: "{{ ansible_local.apache2.uds_available|default(True)|bool|ternary(app_fpm_listen_uds, app_fpm_listen) }}"
       user: "{{ app_user }}"
       group: "{{ app_group }}"
       php_flag: "{{ php_flag }}"
