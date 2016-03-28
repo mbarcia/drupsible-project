@@ -242,7 +242,7 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 		# Write USE_SITE_INSTALL
 		sed -i "s|USE_SITE_INSTALL=.*$|USE_SITE_INSTALL=\"${USE_SITE_INSTALL}\"|g" "${APP_NAME}.profile"
 	fi
-	if [ "$USE_UPSTREAM_SITE" != "yes" ]; then
+	if [ "$USE_UPSTREAM_SITE" == "" ]; then
 		echo "Want to use an upstream site to sync the DB and/or files with? (y|n)"
 		if askyesno; then
 			USE_UPSTREAM_SITE='yes'
@@ -314,19 +314,18 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 			fi
 			# Write SYNC_DB
 			sed -i "s|SYNC_DB=.*$|SYNC_DB=\"${SYNC_DB}\"|g" "${APP_NAME}.profile"
-		else
-			if [ "$DBDUMP" == "" ]; then
-				echo "DB dump filename? (ie. example.sql.gz, must be in ansible/playbooks/dbdumps)"
-				read -r DBDUMP
-				# Write DBDUMP
-				sed -i "s|DBDUMP=.*$|DBDUMP=\"${DBDUMP}\"|g" "${APP_NAME}.profile"
-			fi
-			if [ "$FILES_TARBALL" == "" ]; then
-				echo "Files tarball? (ie. example-files.tar.gz, must be in ansible/playbooks/files-tarballs)"
-				read -r FILES_TARBALL
-				# Write FILES_TARBALL
-				sed -i "s|FILES_TARBALL=.*$|FILES_TARBALL=\"${FILES_TARBALL}\"|g" "${APP_NAME}.profile"
-			fi
+		fi
+		if [ "$DBDUMP" == "" ] && [ "$SYNC_DB" != "yes" ]; then
+			echo "DB dump filename? (ie. example.sql.gz, must be in ansible/playbooks/dbdumps)"
+			read -r DBDUMP
+			# Write DBDUMP
+			sed -i "s|DBDUMP=.*$|DBDUMP=\"${DBDUMP}\"|g" "${APP_NAME}.profile"
+		fi
+		if [ "$FILES_TARBALL" == "" ] && [ "$SYNC_FILES" != "yes" ]; then
+			echo "Files tarball? (ie. example-files.tar.gz, must be in ansible/playbooks/files-tarballs)"
+			read -r FILES_TARBALL
+			# Write FILES_TARBALL
+			sed -i "s|FILES_TARBALL=.*$|FILES_TARBALL=\"${FILES_TARBALL}\"|g" "${APP_NAME}.profile"
 		fi
 	fi
 	if [ "$CODEBASE_TARBALL" == "" ]; then
