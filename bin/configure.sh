@@ -315,13 +315,13 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 			# Write SYNC_DB
 			sed -i "s|SYNC_DB=.*$|SYNC_DB=\"${SYNC_DB}\"|g" "${APP_NAME}.profile"
 		fi
-		if [ "$DBDUMP" == "" ] && [ "$SYNC_DB" != "yes" ]; then
+		if [ "$DBDUMP" == "" ] && ([ "$SYNC_DB" == "" ] || [ "$SYNC_DB" == "no" ]); then
 			echo "DB dump filename? (ie. example.sql.gz, must be in ansible/playbooks/dbdumps)"
 			read -r DBDUMP
 			# Write DBDUMP
 			sed -i "s|DBDUMP=.*$|DBDUMP=\"${DBDUMP}\"|g" "${APP_NAME}.profile"
 		fi
-		if [ "$FILES_TARBALL" == "" ] && [ "$SYNC_FILES" != "yes" ]; then
+		if [ "$FILES_TARBALL" == "" ] && ([ "$SYNC_FILES" == "" ] || [ "$SYNC_FILES" == "no" ]); then
 			echo "Files tarball? (ie. example-files.tar.gz, must be in ansible/playbooks/files-tarballs)"
 			read -r FILES_TARBALL
 			# Write FILES_TARBALL
