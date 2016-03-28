@@ -5,7 +5,7 @@
   - role: debops.secret
     tags: [ 'role::secret', 'role::deploy:secret' ]
   - role: debops.php5
-    when: apache2_mpm != 'prefork'
+    when: ansible_local.apache2.mpm != 'prefork'
     become: yes
     php5_app_pool:
       enabled: True

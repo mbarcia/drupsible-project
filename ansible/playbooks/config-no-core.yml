@@ -105,10 +105,10 @@
     tags: [ 'role::users' ]
   - role: debops.php5
     tags: [ 'role::php5' ]
-    when: apache2_mpm != 'prefork'
+    when: ansible_local.apache2.mpm != 'prefork'
   - role: drupsible.newrelic
     tags: [ 'role::newrelic' ]
-    when: provision_new_relic|default(False)|bool and 'newrelic-php5' in apache2_php5_packages_ontop and apache2_mpm == 'prefork'
+    when: provision_new_relic|default(False)|bool and 'newrelic-php5' in apache2_php5_packages_ontop|default([]) and ansible_local.apache2.mpm == 'prefork'
   - role: drupsible.apache2
     tags: [ 'role::apache2' ]
     apache2_site_name: "{{ app_name }}"
