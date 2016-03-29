@@ -38,18 +38,18 @@ In the future, Drupsible may run on other platforms.
 ## Local
 1. If you are on Windows, run Git Bash (as _administrator_) 
 1. Git clone drupsible-project and put it in a folder named after your project, like _~/myproject-drupsible_, or _~/drupsible/my-project_
-```
-git clone https://github.com/mbarcia/drupsible-project.git myproject
-```
+ ```
+ git clone https://github.com/mbarcia/drupsible-project.git myproject
+ ```
 1. Although the master branch is considered stable, you can optionally switch to the latest tag
-```
-git checkout tags/0.9.9
-```
+ ```
+ git checkout tags/0.9.9
+ ```
 1. Run the configuration wizard
-```
-cd myproject
-bin/configure.sh
-```
+ ```
+ cd myproject
+ bin/configure.sh
+ ```
 1. Drupsible will start an interactive session, asking for the handful of values that really matter (app name, domain name, etc.).
 1. Next, run ```vagrant up``` 
 1. Grab a cup of green tea, well deserved!
