@@ -40,6 +40,13 @@ In the future, Drupsible may run on other platforms.
 1. Git clone drupsible-project and put it in a folder named after your project, like _~/myproject-drupsible_, or _~/drupsible/my-project_
 ```
 git clone https://github.com/mbarcia/drupsible-project.git myproject
+```
+1. Although the master branch is considered stable, you can optionally switch to the latest tag
+```
+git checkout tags/0.9.9
+```
+1. Run the configuration wizard
+```
 cd myproject
 bin/configure.sh
 ```
