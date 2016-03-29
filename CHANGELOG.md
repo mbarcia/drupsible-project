@@ -1,3 +1,59 @@
+Release Notes - Drupsible - Version 0.9.9
+
+## Tasks
+
+* [[DRUPSIBLE-106](https://drupsible.atlassian.net/browse/DRUPSIBLE-106)] - Check compatibility
+* [[DRUPSIBLE-112](https://drupsible.atlassian.net/browse/DRUPSIBLE-112)] - Upgrade PKI role to its newest release
+* [[DRUPSIBLE-120](https://drupsible.atlassian.net/browse/DRUPSIBLE-120)] - Release memcached role to Ansible Galaxy
+* [[DRUPSIBLE-121](https://drupsible.atlassian.net/browse/DRUPSIBLE-121)] - Release composer role to Ansible Galaxy
+* [[DRUPSIBLE-122](https://drupsible.atlassian.net/browse/DRUPSIBLE-122)] - Reorganize playbooks and groups of hosts in the inventory. Remove hard deps of Varnish and release it on Ansible Galaxy.
+* [[DRUPSIBLE-123](https://drupsible.atlassian.net/browse/DRUPSIBLE-123)] - Release newrelic role to Ansible Galaxy
+* [[DRUPSIBLE-124](https://drupsible.atlassian.net/browse/DRUPSIBLE-124)] - Update drush versions for D7 and D8
+* [[DRUPSIBLE-133](https://drupsible.atlassian.net/browse/DRUPSIBLE-133)] - Improve drupsible's "enable/disable modules"
+* [[DRUPSIBLE-134](https://drupsible.atlassian.net/browse/DRUPSIBLE-134)] - Provide ability to ignore errors of drush make
+* [[DRUPSIBLE-136](https://drupsible.atlassian.net/browse/DRUPSIBLE-136)] - Improved handling of Drupal versions
+* [[DRUPSIBLE-143](https://drupsible.atlassian.net/browse/DRUPSIBLE-143)] - Normalize passwords location under secret folder
+* [[DRUPSIBLE-144](https://drupsible.atlassian.net/browse/DRUPSIBLE-144)] - Skip copy of vagrant.yml and ansible.cfg if exists
+* [[DRUPSIBLE-147](https://drupsible.atlassian.net/browse/DRUPSIBLE-147)] - Make app_env values all scalar, to simplify the configuration needed
+* [[DRUPSIBLE-154](https://drupsible.atlassian.net/browse/DRUPSIBLE-154)] - Tidy up apache2 role
+* [[DRUPSIBLE-155](https://drupsible.atlassian.net/browse/DRUPSIBLE-155)] - Replace sudo by become
+
+## Bugs
+
+* [[DRUPSIBLE-30](https://drupsible.atlassian.net/browse/DRUPSIBLE-30)] - Ansible bug in unarchive module for non-ASCII chars in filenames
+* [[DRUPSIBLE-111](https://drupsible.atlassian.net/browse/DRUPSIBLE-111)] - deploy.yml playbook fails on apt dependency of newrelic role (with_items receives an empty var)
+* [[DRUPSIBLE-114](https://drupsible.atlassian.net/browse/DRUPSIBLE-114)] - On Ansible 2, debops.pki role fails restart ferm
+* [[DRUPSIBLE-115](https://drupsible.atlassian.net/browse/DRUPSIBLE-115)] - Varnish fail to start due to port in use by apache2
+* [[DRUPSIBLE-127](https://drupsible.atlassian.net/browse/DRUPSIBLE-127)] - A few minor bugs in D8
+* [[DRUPSIBLE-135](https://drupsible.atlassian.net/browse/DRUPSIBLE-135)] - Varnish virtual hosts task do not work well
+* [[DRUPSIBLE-145](https://drupsible.atlassian.net/browse/DRUPSIBLE-145)] - Logrotate (daily): duplicate log entry for drupal.log
+* [[DRUPSIBLE-146](https://drupsible.atlassian.net/browse/DRUPSIBLE-146)] - Fix db clone
+* [[DRUPSIBLE-152](https://drupsible.atlassian.net/browse/DRUPSIBLE-152)] - New Relic sysmond not started after Drupsible playbooks ran
+
+## Stories
+
+* [[DRUPSIBLE-52](https://drupsible.atlassian.net/browse/DRUPSIBLE-52)] - Support drush make in custom profiles
+* [[DRUPSIBLE-72](https://drupsible.atlassian.net/browse/DRUPSIBLE-72)] - Install xdebug
+* [[DRUPSIBLE-73](https://drupsible.atlassian.net/browse/DRUPSIBLE-73)] - Install uploadprogress
+* [[DRUPSIBLE-83](https://drupsible.atlassian.net/browse/DRUPSIBLE-83)] - get_url instead of curl
+* [[DRUPSIBLE-102](https://drupsible.atlassian.net/browse/DRUPSIBLE-102)] - Configure full backups per target environment
+* [[DRUPSIBLE-103](https://drupsible.atlassian.net/browse/DRUPSIBLE-103)] - Upgrade to users v0.1.5
+* [[DRUPSIBLE-105](https://drupsible.atlassian.net/browse/DRUPSIBLE-105)] - Remove workaround now Vagrant 1.8 is out (and enforce the new version)
+* [[DRUPSIBLE-107](https://drupsible.atlassian.net/browse/DRUPSIBLE-107)] - Upgrade Drupsible VM to Ansible 2
+* [[DRUPSIBLE-109](https://drupsible.atlassian.net/browse/DRUPSIBLE-109)] - Document Samba role
+* [[DRUPSIBLE-110](https://drupsible.atlassian.net/browse/DRUPSIBLE-110)] - set/force location for downloading modules with drush dl
+* [[DRUPSIBLE-116](https://drupsible.atlassian.net/browse/DRUPSIBLE-116)] - Update apache vhost common definition, as per new .htaccess in D7.42
+* [[DRUPSIBLE-117](https://drupsible.atlassian.net/browse/DRUPSIBLE-117)] - Improvements to requirements.default.yml for the new galaxy
+* [[DRUPSIBLE-118](https://drupsible.atlassian.net/browse/DRUPSIBLE-118)] - Replace hard role dependencies of apache2
+* [[DRUPSIBLE-125](https://drupsible.atlassian.net/browse/DRUPSIBLE-125)] - Switch drush defaults to use Drupal 8
+* [[DRUPSIBLE-126](https://drupsible.atlassian.net/browse/DRUPSIBLE-126)] - Switch default Drupal version to Drupal 8
+* [[DRUPSIBLE-129](https://drupsible.atlassian.net/browse/DRUPSIBLE-129)] - Setup Twig's C extension
+* [[DRUPSIBLE-132](https://drupsible.atlassian.net/browse/DRUPSIBLE-132)] - Remove debops.apt, debops.apt_preferences as they are not needed anymore
+* [[DRUPSIBLE-148](https://drupsible.atlassian.net/browse/DRUPSIBLE-148)] - Allow to enable Xdebug for PHP-CLI (default disabled)
+* [[DRUPSIBLE-149](https://drupsible.atlassian.net/browse/DRUPSIBLE-149)] - I want to forget about the communication method between PHP and Apache2 (socket or port)
+* [[DRUPSIBLE-150](https://drupsible.atlassian.net/browse/DRUPSIBLE-150)] - Add HTTPS enabled? and Varnish enabled? questions to configure.sh
+* [[DRUPSIBLE-151](https://drupsible.atlassian.net/browse/DRUPSIBLE-151)] - Improve logic and error handling in bin/ssh-agent.sh
+
 # Release Notes - Drupsible - Version 0.9.8
 
 ## Bugs
