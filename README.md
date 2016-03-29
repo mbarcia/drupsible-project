@@ -47,8 +47,7 @@ In the future, Drupsible may run on other platforms.
  ```
 1. Run the configuration wizard
  ```
- cd myproject
- bin/configure.sh
+ cd myproject; bin/configure.sh
  ```
 1. Drupsible will start an interactive session, asking for the handful of values that really matter (app name, domain name, etc.).
 1. Next, run ```vagrant up``` 
@@ -112,9 +111,13 @@ In line with Ansible's best practices, you can customize and override any value 
 * ```ansible/playbooks/group_vars/<app_name>-<app_target>/mysql.yml```
 
 You can also configure parameters which maybe global to the application under
-```ansible/playbooks/group_vars/<app_name>/all.yml```
+ ```
+ ansible/playbooks/group_vars/<app_name>/all.yml
+ ```
 or to the webservers group, no matter in which environment they are in
-```ansible/playbooks/group_vars/<app_name>/deploy.yml```
+ ```
+ ansible/playbooks/group_vars/<app_name>/deploy.yml
+ ```
 
 A good example (SMTP) follows.
 ### Email sending capability ###
