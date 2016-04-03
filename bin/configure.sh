@@ -462,12 +462,6 @@ sed -i "/apps\:/a\
 # Remove empty lines
 sed -i '/^$/d' vagrant.yml
 #
-# Assign a random private IP address to minimize collision with other Drupsible projects.
-#
-set $(dd if=/dev/urandom bs=2 count=1 2>/dev/null | od -An -tu1)
-IP_ADDR_RANDOM="192.168.$1.$2"
-sed -i "s/ip_addr:.*/ip_addr: '${IP_ADDR_RANDOM}'/g" vagrant.yml
-#
 # ansible/requirements.yml
 #
 cp ansible/requirements.default.yml ansible/requirements.yml
