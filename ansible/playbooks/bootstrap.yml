@@ -2,14 +2,14 @@
 - include: core.yml
 
 - name: Bootstrap hosts for Drupsible
-  hosts: 'all:!localhost'
+  hosts: [ '{{ app_name }}:!localhost' ]
   gather_facts: True
 
   roles:
-    - role: debops.bootstrap
-      become: yes
-      bootstrap_raw: False
-      bootstrap_domain: "{{ webdomain }}"
-      bootstrap_base_packages: [ 'lsb-release' ]
-      bootstrap_admin_name: "{{ app_env['user'] }}"
-      bootstrap_admin_comment: "{{ app_name }}/Drupsible administrator"
+  - role: debops.bootstrap
+    become: yes
+    bootstrap_raw: False
+    bootstrap_domain: "{{ webdomain }}"
+    bootstrap_admin_name: "{{ app_user }}"
+    bootstrap_admin_comment: "{{ app_name }}/Drupsible administrator"
+    bootstrap_admin_system: False

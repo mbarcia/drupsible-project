@@ -1,60 +1,31 @@
 ---
 - name: Deploy
-  hosts: drupsible_deploy
-
+  hosts: [ '{{ app_name }}-{{ app_target }}_deploy' ]
   roles:
-  - role: debops.users
-    become: yes
-    users_enabled: True
-    users_list:
-    - name: "{{ app_env['user'] }}"
-      forward: "{{ app_env['admin_email'] }}"
-      state: 'present'
-    users_admins: [ "{{ app_env['user'] }}" ]
-    tags: config.users
-
+  - role: debops.secret
+    tags: [ 'role::secret', 'role::deploy:secret' ]
   - role: debops.php5
-    when: apache2_mpm != 'prefork'
+    when: ansible_local.apache2.mpm != 'prefork'
     become: yes
-    php5_packages: "{{ provision_new_relic|default(False)|bool|ternary([ 'newrelic-php5' ], [] ) }}"
     php5_app_pool:
       enabled: True
       name: "{{ app_name }}"
-      listen: "{{ app_env['fpm_listen'] }}"
-      user: "{{ app_env['user'] }}"
-      group: "{{ app_env['group'] }}"
+      listen: "{{ ansible_local.apache2.uds_available|default(True)|bool|ternary(app_fpm_listen_uds, app_fpm_listen) }}"
+      user: "{{ app_user }}"
+      group: "{{ app_group }}"
       php_flag: "{{ php_flag }}"
       php_value: "{{ php_value }}"
     php5_pools: [ '{{ php5_app_pool }}' ]
     tags: config.php5
-
-  - role: drupsible.composer
-    become: yes
-    tags: composer
-
-  - role: drupsible.drush
-    tags: drush
-  
-  - role: drupsible.newrelic
-    when: provision_new_relic|default(False)|bool
-    become: yes
-    tags: newrelic
-
-  - role: drupsible.memcached
-    when: app_env.memcached|bool
-    become: yes
-    tags: memcached
-
-  - role: drupsible.samba
-    samba_webhost: "{{ deploy_webhost }}"
-    when: deploy_target is defined and deploy_target == 'local'
-    become: yes
-    tags: samba
-
   - role: drupsible.deploy
     tags: deploy
-    deploy_varnish_enabled: "{{ app_env['varnish_enabled'] }}"
-    deploy_varnish_mgmt_port: "{{ app_env['varnish_mgmt_port'] }}"
+    deploy_build_id: "{{ app_build_id }}"
+    deploy_varnish_enabled: "{{ app_varnish_enabled }}"
+    deploy_varnish_mgmt_port: "{{ app_varnish_mgmt_port|default('6082') }}"
     deploy_target: "{{ app_target }}"
     deploy_webhost: "{{ app_webhost }}"
-    trusted_host_patterns: [ "(?i)^.+\\.{{ webdomain|regex_replace('[.]', '\\.') }}$" ]
+    deploy_trusted_host_patterns: [ "(?i)^.+\\.{{ webdomain|regex_replace('[.]', '\\.') }}$" ]
+    deploy_mysql_host: "{{ groups[ app_name + '-' + app_target + '_mysql' ][0] }}"
+    deploy_db_name: "{{ app_db_name }}"
+    deploy_db_user: "{{ app_db_user }}"
+    deploy_db_password: '{{ app_db_password|default(lookup("password", secret + "/credentials/" + app_name + "/mysql/" + app_db_user + "/password chars=ascii_letters,digits,hexdigits")) }}'

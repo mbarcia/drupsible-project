@@ -1,0 +1,29 @@
+---
+#
+# Configuration file for the deploy/webserver group of the LOCAL environment.
+#
+
+# Modules to enable/disable/uninstall per app environment
+# Always enable devel
+deploy_modules_present_env: [ 'devel' ]
+# Always disable/uninstall cdn
+deploy_modules_absent_env: [ 'cdn' ]
+
+# PHP development settings, YAY!
+php5_max_execution_time: '0'
+php5_max_input_time: '-1'
+
+# No New Relic in local
+apache2_mod_php5_packages_ontop:
+- php-pear
+- php-soap
+- php5-curl
+- php5-gd
+- php5-gmp
+- php5-mcrypt
+- php5-memcache
+- php5-mysql
+- imagemagick
+
+# Also allow Vagrant-host
+apache2_allowed_hosts: [ "127.0.0.1", "10.0.2.2" ]

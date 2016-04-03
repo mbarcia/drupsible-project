@@ -1,6 +1,0 @@
----
-webdomain: "example.com"
-
-app_name: example-project
-
-drupal_version: '7'

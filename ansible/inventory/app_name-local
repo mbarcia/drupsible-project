@@ -1,0 +1,26 @@
+#
+# Local
+#
+localhost ansible_connection=local
+
+[app_name:children]
+app_name-local
+
+[app_name-local:children]
+app_name-local_mysql
+app_name-local_deploy
+app_name-local_varnish
+
+[app_name-local_varnish]
+localhost
+
+[app_name-local_deploy]
+localhost
+
+[app_name-local_mysql]
+localhost
+
+[app_name:vars]
+app_target=local
+app_webhost=local
+webdomain=example.com

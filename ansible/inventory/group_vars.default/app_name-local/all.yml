@@ -1,0 +1,9 @@
+---
+#
+# Configuration file for ALL servers of the LOCAL environment.
+#
+app_aliases: []
+app_user: 'vagrant'
+
+# Add vagrant to the default groups defined in debops.sshd
+sshd__allow_groups: [ 'vagrant' , 'root', 'admins', 'sshusers', 'sftponly' ]

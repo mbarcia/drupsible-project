@@ -1,0 +1,142 @@
+---
+#
+# Configuration file for the deploy/webserver group of ALL the environments.
+#
+
+#
+# drupsible.deploy defaults
+#
+# Set by configure.sh
+deploy_files_sync_enabled: False
+
+# Set by configure.sh
+deploy_install_profile_enabled: False
+deploy_d_o_install_profile: ''
+deploy_custom_install_profile: ''
+
+# Set by configure.sh
+deploy_drush_make_enabled: False
+deploy_drush_makefile: ''
+
+# Set by configure.sh
+deploy_codebase_tarball_filename: ''
+deploy_codebase_import_enabled: no
+
+# Set by configure.sh
+deploy_site_install_enabled: False
+
+#
+# Upstream host to sync db/files with
+#
+# Set by configure.sh
+deploy_db_sync_enabled: False
+deploy_upstream_remote_host: ""
+deploy_upstream_remote_port: ""
+deploy_upstream_remote_user: ""
+deploy_upstream_docroot: ""
+deploy_upstream_files_path: "sites/default/files"
+# Advanced upstream host configuration
+# Set by configure.sh
+deploy_upstream_proxy_port: ""
+deploy_upstream_proxy_credentials: ""
+deploy_upstream_ssh_options: ""
+
+#
+# Drupal settings
+#
+# Set by configure.sh
+deploy_db_dump_filename: ''
+deploy_db_import_enabled:
+
+# Set by configure.sh
+deploy_files_tarball_filename:
+deploy_files_import_enabled:
+
+# Set by configure.sh
+deploy_git_repo_protocol: ''
+deploy_git_repo_server: ''
+deploy_git_repo_user: ''
+deploy_git_repo_path: ''
+deploy_git_repo_pass: ''
+deploy_git_repo_version: ''
+
+#
+# drupsible.apache2 defaults
+#
+
+# Here's the list of all IP's from Cloudflare
+# https://www.cloudflare.com/ips/
+apache2_allowed_hosts: [ "127.0.0.1" ]
+
+apache2_modules:
+- alias
+- auth_basic
+- authn_file
+- authz_host
+- authz_user
+- autoindex
+- deflate
+- dir
+- env
+- expires
+- mime
+- negotiation
+- reqtimeout
+- rewrite
+- setenvif
+- status
+
+apache2_mod_php5_packages_ontop:
+- php-pear
+- php-soap
+- php5-curl
+- php5-gd
+- php5-gmp
+- php5-mcrypt
+- php5-memcache
+- php5-mysql
+- newrelic-php5
+
+apache2_mod_php_post_max_size: "32M"
+apache2_mod_php_upload_max_filesize: "32M"
+apache2_mod_php_timezone: "Europe/Madrid"
+apache2_mod_php_memory_limit: "256M"
+
+# This setting in None totally voids .htaccess effects
+apache2_allow_override_htaccess: None
+
+#
+# debops.php5 defaults
+#
+
+php5_packages:
+- php-pear
+- php-soap
+- php5-curl
+- php5-gd
+- php5-gmp
+- php5-mcrypt
+- php5-mysql
+
+php5_post_max_size: '32M'
+
+php5_default_pm_status: True
+php5_default_pm_status_path: "{{ app_fpm_status_path | default('/fpm-status')}}"
+php5_default_ping_path: "{{ app_fpm_ping_path | default('/ping') }}"
+php5_production: "{{ (app_target|default('prod') == 'prod')|ternary(True, False) }}"
+
+php_value:
+  memory_limit: 192M
+  newrelic.appname: "{{ app_name|quote }}"
+  newrelic.license: "{{ newrelic_license_key|default(False)|ternary(newrelic_license_key, 'NO_NEWRELIC_LICENSE_KEY')|quote }}"
+  max_input_vars: 2000
+  # The following settings for PHP 5.5 are based on https://goo.gl/AsDmgt
+  opcache.memory_consumption: 64
+  opcache.max_accelerated_files: 6000
+  opcache.max_wasted_percentage: 10
+
+php_flag:
+  cgi.fix_path_info: 1
+  # The following settings for PHP 5.5 are based on https://goo.gl/AsDmgt
+  opcache.validate_timestamps: "{{ (app_target|default('prod') != 'prod') | ternary('True', 'False') }}"
+  opcache.fast_shutdown: 1

@@ -1,152 +1,164 @@
 ---
-- name: Common configuration for all hosts
-  hosts: [ 'all' ]
+- name: Common configuration (DebOps) for all hosts
+  hosts: [ '{{ app_name }}' ]
   gather_facts: True
   become: True
-
   roles:
-
-    - role: debops.pki/env
-      tags: [ 'role::pki', 'role::pki:secret', 'role::secret' ]
-
-    - role: debops.secret
-      tags: [ 'role::secret', 'role::pki', 'role::pki:secret' ]
-      secret_directories:
-        - '{{ pki_env_secret_directories }}'
-
-    - role: debops.apt_preferences
-      tags: [ 'apt_preferences', 'role::apt_preferences' ]
-      apt_preferences_dependent_list:
-        - '{{ sshd__apt_preferences__dependent_list }}'
-
-    - role: debops.etc_services
-      tags: [ 'role::etc_services' ]
-
-    - role: debops.dhparam
-      tags: [ 'role::dhparam' ]
-
-    - role: debops.pki
-      tags: [ 'role::pki' ]
-      when: app_env['https_enabled'] or 
-        (smtp_server is defined and 
-        smtp_port is defined and 
-        smtp_user is defined)
-
-    - role: debops.apt
-      tags: [ 'role::apt' ]
-
-    - role: debops.ferm
-      tags: [ 'role::ferm' ]
-      ferm_dependent_rules:
-        - '{{ sshd__ferm__dependent_rules }}'
-
-    - role: debops.tcpwrappers
-      tags: [ 'role::tcpwrappers' ]
-      tcpwrappers_dependent_allow:
-        - '{{ sshd__tcpwrappers__dependent_allow }}'
-
-    - role: debops.unattended_upgrades
-      tags: [ 'role::unattended_upgrades' ]
-
-    - role: debops.users
-      tags: [ 'role::users' ]
-
-    - role: debops.sshkeys
-      tags: [ 'role::sshkeys' ]
-
-    - role: debops.sshd
-      tags: [ 'role::sshd' ]
-
+  - role: debops.secret
+    tags: [ 'role::secret', 'role::pki', 'role::pki:secret' ]
+  - role: debops.etc_services
+    tags: [ 'role::etc_services' ]
+  - role: debops.ferm
+    tags: [ 'role::ferm' ]
+    ferm_dependent_rules:
+    - '{{ sshd__ferm__dependent_rules }}'
+  - role: debops.tcpwrappers
+    tags: [ 'role::tcpwrappers' ]
+    tcpwrappers_dependent_allow:
+    - '{{ sshd__tcpwrappers__dependent_allow }}'
+  - role: debops.sshkeys
+    tags: [ 'role::sshkeys' ]
+  - role: debops.sshd
+    tags: [ 'role::sshd' ]
 - name: MySQL
-  hosts: drupsible_mysql
+  hosts: [ '{{ app_name }}-{{ app_target }}_mysql' ]
   become: True
   roles:
-    - role: drupsible.mysql
-      tags: [ 'role::mysql', 'role::mysql:config' ]
-      mysql_users:
-        - name: "{{ app_env['db_user'] }}"
-          host: "%"
-          state: 'present'
-          password: '{{ app_env["db_password"] | default(lookup("password", secret + "/credentials/" + ansible_fqdn + "/mysql/" + app_env.db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
-          priv: '{{ app_env["db_name"] }}.*:ALL'
-        - name: "{{ app_env['db_user'] }}"
-          host: localhost
-          state: 'present'
-          password: '{{ app_env["db_password"] | default(lookup("password", secret + "/credentials/" + ansible_fqdn + "/mysql/" + app_env.db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
-          priv: '{{ app_env["db_name"] }}.*:ALL'
-        - name: "{{ app_env['db_user'] }}"
-          host: "{{ groups.drupsible_mysql.0 }}"
-          state: 'present'
-          password: '{{ app_env["db_password"] | default(lookup("password", secret + "/credentials/" + ansible_fqdn + "/mysql/" + app_env.db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
-          priv: '{{ app_env["db_name"] }}.*:ALL'
-
-- name: MySQL (for cloned DB mode)
-  hosts: drupsible_mysql
+  - role: drupsible.mysql
+    tags: [ 'role::mysql' ]
+    mysql_databases:
+    - name: "{{ app_name }}"
+      state: 'present'
+    - name: "{{ app_name }}_{{ app_build_id }}"
+      state: "{{ app_db_create_for_build_enabled|default(False)|bool|ternary('present', 'absent') }}"
+    mysql_users:
+    - name: "{{ app_db_user }}"
+      host: "%"
+      state: 'present'
+      password: '{{ app_db_password | default(lookup("password", secret + "/credentials/" + app_name + "/mysql/" + app_db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
+      priv: '{{ app_db_name }}%.*:ALL'
+    - name: "{{ app_db_user }}"
+      host: localhost
+      state: 'present'
+      password: '{{ app_db_password | default(lookup("password", secret + "/credentials/" + app_name + "/mysql/" + app_db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
+      priv: '{{ app_db_name }}%.*:ALL'
+    - name: "{{ app_db_user }}"
+      host: "{{ ansible_hostname }}"
+      state: 'present'
+      password: '{{ app_db_password | default(lookup("password", secret + "/credentials/" + app_name + "/mysql/" + app_db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
+      priv: '{{ app_db_name }}%.*:ALL'
+    - name: "{{ app_db_user }}"
+      host: "10.0.2.2"
+      state: 'present'
+      password: '{{ app_db_password | default(lookup("password", secret + "/credentials/" + app_name + "/mysql/" + app_db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
+      priv: '{{ app_db_name }}%.*:ALL'
+- name: Ferm/Postfix/PHP/Composer/New Relic/Apache/uploadprogress
+  hosts: [ '{{ app_name }}-{{ app_target }}_deploy' ]
   become: True
   roles:
-    - role: drupsible.mysql
-      tags: [ 'role::mysql-clone', 'role::mysql-clone:config' ]
-      when: app_env.db_clone|bool
-      vars:
-        mysql_databases:
-          - name: "{{ app_name }}_{{ build }}"
-            state: 'present'
-  
-- name: PHP-FPM
-  hosts: debops_php5
-  become: True
-  roles:
-    - role: debops.php5
-      tags: [ 'role::php5', 'role::php5:config' ]
-      when: apache2_mpm != 'prefork'
-
-- name: Apache
-  hosts: drupsible_apache2
-  become: True
-  roles:
-    - role: debops.ferm
-      tags: [ 'role::ferm' ]
-      ferm_dependent_rules:
-        - '{{ postfix_ferm_dependent_rules }}'
-        - '{{ apache2_ferm_dependent_rules }}'
-      when: smtp_server is defined and smtp_port is defined and smtp_user is defined
-
-    - role: debops.ferm
-      tags: [ 'role::ferm' ]
-      ferm_dependent_rules:
-        - '{{ apache2_ferm_dependent_rules }}'
-      when: smtp_server is not defined or smtp_port is not defined or smtp_user is not defined
-
-    - role: debops.postfix
-      tags: [ 'role::postfix' ]
-      postfix: [ 'client' ]
-      postfix_relayhost: "[{{ smtp_server }}]:{{ smtp_port }}"
-      postfix_smtp_sasl_password_map: "{ '[{{ smtp_server }}]:{{ smtp_port }}': '{{ smtp_user }}' }"
-      when: smtp_server is defined and smtp_port is defined and smtp_user is defined
-
-    - role: drupsible.newrelic
-      when: "'newrelic-php5' in php5_packages_ontop and apache2_mpm == 'prefork'"
-
-    - role: drupsible.apache2
-      tags: [ 'role::apache2', 'role::apache2:config' ]
-      apache2_pki_crt: "{{ deploy_pki_crt|default('/etc/pki/realms/domain/default.crt') }}"
-      apache2_pki_key: "{{ deploy_pki_key|default('/etc/pki/realms/domain/default.key') }}"
-      apache2_port: "{{ (app_env['varnish_enabled'] is not defined or not app_env['varnish_enabled']) | ternary(80, app_env['app_apache2_alt_port']) }}"
-      apache2_https_enabled: "{{ app_env['https_enabled'] }}"
-      apache2_fpm_server_status_path: "{{ app_fpm_status_path | default('/fpm-status') }}"
-      apache2_fpm_ping_path: "{{ app_fpm_ping_path | default('/ping') }}"
-      apache2_webhost: "{{ app_webhost }}"
-
+  - role: debops.pki/env
+    tags: [ 'role::pki', 'role::secret' ]
+    when: app_https_enabled|default(False)|bool or 
+      (smtp_server is defined and 
+      smtp_port is defined and 
+      smtp_user is defined)
+  - role: debops.secret
+    tags: [ 'role::secret', 'role::pki', 'role::pki:secret' ]
+    secret_directories:
+    - "{{ pki_env_secret_directories|default('') }}"
+    when: app_https_enabled|default(False)|bool or 
+      (smtp_server is defined and 
+      smtp_port is defined and 
+      smtp_user is defined)
+  - role: debops.dhparam
+    tags: [ 'role::dhparam' ]
+    when: app_https_enabled|default(False)|bool or 
+      (smtp_server is defined and 
+      smtp_port is defined and 
+      smtp_user is defined)
+  - role: debops.pki
+    tags: [ 'role::pki' ]
+    when: app_https_enabled|default(False)|bool or 
+      (smtp_server is defined and 
+      smtp_port is defined and 
+      smtp_user is defined)
+  - role: debops.ferm
+    tags: [ 'role::ferm:deploy' ]
+    ferm_dependent_rules:
+    - '{{ postfix_ferm_dependent_rules|default([]) }}'
+    - '{{ apache2_ferm_dependent_rules }}'
+    - '{{ samba_ferm_dependent_rules|default([]) }}'
+  - role: debops.postfix
+    tags: [ 'role::postfix' ]
+    postfix: [ 'client' ]
+    postfix_relayhost: "[{{ smtp_server }}]:{{ smtp_port }}"
+    postfix_smtp_sasl_password_map: "{ '[{{ smtp_server }}]:{{ smtp_port }}': '{{ smtp_user }}' }"
+    when: smtp_server is defined and smtp_port is defined and smtp_user is defined
+  - role: debops.users
+    users_enabled: True
+    users_list:
+    - name: "{{ app_user }}"
+      forward: "{{ app_admin_email }}"
+      shell: '/bin/bash'
+      state: 'present'
+    users_admins: [ "{{ app_user }}" ]
+    tags: [ 'role::users' ]
+  - role: drupsible.apache2
+    tags: [ 'role::apache2' ]
+    apache2_site_name: "{{ app_name }}"
+    apache2_pki_crt: "{{ deploy_pki_crt|default('/etc/pki/realms/domain/default.crt') }}"
+    apache2_pki_key: "{{ deploy_pki_key|default('/etc/pki/realms/domain/default.key') }}"
+    apache2_port: "{{ app_varnish_enabled|default(False)|bool|ternary(app_apache2_alt_port|default('8080'), '80') }}"
+    apache2_fpm_server_status_path: "{{ app_fpm_status_path | default('/fpm-status') }}"
+    apache2_fpm_ping_path: "{{ app_fpm_ping_path | default('/ping') }}"
+    apache2_webhost: "{{ app_webhost }}"
+    apache2_fpm_listen: "{{ app_fpm_listen }}"
+    apache2_fpm_listen_uds: "{{ app_fpm_listen_uds }}"
+    apache2_https_enabled: "{{ app_https_enabled|default(False)|bool }}"
+  - role: debops.php5
+    tags: [ 'role::php5' ]
+    when: ansible_local.apache2.mpm != 'prefork'
+  - role: drupsible.newrelic
+    tags: [ 'role::newrelic' ]
+    when: provision_new_relic|default(False)|bool and 'newrelic-php5' in apache2_php5_packages_ontop|default([]) and ansible_local.apache2.mpm == 'prefork'
+  - role: drupsible.uploadprogress
+    tags: [ 'role::uploadprogress' ]
+  - role: drupsible.xdebug
+    tags: [ 'role::xdebug' ]
+    xdebug_cli_enabled: "{{ app_xdebug_cli_enabled|default(False) }}"
+    when: app_target|default('local') in app_xdebug_targets|default([ 'local', 'ci', 'qa' ])
+  - role: drupsible.composer
+    tags: [ 'role::composer' ]
+  - role: drupsible.memcached
+    when: app_memcached_enabled|default(True)|bool
+    tags: [ 'role::memcached' ]
+  - role: drupsible.newrelic
+    when: provision_new_relic|default(False)|bool
+    tags: [ 'role::newrelic' ]
+  - role: drupsible.drush
+    drush_min_version: "{{ app_drush_min_version|default('8.0.5') }}"
+    tags: [ 'role::drush' ]
+  - role: drupsible.samba
+    samba_webhost: "{{ app_webhost }}"
+    when: app_target == 'local'
+    tags: [ 'role::samba' ]
 - name: Varnish
-  hosts: drupsible_varnish
+  hosts: [ '{{ app_name }}-{{ app_target }}_varnish' ]
   become: True
   roles:
-    - role: drupsible.varnish
-      tags: [ 'role::varnish', 'role::varnish:config' ]
-      trusted_hosts: "{{ app_env['aliases'] }}"
-      varnish_pipe_timeout: 600
-      varnish_apache2_port: "{{ app_env['app_apache2_alt_port'] }}"
-      varnish_management_console_listen_on: "{{ app_env['varnish_mgmt_port'] }}"
-      varnish_fpm_ping_path: "{{ app_fpm_ping_path | default('/ping') }}"
-      varnish_webhost: "{{ app_webhost }}"
-      when: app_env['varnish_enabled']|bool
+  - role: debops.secret
+    tags: [ 'role::secret', 'role::varnish:secret' ]
+  - role: debops.ferm
+    tags: [ 'role::ferm:varnish' ]
+    ferm_dependent_rules:
+    - '{{ varnish_ferm_dependent_rules }}'
+  - role: drupsible.varnish
+    tags: [ 'role::varnish' ]
+    varnish_trusted_hosts: "{{ app_server_aliases }}"
+    varnish_pipe_timeout: 600
+    varnish_apache2_port: "{{ app_apache2_alt_port|default('8080') }}"
+    varnish_management_console_listen_on: "{{ app_varnish_mgmt_port|default('6082') }}"
+    varnish_fpm_ping_path: "{{ app_fpm_ping_path | default('/ping') }}"
+    varnish_webhost: "{{ app_webhost }}"
+    varnish_app_name: "{{ app_name }}"
+    when: app_varnish_enabled|bool
