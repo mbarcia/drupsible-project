@@ -21,7 +21,7 @@ if is_windows
 end
 
 # Install required plugins if not present.
-required_plugins = %w(vagrant-cachier vagrant-hostsupdater)
+required_plugins = %w(vagrant-cachier)
 required_plugins.each do |plugin|
   need_restart = false
   unless Vagrant.has_plugin? plugin
@@ -87,8 +87,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       if APPS.length < 2
         machine.vm.hostname = host['name'] + '.' + host['domain']
-        # Add .bak host to /etc/hosts. 
-        config.hostsupdater.aliases = [ host['name'] + '.bak.' + host['domain'] ]
       else
         machine.vm.hostname = 'drupsible.multi.app'
       end
