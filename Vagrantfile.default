@@ -120,7 +120,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Config-deploy each of the apps
       APPS.each do |app|
         machine.vm.provision "shell", 
-          inline: 'sed "s|pitiribi|' + app['name'] + '|g" /vagrant/scripts/app-aliases.sh >> /home/vagrant/.profile'
+          inline: 'sed "s|pitiribi|' + app['name'] + '|g;s|\r$||g'" /vagrant/scripts/app-aliases.sh >> /home/vagrant/.profile'
 
         # Scaffold directories and symlinks
         machine.vm.provision "shell" do |sh|
