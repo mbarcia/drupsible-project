@@ -79,13 +79,20 @@ In the future, Drupsible may run on other *nix platforms.
 ### Comments and observations ###
 * Your default credentials at http://local.doma.in/user/login are admin/drups1ble. You can override it later, per environment.
 * In your file manager (Windows Explorer look for \\LOCAL, or Samba shares), there will be a shared folder:
-local.doma.in app - Current version of the Drupal website and the logs.
+  local.doma.in app
+  Check out [the Samba role documentation](https://github.com/mbarcia/drupsible-samba#work-your-drupal-code), and work your Drupal code!
 * You will then be able to connect your IDE of choice to this folder, or use any editor to develop and test. After you are done, just commit to your GIT repository.
 * If anything changes, ie. your Git credentials, run bin/configure.sh again but this time
   * You will be automatically presented with the edition of ```<app_name>.profile```
   * After saving ```<app_name>.profile```, run ```vagrant provision``` (instead of ```vagrant up```)
 * The rest of workstations in your LAN would be able see your website if they also added this line to their /etc/hosts file. Although this is considered a feature (and not a security hole!), you should take your precautions if needed.
 * If you want to customize more, please read section "Advanced usage" below. 
+* In your local environment, and on a per-app basis, Drupsible sets up these very handy shell aliases:
+  <app_name>-config
+  <app_name>-deploy
+  <app_name>-config-deploy
+  You can even use these with tags or more extra-vars as if you were using ```ansible-playbook```. 
+  Type ```alias``` at the command prompt for more info.
 
 ## Other target environments
 Once your Drupal website is working on your local, you can proceed to deploy to the upper environments.
@@ -178,7 +185,7 @@ Notes:
 #### Run Drupsible config playbook
 Finally, from /home/vagrant, run
 ```
-ansible-playbook -i ansible/inventory/<app_name>-prod ansible/playbooks/config.yml --extra-vars "app_name=<app_name> app_target=prod"
+<app_name>-config --tags role::postfix
 ```
 and Drupsible will automatically configure Postfix through DebOps.
 
