@@ -17,57 +17,74 @@ Drupsible project is the starting point of Drupsible, and it is the only thing y
 * [Vagrant](http://www.vagrantup.com/downloads) 1.8.1+
   * requires commercial plug-in for VMWare
 * [Git Bash](https://git-scm.com/download/win) (only if you are on Windows)
+* [PuTTY](https://the.earth.li/~sgtatham/putty/latest/x86/putty-0.67-installer.msi) (only if you are on Windows)
 * [Check your BIOS](http://www.howtogeek.com/213795/how-to-enable-intel-vt-x-in-your-computers-bios-or-uefi-firmware/) for virtualization, it must be enabled
 * If you want to import an ongoing development:
   * Have your Drupal website codebase, either managed through a GIT repository or simply stored in a tarball/archive. Ideally, without sites/default/files in it!.
-  * Optionally, have a SSH key setup for your Git repository.
+  * Optionally, have a "deployment key" setup for your Git repository.
   * Have a DB dump of your Drupal website.
   * Optionally, have a separate files tarball/archive of sites/default/files.
   * If your project is a distibution with a Makefile, you can also use Drupsible to manage it.
 * If you want to try a Drupal distribution, 
   * you will be able to type its name (interactively) and 
   * run it locally in no time.
-* Since v0.9.9, you can run multiple applications in the same VM/server.
+* You can configure multiple applications in the same VM, that you may deploy to a single server in PROD as well.
+  ```bin/configure.sh <app_name>```
 
 ## Remote servers
 All remote target servers must be Debian (wheezy/jessie) or Ubuntu (trusty/vivid) stock boxes (although currently testing Jessie only). 
-In the future, Drupsible may run on other platforms.
+In the future, Drupsible may run on other *nix platforms.
 
 # Basic usage
 
 ## Local
-1. If you are on Windows, run Git Bash (as _administrator_) 
-1. Git clone drupsible-project and put it in a folder named after your project, like _~/myproject-drupsible_, or _~/drupsible/my-project_
- ```
- git clone https://github.com/mbarcia/drupsible-project.git myproject
- ```
+1. If you are on Windows, run Git Bash
+1. Also, in Windows, load any Github/Bitbucket deployment key into Pageant.
+1. Git-clone mbarcia/drupsible-project and put it in a folder named after your project, like _~/drupsible/my-project_
+    ```
+    cd ~/drupsible
+    git clone https://github.com/mbarcia/drupsible-project.git myproject
+    cd myproject
+    ```
 1. Although the master branch is considered stable, you can optionally switch to the latest tag
- ```
- git checkout tags/0.9.9
- ```
+    ```
+    git checkout tags/0.9.9
+    ```
 1. Run the configuration wizard
- ```
- cd myproject; bin/configure.sh
- ```
+    ```
+    bin/configure.sh
+    ```
 1. Drupsible will start an interactive session, asking for the handful of values that really matter (app name, domain name, etc.).
 1. Next, run ```vagrant up``` 
 1. Grab a cup of green tea, well deserved!
-1. For one time only, it will download some plugins and the drupsible box from the internet, in 4-30 minutes depending on your download speed.
-1. While you watch the tasks being run, that should take 7-15 minutes depending on your hardware speed. It may ask for your sysadmin password at the beginning if your terminal does not have root privileges.
+1. For one time only, it will download the drupsible box (~400M) and the vagrant-cachier plugin.
+1. If your user is not admin, Vagrant should ask for your OS admin password
 1. When you see it's done, you will see a message like this:
-```
-==> local: local.<domain>        : ok=493  changed=190  unreachable=0    failed=0
-==> local: Drupsible box has been provisioned and configured. Go to your app URL and have a happy development.
-```
+    ```
+    ==> local: local.doma.in        : ok=493  changed=190  unreachable=0    failed=0
+    ==> local: Drupsible box has been provisioned and configured. Go to your app URL and have a happy development.
+    ```
+1. Your Drupal app has been deployed! Only one last step is needed: 
+    ```
+    vagrant ssh
+    sudo ifconfig -a
+    ```
+    eth1 will normally inform the IP you need, ie. 192.168.1.33
+1. Then, add a line to your Host OS /etc/hosts file (in Windows, that file would be ```C:\Windows\System32\drivers\etc\hosts```).
+    ```
+    192.168.1.33 local.doma.in
+    ```
+1. Now, point your browser to your website: http://local.doma.in. Voilà.
 
-* Your VM will be ready: point your browser to your website: http://local.domain. Voilà.
-* Your credentials at http://local.domain/user/login are admin/drups1ble.
+### Comments and observations ###
+* Your default credentials at http://local.doma.in/user/login are admin/drups1ble. You can override it later, per environment.
 * In your file manager (Windows Explorer look for \\LOCAL, or Samba shares), there will be a shared folder:
-local.webdomain app - Current version of the Drupal website and the logs.
+local.doma.in app - Current version of the Drupal website and the logs.
 * You will then be able to connect your IDE of choice to this folder, or use any editor to develop and test. After you are done, just commit to your GIT repository.
 * If anything changes, ie. your Git credentials, run bin/configure.sh again but this time
   * You will be automatically presented with the edition of ```<app_name>.profile```
   * After saving ```<app_name>.profile```, run ```vagrant provision``` (instead of ```vagrant up```)
+* The rest of workstations in your LAN would be able see your website if they also added this line to their /etc/hosts file. Although this is considered a feature (and not a security hole!), you should take your precautions if needed.
 * If you want to customize more, please read section "Advanced usage" below. 
 
 ## Other target environments
@@ -174,8 +191,8 @@ Now your web server is ready to send out notification emails through Google Mail
 
 If you are NOT using a codebase tarball/archive, and have your Drupal codebase in a Git repository, you are aware that, in order to deploy a new version of your codebase,
  
-1. your session needs to be running an ssh-agent. 
-1. your Git repository needs to authorize Drupsible through your public key. For a real world example, see the [docs at Bitbucket](https://confluence.atlassian.com/bitbucket/how-to-install-a-public-key-on-your-bitbucket-account-276628835.html).
+1. your session needs to be running an ssh-agent with a deployment key loaded. 
+1. your Git repository will authorize Drupsible through this deployment key. For a real world example, see the [docs at Bitbucket](https://confluence.atlassian.com/bitbucket/how-to-install-a-public-key-on-your-bitbucket-account-276628835.html).
 
 The following is managed automatically by the bin/configure.sh script, so you will not need to worry. However, just in case you are not using configure.sh, you can check that you have an SSH agent running, and that it has your private keys loaded with this command:
 ```
@@ -188,6 +205,10 @@ bin/ssh-agent.sh <your-private-key-filename>
 eval $(<~/.ssh-agent)
 ```
 Drupsible will, from where the codebase needs to be cloned/checked-out, automatically present the credentials to the Git server.
-### Note to OSX users
+### Note to OSX host users
 Make sure your private key is in the keychain before trying to clone from a secured git repo.
 
+### Note to Windows host users
+Due to a [limitation in Vagrant](https://github.com/mitchellh/vagrant/issues/1735#issuecomment-119875409), if you are running a Windows OS host, and need to clone from a Git repo using a deployment key, and want to have ```vagrant up``` and ```vagrant provision``` work properly, you
+#### need to have Pageant running with the _same_ deployment key loaded ####
+Inside the VM there are no issues, it is only vagrant provision not forwarding the SSH agent.
