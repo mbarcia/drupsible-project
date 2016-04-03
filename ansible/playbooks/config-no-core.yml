@@ -125,8 +125,8 @@
     tags: [ 'role::uploadprogress' ]
   - role: drupsible.xdebug
     tags: [ 'role::xdebug' ]
-    xdebug_cli_enabled: "{{ app_xdebug_cli_enabled|default(False) }}"
-    when: app_target|default('local') in app_xdebug_targets|default([ 'local', 'ci', 'qa' ])
+    xdebug_cli_enabled: "{{ deploy_xdebug_cli_enabled|default(False)|bool }}"
+    when: deploy_xdebug_enabled|default(False)|bool
   - role: drupsible.composer
     tags: [ 'role::composer' ]
   - role: drupsible.memcached
