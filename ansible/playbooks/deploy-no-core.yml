@@ -4,19 +4,6 @@
   roles:
   - role: debops.secret
     tags: [ 'role::secret', 'role::deploy:secret' ]
-  - role: debops.php5
-    when: ansible_local.apache2.mpm != 'prefork'
-    become: yes
-    php5_app_pool:
-      enabled: True
-      name: "{{ app_name }}"
-      listen: "{{ ansible_local.apache2.uds_available|default(True)|bool|ternary(app_fpm_listen_uds, app_fpm_listen) }}"
-      user: "{{ app_user }}"
-      group: "{{ app_group }}"
-      php_flag: "{{ php_flag }}"
-      php_value: "{{ php_value }}"
-    php5_pools: [ '{{ php5_app_pool }}' ]
-    tags: config.php5
   - role: drupsible.deploy
     tags: deploy
     deploy_build_id: "{{ app_build_id }}"

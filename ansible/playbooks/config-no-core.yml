@@ -118,6 +118,16 @@
   - role: debops.php5
     tags: [ 'role::php5' ]
     when: ansible_local.apache2.mpm != 'prefork'
+    become: yes
+    php5_app_pool:
+      enabled: True
+      name: "{{ app_name }}"
+      listen: "{{ ansible_local.apache2.uds_available|default(True)|bool|ternary(app_fpm_listen_uds, app_fpm_listen) }}"
+      user: "{{ app_user }}"
+      group: "{{ app_group }}"
+      php_flag: "{{ php_flag }}"
+      php_value: "{{ php_value }}"
+    php5_pools: [ '{{ php5_app_pool }}' ]
   - role: drupsible.newrelic
     tags: [ 'role::newrelic' ]
     when: provision_new_relic|default(False)|bool and 'newrelic-php5' in apache2_php5_packages_ontop|default([]) and ansible_local.apache2.mpm == 'prefork'
