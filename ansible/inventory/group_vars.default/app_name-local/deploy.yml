@@ -8,6 +8,8 @@
 deploy_modules_present_env: [ 'devel' ]
 # Always disable/uninstall cdn
 deploy_modules_absent_env: [ 'cdn' ]
+# Xdebug extension enabled
+deploy_xdebug_enabled: yes
 
 # PHP development settings, YAY!
 php5_max_execution_time: '0'
