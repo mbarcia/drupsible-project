@@ -3,8 +3,7 @@
 # Configuration file for ALL servers of the PROD environment.
 #
 
-# Modules to enable/disable/uninstall per app environment
-# Always enable devel
+# Do not touch module's on/off
 deploy_modules_present_env: []
-# Always disable/uninstall cdn
+# devel should always be disabled
 deploy_modules_absent_env: [ 'devel' ]

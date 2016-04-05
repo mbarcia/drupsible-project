@@ -3,10 +3,9 @@
 # Configuration file for the deploy/webserver group of the LOCAL environment.
 #
 
-# Modules to enable/disable/uninstall per app environment
-# Always enable devel
+# Always devel enabled
 deploy_modules_present_env: [ 'devel' ]
-# Always disable/uninstall cdn
+# Always cdn disabled
 deploy_modules_absent_env: [ 'cdn' ]
 # Xdebug extension enabled
 deploy_xdebug_enabled: yes
