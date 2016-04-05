@@ -153,13 +153,13 @@ done
 # Prompt for values not yet assigned.
 #
 if [ "$DOMAIN" == "" ]; then
-	echo "Internet domain of the web application?"
+	echo "What is the primary internet domain of your web application?"
 	read -r DOMAIN
 	# Write DOMAIN
 	sed -i "s/DOMAIN=.*$/DOMAIN=\"${DOMAIN}\"/g" "${APP_NAME}.profile"
 fi
 if [ "$DRUPAL_VERSION" == "" ] || [ "$FIRST_TIME" == 'yes' ]; then
-	echo "Drupal version? (7|8) [8])"
+	echo "What Drupal version are you using? (7|8) [8])"
 	read -r DRUPAL_VERSION
 	if [ "$DRUPAL_VERSION" == "" ]; then
 		DRUPAL_VERSION="8"
@@ -169,7 +169,7 @@ if [ "$DRUPAL_VERSION" == "" ] || [ "$FIRST_TIME" == 'yes' ]; then
 fi
 if [ "$FIRST_TIME" == 'yes' ]; then
 	if [ "$MULTILINGUAL" == "" ]; then
-		echo "Will you setup a multilingual website? (y|n)"
+		echo "Are you you setting up a multilingual website? (y|n)"
 		if askyesno; then
 			MULTILINGUAL='yes'
 		else
@@ -180,6 +180,7 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 	fi
 	if [ "$MULTILINGUAL" == "yes" ]; then
 		echo "Enumerate the languages, comma-separated, starting with the default language:"
+		echo "For example, you could type es,en"
 		read -r LANGUAGES
 		LANGUAGES_NO_WHITESPACE="$(echo -e "${LANGUAGES}" | tr -d '[[:space:]]')"
 		# Write LANGUAGES
@@ -196,13 +197,17 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 		sed -i "s|USE_INSTALL_PROFILE=.*$|USE_INSTALL_PROFILE=\"${USE_INSTALL_PROFILE}\"|g" "${APP_NAME}.profile"
 	fi
 	if [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$D_O_INSTALL_PROFILE" == "" ]; then
-		echo "Type contrib/core profile or distribution, if applicable (ie. commerce_kickstart) []"
+		echo "Name of contrib distribution, or core profile? []"
+		echo "If you are using a custom profile, leave this empty now."
+		echo "For example, here you could type bear"
 		read -r D_O_INSTALL_PROFILE
 		# Write D_O_INSTALL_PROFILE
 		sed -i "s|D_O_INSTALL_PROFILE=.*$|D_O_INSTALL_PROFILE=\"${D_O_INSTALL_PROFILE}\"|g" "${APP_NAME}.profile"
 	fi
 	if [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$D_O_INSTALL_PROFILE" == "" ] && [ "$CUSTOM_INSTALL_PROFILE" == "" ]; then
-		echo "Type the name of your custom profile/distribution"
+		echo "Custom profile name? []"
+		echo "You will be able to configure the Git-related information in a moment."
+		echo "For example, here you could type myprofile"
 		read -r CUSTOM_INSTALL_PROFILE
 		# Write CUSTOM_INSTALL_PROFILE
 		sed -i "s|CUSTOM_INSTALL_PROFILE=.*$|CUSTOM_INSTALL_PROFILE=\"${CUSTOM_INSTALL_PROFILE}\"|g" "${APP_NAME}.profile"
@@ -213,7 +218,7 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 	fi
 	if [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$USE_DRUSH_MAKE" == "" ]; then
 		if [ "$D_O_INSTALL_PROFILE" != "" ] && [ "$D_O_INSTALL_PROFILE" != "standard" ] && [ "$D_O_INSTALL_PROFILE" != "minimal" ] && [ "$D_O_INSTALL_PROFILE" != "testing" ]; then
-			echo "Want to drush make <yourmakefile>? (y|n)"
+			echo "Are you using drush make <yourmakefile>? (y|n)"
 			if askyesno; then
 				USE_DRUSH_MAKE='yes'
 			else
@@ -222,7 +227,7 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 			# Write USE_DRUSH_MAKE
 			sed -i "s|USE_DRUSH_MAKE=.*$|USE_DRUSH_MAKE=\"${USE_DRUSH_MAKE}\"|g" "${APP_NAME}.profile"
 			if [ "$DRUSH_MAKEFILE" == "" ] && [ "$USE_DRUSH_MAKE" == "yes" ]; then
-				echo "Makefile? [build-${APP_NAME}.make]"
+				echo "Drush makefile of the profile? [build-${APP_NAME}.make]"
 				read -r DRUSH_MAKEFILE
 				if [ "$DRUSH_MAKEFILE" == "" ]; then
 					DRUSH_MAKEFILE="build-${APP_NAME}.make"
@@ -233,7 +238,7 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 		fi
 	fi
 	if [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$USE_SITE_INSTALL" == "" ]; then
-		echo "Want to drush site-install? (y|n)"
+		echo "Are you using drush site-install? (y|n)"
 		if askyesno; then
 			USE_SITE_INSTALL='yes'
 		else
@@ -242,8 +247,9 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 		# Write USE_SITE_INSTALL
 		sed -i "s|USE_SITE_INSTALL=.*$|USE_SITE_INSTALL=\"${USE_SITE_INSTALL}\"|g" "${APP_NAME}.profile"
 	fi
-	if [ "$USE_UPSTREAM_SITE" == "" ]; then
-		echo "Want to use an upstream site to sync the DB and/or files with? (y|n)"
+	if [ "$USE_UPSTREAM_SITE" == "" ] && [ "$USE_SITE_INSTALL" != "yes" ]; then
+		echo "Are you importing the content from another Drupal site? (y|n)"
+		echo "You will need to inform its remote host, user, and base path."
 		if askyesno; then
 			USE_UPSTREAM_SITE='yes'
 		else
@@ -288,7 +294,7 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 			# Write REMOTE_UPSTREAM_SSH_OPTIONS
 			sed -i "s|REMOTE_UPSTREAM_SSH_OPTIONS=.*$|REMOTE_UPSTREAM_SSH_OPTIONS=\"${REMOTE_UPSTREAM_SSH_OPTIONS}\"|g" "${APP_NAME}.profile"
 			#
-			echo "Want to sync files with the upstream site? (y|n)"
+			echo "Are you rsync'ing files from this Drupal site? (y|n)"
 			if askyesno; then
 				SYNC_FILES='yes'
 			else
@@ -306,7 +312,7 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 				sed -i "s|REMOTE_UPSTREAM_FILES_PATH=.*$|REMOTE_UPSTREAM_FILES_PATH=\"${REMOTE_UPSTREAM_FILES_PATH}\"|g" "${APP_NAME}.profile"
 			fi
 			#
-			echo "Want to sync the DB with the upstream site? (y|n)"
+			echo "Are you sql-sync'ing the DB from this other Drupal site? (y|n)"
 			if askyesno; then
 				SYNC_DB='yes'
 			else
@@ -315,14 +321,18 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 			# Write SYNC_DB
 			sed -i "s|SYNC_DB=.*$|SYNC_DB=\"${SYNC_DB}\"|g" "${APP_NAME}.profile"
 		fi
-		if [ "$DBDUMP" == "" ] && ([ "$SYNC_DB" == "" ] || [ "$SYNC_DB" == "no" ]); then
-			echo "DB dump filename? (ie. example.sql.gz, must be in ansible/playbooks/dbdumps)"
+		if [ "$DBDUMP" == "" ] && ([ "$SYNC_DB" == "" ] || [ "$SYNC_DB" != "yes" ]); then
+			echo "DB dump filename?"
+			echo "For example, ${APP_NAME}.sql"
+			echo "This archive/file must be located in ansible/playbooks/dbdumps."
 			read -r DBDUMP
 			# Write DBDUMP
 			sed -i "s|DBDUMP=.*$|DBDUMP=\"${DBDUMP}\"|g" "${APP_NAME}.profile"
 		fi
-		if [ "$FILES_TARBALL" == "" ] && ([ "$SYNC_FILES" == "" ] || [ "$SYNC_FILES" == "no" ]); then
-			echo "Files tarball? (ie. example-files.tar.gz, must be in ansible/playbooks/files-tarballs)"
+		if [ "$FILES_TARBALL" == "" ] && ([ "$SYNC_FILES" == "" ] || [ "$SYNC_FILES" != "yes" ]); then
+			echo "Files tarball?"
+			echo "For example, ${APP_NAME}-files.tar.gz"
+			echo "This archive must be located in ansible/playbooks/files-tarballs."
 			read -r FILES_TARBALL
 			# Write FILES_TARBALL
 			sed -i "s|FILES_TARBALL=.*$|FILES_TARBALL=\"${FILES_TARBALL}\"|g" "${APP_NAME}.profile"
@@ -330,7 +340,10 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 	fi
 	if [ "$CODEBASE_TARBALL" == "" ]; then
 		if [ "$USE_INSTALL_PROFILE" == "no" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$CUSTOM_INSTALL_PROFILE" != "" ]); then
-			echo "Codebase tarball? (must be in ansible/playbooks/codebase-tarballs, leave empty if you have a Git repo.)"
+			echo "Codebase tarball?"
+			echo "For example, ${APP_NAME}-codebase.tar.gz"
+			echo "This archive must be located in ansible/playbooks/codebase-tarballs."
+			echo "Please leave it empty if you use a Git repo for the code."
 			read -r CODEBASE_TARBALL
 			# Write CODEBASE_TARBALL
 			sed -i "s|CODEBASE_TARBALL=.*$|CODEBASE_TARBALL=\"${CODEBASE_TARBALL}\"|g" "${APP_NAME}.profile"
@@ -348,7 +361,8 @@ if [ "$CODEBASE_TARBALL" == "" ]; then
 		fi
 		
 		if [ "$GIT_SERVER" == "" ]; then
-			echo "Git server name where your Drupal website is?"
+			echo "Git server name?"
+			echo "For example, bitbucket.org"
 			read -r GIT_SERVER
 			# Write GIT_SERVER
 			sed -i "s/GIT_SERVER=.*$/GIT_SERVER=\"${GIT_SERVER}\"/g" "${APP_NAME}.profile"
@@ -356,20 +370,23 @@ if [ "$CODEBASE_TARBALL" == "" ]; then
 		
 		if [ "$GIT_USER" == "" ]; then
 			echo "Git username who will be cloning the Drupal repository?"
+			echo "For example, git"
 			read -r GIT_USER
 			# Write GIT_USER
 			sed -i "s/GIT_USER=.*$/GIT_USER=\"${GIT_USER}\"/g" "${APP_NAME}.profile"
 		fi
 		
 		if [ "$GIT_PATH" == "" ]; then
-			echo "Git path of your Drupal repository? (ie. mbarcia/drupsible-project.git)"
+			echo "Git path of your Drupal repository?"
+			echo "For example, mbarcia/drupsible-project.git"
 			read -r GIT_PATH
 			# Write GIT_PATH
 			sed -i "s|GIT_PATH=.*$|GIT_PATH=\"${GIT_PATH}\"|g" "${APP_NAME}.profile"
 		fi
 		
 		if [ "$GIT_PASS" == "" ]; then
-			echo "Git password? (leave it empty if you use a SSH key)"
+			echo "Git password?"
+			echo "Please leave it empty if you use a SSH deployment key."
 			read -r -s GIT_PASS
 			# Write GIT_PASS
 			if [ ! "$GIT_PASS" == "" ]; then
@@ -408,7 +425,7 @@ fi
 # Gather input about https enabled
 # HTTPS is currently available only on D7, so don't bother asking in D8
 if [ "${DRUPAL_VERSION}" == '7' ] && [ "$APP_HTTPS_ENABLED" == "" ]; then
-	echo "Want your website deployed as https:// instead of just http://? (y|n)"
+	echo "Want your website deployed as HTTPS://, instead of just http://? (y|n)"
 	if askyesno; then
 		APP_HTTPS_ENABLED='yes'
 	else
@@ -420,7 +437,7 @@ fi
 # Gather input about varnish enabled
 # Varnish does not perform SSL termination, so don't ask if HTTPS is enabled
 if [ "$APP_HTTPS_ENABLED" != "yes" ] && [ "$APP_VARNISH_ENABLED" == "" ]; then
-	echo "Want your website deployed behind a Varnish front-end? (y|n)"
+	echo "Want your website deployed behind Varnish? (y|n)"
 	if askyesno; then
 		APP_VARNISH_ENABLED='yes'
 	else
