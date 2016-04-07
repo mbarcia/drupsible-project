@@ -470,7 +470,7 @@ if [ ! -f vagrant.yml ]; then
 else
 	echo "Warning: skipped copy of vagrant.yml because it already exists. Check its contents before proceeding."
 fi
-sed -i "s/example\.com/${DOMAIN}/g" vagrant.yml
+sed -i "s/domain:.*/domain: '${DOMAIN}'/g" vagrant.yml
 # Remove any possible app duplicates
 sed -i "s|^- name\: '${APP_NAME}'$||g" vagrant.yml
 # Add app name to the list
@@ -493,7 +493,7 @@ do
 	if [ ! -f "ansible/inventory/${APP_NAME}${ENV}" ]; then
 		cp "ansible/inventory/app_name${ENV}" "ansible/inventory/${APP_NAME}${ENV}"
 		# Replace example.com by the proper hostname
-		sed -i "s/example\.com/${DOMAIN}/g" "ansible/inventory/${APP_NAME}${ENV}"
+		sed -i "s/webdomain=.*/webdomain=${DOMAIN}/g" "ansible/inventory/${APP_NAME}${ENV}"
 		# Replace app_name by the actual app name
 		sed -i "s/app_name/${APP_NAME}/g" "ansible/inventory/${APP_NAME}${ENV}"
 	else
@@ -521,10 +521,7 @@ do
 	cp -pr "ansible/inventory/group_vars.default/app_name${ENV}/." "ansible/inventory/group_vars/${APP_NAME}${ENV}/"
 	cd "ansible/inventory/group_vars/${APP_NAME}${ENV}" || exit 2
 	# Perform the regexp replacements in the final config files
-	sed -i "s/example\.com/${DOMAIN}/g" all.yml
-	sed -i "s/example-project/${APP_NAME}/g" all.yml
-	sed -i "s/example\.com/${DOMAIN}/g" deploy.yml
-	sed -i "s/example-project/${APP_NAME}/g" deploy.yml
+	sed -i "s/app_name:.*/app_name: '${APP_NAME}'/g" all.yml
 	sed -i "s/app_drupal_version:.*/app_drupal_version: '${DRUPAL_VERSION}'/g" all.yml
 	if [ "$MULTILINGUAL" == "yes" ]; then
 		sed -i "s|app_i18n_enabled:.*$|app_i18n_enabled: yes|g" all.yml
