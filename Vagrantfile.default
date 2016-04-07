@@ -20,17 +20,6 @@ if is_windows
   install_windows_param = 'is_windows'
 end
 
-# Install required plugins if not present.
-required_plugins = %w(vagrant-cachier)
-required_plugins.each do |plugin|
-  need_restart = false
-  unless Vagrant.has_plugin? plugin
-    system "vagrant plugin install #{plugin}"
-    need_restart = true
-  end
-  exec "vagrant #{ARGV.join(' ')}" if need_restart
-end
-
 settings = YAML.load_file 'vagrant.yml'
 HOSTS = settings['hosts']
 APPS = settings['apps']
@@ -136,13 +125,4 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       end # APPS-each
     end # config machine
   end # HOSTS-each
-
-  # Allow caching to be used (see the vagrant-cachier plugin)
-  if Vagrant.has_plugin?("vagrant-cachier")
-    config.cache.scope = :machine
-    config.cache.auto_detect = false
-    config.cache.enable :apt
-    config.cache.enable :gem
-    config.cache.enable :npm
-  end
 end
