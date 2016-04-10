@@ -11,6 +11,23 @@ askyesno ()
 	echo # just a final linefeed, optics...
 	return $retval
 }
+
+function clean_up {
+	echo "---------------------------------------------------------"
+	echo "Configuration script terminated."
+	# Perform program exit housekeeping
+	if [ ! -f "${APP_NAME}.profile" ]; then
+		rm "${APP_NAME}.profile"
+		echo "The existing ${APP_NAME}.profile has been removed, for a fresh start."
+	fi
+	echo "Please run bin/configure.sh again to configure Drupsible."
+	echo "---------------------------------------------------------"
+		
+	exit
+}
+
+trap clean_up SIGHUP SIGINT SIGTERM
+
 #
 # Chdir to top-level folder if needed.
 #
@@ -199,7 +216,7 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 	if [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$D_O_INSTALL_PROFILE" == "" ]; then
 		echo "Name of contrib distribution, or core profile? []"
 		echo "If you are using a custom profile, leave this empty now."
-		echo "For example, here you could type bear"
+		echo "For example, here you could type 'bear', or 'minimal'"
 		read -r D_O_INSTALL_PROFILE
 		# Write D_O_INSTALL_PROFILE
 		sed -i "s|D_O_INSTALL_PROFILE=.*$|D_O_INSTALL_PROFILE=\"${D_O_INSTALL_PROFILE}\"|g" "${APP_NAME}.profile"
@@ -207,7 +224,6 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 	if [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$D_O_INSTALL_PROFILE" == "" ] && [ "$CUSTOM_INSTALL_PROFILE" == "" ]; then
 		echo "Custom profile name? []"
 		echo "You will be able to configure the Git-related information in a moment."
-		echo "For example, here you could type myprofile"
 		read -r CUSTOM_INSTALL_PROFILE
 		# Write CUSTOM_INSTALL_PROFILE
 		sed -i "s|CUSTOM_INSTALL_PROFILE=.*$|CUSTOM_INSTALL_PROFILE=\"${CUSTOM_INSTALL_PROFILE}\"|g" "${APP_NAME}.profile"
@@ -217,8 +233,11 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 		echo "======="
 	fi
 	if [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$USE_DRUSH_MAKE" == "" ]; then
-		if [ "$D_O_INSTALL_PROFILE" != "" ] && [ "$D_O_INSTALL_PROFILE" != "standard" ] && [ "$D_O_INSTALL_PROFILE" != "minimal" ] && [ "$D_O_INSTALL_PROFILE" != "testing" ]; then
-			echo "Are you using drush make <yourmakefile>? (y|n)"
+		if [ "$CUSTOM_INSTALL_PROFILE" != "" ] || ([ "$D_O_INSTALL_PROFILE" != "" ] && [ "$D_O_INSTALL_PROFILE" != "standard" ] && [ "$D_O_INSTALL_PROFILE" != "minimal" ] && [ "$D_O_INSTALL_PROFILE" != "testing" ]); then
+			echo "Are you using drush make? (y|n)"
+			if [ "$D_O_INSTALL_PROFILE" != "" ]; then
+				echo "Hint: a Drupal.org distribution usually does, so if in doubt, press 'y'"
+			fi
 			if askyesno; then
 				USE_DRUSH_MAKE='yes'
 			else
@@ -227,10 +246,20 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 			# Write USE_DRUSH_MAKE
 			sed -i "s|USE_DRUSH_MAKE=.*$|USE_DRUSH_MAKE=\"${USE_DRUSH_MAKE}\"|g" "${APP_NAME}.profile"
 			if [ "$DRUSH_MAKEFILE" == "" ] && [ "$USE_DRUSH_MAKE" == "yes" ]; then
-				echo "Drush makefile of the profile? [build-${APP_NAME}.make]"
+				if [ "$D_O_INSTALL_PROFILE" != "" ]; then
+					echo "Makefile? [build-${D_O_INSTALL_PROFILE}.make]"
+					echo "Hint: hit Enter if in doubt"
+				elif [ "$CUSTOM_INSTALL_PROFILE" != "" ]; then
+					echo "Makefile? [build-${CUSTOM_INSTALL_PROFILE}.make]"
+					echo "Hint: hit Enter if in doubt"
+				fi
 				read -r DRUSH_MAKEFILE
 				if [ "$DRUSH_MAKEFILE" == "" ]; then
-					DRUSH_MAKEFILE="build-${APP_NAME}.make"
+					if [ "$D_O_INSTALL_PROFILE" != "" ]; then
+						DRUSH_MAKEFILE="build-${D_O_INSTALL_PROFILE}.make"
+					elif [ "$CUSTOM_INSTALL_PROFILE" != "" ]; then
+						DRUSH_MAKEFILE="build-${CUSTOM_INSTALL_PROFILE}.make"
+					fi
 				fi
 				# Write DRUSH_MAKEFILE
 				sed -i "s|DRUSH_MAKEFILE=.*$|DRUSH_MAKEFILE=\"${DRUSH_MAKEFILE}\"|g" "${APP_NAME}.profile"
@@ -239,6 +268,7 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 	fi
 	if [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$USE_SITE_INSTALL" == "" ]; then
 		echo "Are you using drush site-install? (y|n)"
+		echo "Hint: an install profile usually needs this so, if in doubt, press 'y'"
 		if askyesno; then
 			USE_SITE_INSTALL='yes'
 		else
@@ -321,25 +351,25 @@ if [ "$FIRST_TIME" == 'yes' ]; then
 			# Write SYNC_DB
 			sed -i "s|SYNC_DB=.*$|SYNC_DB=\"${SYNC_DB}\"|g" "${APP_NAME}.profile"
 		fi
-		if [ "$DBDUMP" == "" ] && ([ "$SYNC_DB" == "" ] || [ "$SYNC_DB" != "yes" ]); then
+		if [ "$DBDUMP" == "" ] && [ "$SYNC_DB" != "yes" ]; then
 			echo "DB dump filename?"
 			echo "For example, ${APP_NAME}.sql"
-			echo "This archive/file must be located in ansible/playbooks/dbdumps."
+			echo "This archive/file must be present in ansible/playbooks/dbdumps before playbook execution."
 			read -r DBDUMP
 			# Write DBDUMP
 			sed -i "s|DBDUMP=.*$|DBDUMP=\"${DBDUMP}\"|g" "${APP_NAME}.profile"
 		fi
-		if [ "$FILES_TARBALL" == "" ] && ([ "$SYNC_FILES" == "" ] || [ "$SYNC_FILES" != "yes" ]); then
+		if [ "$FILES_TARBALL" == "" ] && [ "$SYNC_FILES" != "yes" ]; then
 			echo "Files tarball?"
 			echo "For example, ${APP_NAME}-files.tar.gz"
-			echo "This archive must be located in ansible/playbooks/files-tarballs."
+			echo "This archive must be present in ansible/playbooks/files-tarballs before playbook execution."
 			read -r FILES_TARBALL
 			# Write FILES_TARBALL
 			sed -i "s|FILES_TARBALL=.*$|FILES_TARBALL=\"${FILES_TARBALL}\"|g" "${APP_NAME}.profile"
 		fi
 	fi
 	if [ "$CODEBASE_TARBALL" == "" ]; then
-		if [ "$USE_INSTALL_PROFILE" == "no" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$CUSTOM_INSTALL_PROFILE" != "" ]); then
+		if [ "$USE_INSTALL_PROFILE" != "yes" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$CUSTOM_INSTALL_PROFILE" != "" ]); then
 			echo "Codebase tarball?"
 			echo "For example, ${APP_NAME}-codebase.tar.gz"
 			echo "This archive must be located in ansible/playbooks/codebase-tarballs."
@@ -451,24 +481,27 @@ fi
 # config values gathered.
 #
 # .gitignore
-cp default.gitignore .gitignore
-sed -i "s/app_name/${APP_NAME}/g" .gitignore
+if [ ! -f .gitignore ]; then
+	cp default.gitignore .gitignore
+	echo "A .gitignore has been created locally for your convenience."
+fi
 #
 if [ ! -f ansible.cfg ]; then
 	cp ansible.cfg.default ansible.cfg
-else
-	echo "Warning: skipped copy of ansible.cfg because it already exists. Check its contents before proceeding."
+	echo "An ansible.cfg has been created locally for your convenience."
 fi
 # Vagrantfile
 #
-cp Vagrantfile.default Vagrantfile
+if [ ! -f Vagrantfile ]; then
+	cp Vagrantfile.default Vagrantfile
+	echo "A Vagrantfile has been created locally for your convenience."
+fi
 #
 # vagrant.yml
 #
 if [ ! -f vagrant.yml ]; then
 	cp vagrant.default.yml vagrant.yml
-else
-	echo "Warning: skipped copy of vagrant.yml because it already exists. Check its contents before proceeding."
+	echo "A vagrant.yml has been created locally for your convenience.."
 fi
 sed -i "s/domain:.*/domain: '${DOMAIN}'/g" vagrant.yml
 # Remove any possible app duplicates
@@ -481,7 +514,10 @@ sed -i '/^$/d' vagrant.yml
 #
 # ansible/requirements.yml
 #
-cp ansible/requirements.default.yml ansible/requirements.yml
+if [ ! -f ansible/requirements.yml ]; then
+	cp ansible/requirements.default.yml ansible/requirements.yml
+	echo "ansible/requirements.yml has been created locally for your convenience.."
+fi
 #
 # Create the inventory file
 #
@@ -497,7 +533,7 @@ do
 		# Replace app_name by the actual app name
 		sed -i "s/app_name/${APP_NAME}/g" "ansible/inventory/${APP_NAME}${ENV}"
 	else
-		echo "Warning: skipped copy of ansible/inventory/${APP_NAME}${ENV} because it already exists. Check its contents before proceeding."
+		echo "ansible/inventory/${APP_NAME}${ENV} already exists and has not been re-generated: if you have edited this file, double-check its content before proceeding."
 	fi
 done
 #
@@ -627,7 +663,7 @@ if [ "$DBDUMP" != "" ] && [ ! -f "ansible/playbooks/dbdumps/$DBDUMP" ]; then
 	echo "WARNING: Please copy $DBDUMP to ansible/playbooks/dbdumps/"
 	echo "======="
 fi
-echo
+echo "---------------------------------------------------------"
 echo "Your webapp has been reconfigured for Drupsible."
 echo "If this is your Ansible controller, refer to the docs to properly run ansible-playbook."
 if [ "$FIRST_TIME" == "yes" ]; then
@@ -635,8 +671,12 @@ if [ "$FIRST_TIME" == "yes" ]; then
 	echo "Have the root password at hand and run:"
 	echo "ansible-playbook -l <host> -u root -k ansible/playbooks/bootstrap.yml"
 fi
+echo "---------------------------------------------------------"
 echo "If this is your local environment, just run vagrant up."
+echo "                                            =========="
 if [ "$FIRST_TIME" == "yes" ]; then
-	echo "Vagrant will run a Debian Jessie Virtualbox by default. Edit vagrant.yml to change this and other custom config values."
+	echo "Vagrant will run the drupsible VM by default."
+	echo "You can edi vagrant.yml to change this and other custom config values."
+	echo "Thank you, and happy development!"
 fi
-echo
+echo "---------------------------------------------------------"
