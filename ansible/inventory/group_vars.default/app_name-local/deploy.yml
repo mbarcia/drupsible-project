@@ -3,6 +3,9 @@
 # Configuration file for the deploy/webserver group of the LOCAL environment.
 #
 
+# Reset admin password in local
+deploy_reset_admin_pass: yes
+
 # Always devel enabled
 deploy_modules_present_env: [ 'devel' ]
 # Always cdn disabled
