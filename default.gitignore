@@ -9,5 +9,7 @@
 /ansible/inventory/group_vars/*
 /ansible/playbooks/
 /ansible/playbooks/*
+/ansible/secret/
+/ansible/secret/*
 /*.profile
 /*.tmp
