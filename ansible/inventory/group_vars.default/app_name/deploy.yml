@@ -25,6 +25,11 @@ deploy_codebase_import_enabled: no
 # Set by configure.sh
 deploy_site_install_enabled: False
 
+# Do not touch module's on/off
+deploy_modules_present_env: []
+# devel module should always be disabled in PROD
+deploy_modules_absent_env: [ 'devel' ]
+
 #
 # Upstream host to sync db/files with
 #
