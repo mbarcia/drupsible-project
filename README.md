@@ -8,7 +8,7 @@ Drupsible project is the starting point of Drupsible, and it is the only thing y
 
 # Requirements
 ## Local
-* Any Windows, Linux or MacOS workstation, with VT-x/AMD-V enabled
+* Any Windows, Linux or MacOS workstation
 * 1G of free RAM, 6G of free disk space (or alternatively, 30G for the 'mbarcia/drupsible-large' VirtualBox box)
 * A Virtual Machine provider
   * [Virtualbox](https://www.virtualbox.org/wiki/Downloads), or
@@ -18,7 +18,12 @@ Drupsible project is the starting point of Drupsible, and it is the only thing y
   * requires commercial plug-in for VMWare
 * [Git Bash](https://git-scm.com/download/win) (only if you are on Windows)
 * [PuTTY](https://the.earth.li/~sgtatham/putty/latest/x86/putty-0.67-installer.msi) (only if you are on Windows)
-* [Check your BIOS](http://www.howtogeek.com/213795/how-to-enable-intel-vt-x-in-your-computers-bios-or-uefi-firmware/) for virtualization, it must be enabled
+* Make sure VT-x (or AMD-V) virtualization is enabled on the host machine
+    * [I'm on a Linux host](http://www.cyberciti.biz/faq/linux-xen-vmware-kvm-intel-vt-amd-v-support/)
+    * [I'm on a Windows host](http://amiduos.com/support/knowledge-base/article/how-can-i-get-to-know-my-processor-supports-virtualization-technology)
+    * [I'm on a Mac host](http://kb.parallels.com/5653)
+
+    This setting must be enabled for 64-bit OS guests like the Drupsible VM.
 * If you want to import an ongoing development:
   * Have your Drupal website codebase, either managed through a GIT repository or simply stored in a tarball/archive. Ideally, without sites/default/files in it!.
   * Optionally, have a "deployment key" setup for your Git repository.
