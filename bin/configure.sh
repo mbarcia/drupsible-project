@@ -175,6 +175,17 @@ if [ "$DOMAIN" == "" ]; then
 	# Write DOMAIN
 	sed -i "s/DOMAIN=.*$/DOMAIN=\"${DOMAIN}\"/g" "${APP_NAME}.profile"
 fi
+if [ "$HOSTNAME" == "" ]; then
+	echo "Host name in your local environment? [local]"
+	echo "Hint: leave this empty so $APP_NAME is served locally at http(s)://local.${DOMAIN}"
+	read -r HOSTNAME
+	if [ "$HOSTNAME" == "" ]; then
+		# Set hostname to default: local
+		HOSTNAME="local"
+	fi
+	# Write HOSTNAME
+	sed -i "s/HOSTNAME=.*$/HOSTNAME=\"${HOSTNAME}\"/g" "${APP_NAME}.profile"
+fi
 if [ "$DRUPAL_VERSION" == "" ] || [ "$FIRST_TIME" == 'yes' ]; then
 	echo "What Drupal version are you using? (7|8) [8])"
 	read -r DRUPAL_VERSION
@@ -519,7 +530,7 @@ if [ ! -f ansible/requirements.yml ]; then
 	echo "ansible/requirements.yml has been created locally for your convenience.."
 fi
 #
-# Create the inventory file
+# Create the inventory file for the local environment
 #
 for ENV in "-local"
 do
@@ -528,10 +539,12 @@ do
 	#
 	if [ ! -f "ansible/inventory/${APP_NAME}${ENV}" ]; then
 		cp "ansible/inventory/app_name${ENV}" "ansible/inventory/${APP_NAME}${ENV}"
-		# Replace example.com by the proper hostname
+		# Assign web domain
 		sed -i "s/webdomain=.*/webdomain=${DOMAIN}/g" "ansible/inventory/${APP_NAME}${ENV}"
 		# Replace app_name by the actual app name
 		sed -i "s/app_name/${APP_NAME}/g" "ansible/inventory/${APP_NAME}${ENV}"
+		# Assign hostname
+		sed -i "s/app_webhost=.*/app_webhost=${HOSTNAME}/g" "ansible/inventory/${APP_NAME}${ENV}"
 	else
 		echo "ansible/inventory/${APP_NAME}${ENV} already exists and has not been re-generated: if you have edited this file, double-check its content before proceeding."
 	fi

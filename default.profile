@@ -7,6 +7,8 @@ APP_NAME="default"
 
 # This is your web domain, like example.com
 DOMAIN=""
+# This is your local hostname without the domain, like "local"
+HOSTNAME=""
 #
 DRUPAL_VERSION="8"
 #
