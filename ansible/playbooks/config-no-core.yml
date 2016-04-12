@@ -152,6 +152,10 @@
     samba_webhost: "{{ app_webhost }}"
     when: app_target == 'local'
     tags: [ 'role::samba' ]
+  - role: drupsible.twigc
+    when: app_drupal_version|version_compare('8', '==')
+    working_dir: "/home/{{ app_user }}/{{ app_name }}"
+    tags: [ 'role::twigc' ]
 - name: Varnish
   hosts: [ '{{ app_name }}-{{ app_target }}_varnish' ]
   become: True
