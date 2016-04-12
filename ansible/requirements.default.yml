@@ -71,3 +71,6 @@
 - src: https://github.com/mbarcia/drupsible-xdebug
   version: master
   name: drupsible.xdebug
+- src: https://github.com/mbarcia/drupsible-twigc
+  version: master
+  name: drupsible.twigc
