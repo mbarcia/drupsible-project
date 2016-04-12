@@ -31,3 +31,6 @@ apache2_mod_php5_packages_ontop:
 
 # Also allow Vagrant-host
 apache2_allowed_hosts: [ "127.0.0.1", "10.0.2.2" ]
+
+# Default to NOT update translations in local
+deploy_update_translations_enabled: False
