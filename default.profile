@@ -1,27 +1,35 @@
 #!/bin/sh
 #
-# Set all the needed config values for your webapp.
-# Your app name will be the basename of this file.
+# Drupsible app profile.
 #
-APP_NAME="default"
+# Contains the basic config values for your Drupal application.
+#
+APP_NAME=""
 
-# This is your web domain, like example.com
+# This is your primary web domain, like 'drupal.org'
 DOMAIN=""
-# This is your local hostname without the domain, like "local"
-HOSTNAME=""
+# This is your _local_ hostname, without the domain, so the Ansible inventory
+# can be generated automatically.
+# In all the other upper environments, inventories need to be created manually
+# by the user.
+HOSTNAME="local"
 #
 DRUPAL_VERSION="8"
 #
 MULTILINGUAL=""
+# Enumerate the languages after commas, starting with the default language
+# Ie. es,en
 LANGUAGES=""
 #
 USE_INSTALL_PROFILE=""
+# This can be a core profile (ie. standard, or minimal) or a contrib profile (ie. bear, or thunder)
 D_O_INSTALL_PROFILE=""
 CUSTOM_INSTALL_PROFILE=""
 #
-# Some install profiles already have all the code
 USE_DRUSH_MAKE=""
+# Ie. build-bear.make
 DRUSH_MAKEFILE=""
+USE_COMPOSER=""
 #
 USE_SITE_INSTALL=""
 #
@@ -37,22 +45,28 @@ REMOTE_UPSTREAM_PROXY_PORT=""
 REMOTE_UPSTREAM_SSH_OPTIONS=""
 SYNC_DB=""
 #
-# This is the codebase tarball of your drupal site.
+# This tarball should contain the codebase of your drupal site.
+# It can be a tar, a gzip, a bzip2 or a xz.
 CODEBASE_TARBALL=""
 #
 # This is the DB dump of your drupal site to import into your local.
+# It is a SQL file, and can be in plain text format, or gzipped
 DBDUMP=""
 #
 # This is the sites/default/files tarball of your drupal site to
 # import into your local.
+# It can be a tar, a gzip, a bzip2 or a xz.
 FILES_TARBALL=""
 #
 KEY_FILENAME="~/.ssh/id_rsa"
 #
+# This is usually ssh
 GIT_PROTOCOL=""
 #
+# Ie. bitbucket.org
 GIT_SERVER=""
 #
+# Ie. git
 GIT_USER=""
 #
 GIT_PATH=""
