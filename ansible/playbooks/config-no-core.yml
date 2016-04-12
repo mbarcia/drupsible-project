@@ -154,7 +154,7 @@
     tags: [ 'role::samba' ]
   - role: drupsible.twigc
     when: app_drupal_version|version_compare('8', '==')
-    working_dir: "/home/{{ app_user }}/{{ app_name }}"
+    twigc_composer_working_dir: "/home/{{ app_user }}/{{ app_name }}"
     tags: [ 'role::twigc' ]
 - name: Varnish
   hosts: [ '{{ app_name }}-{{ app_target }}_varnish' ]
