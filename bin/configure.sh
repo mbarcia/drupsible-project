@@ -161,6 +161,7 @@ if [ "$USE_INSTALL_PROFILE" == "yes" ]; then
 			sed -i "s|DRUSH_MAKEFILE=.*$|DRUSH_MAKEFILE=\"${DRUSH_MAKEFILE}\"|g" "${APP_NAME}.profile.tmp"
 		else
 			echo "Are you using composer? (y|n)"
+			echo "Warning: support for composer is experimental"
 			if askyesno; then
 				USE_COMPOSER='yes'
 			else
