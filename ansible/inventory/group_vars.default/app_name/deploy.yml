@@ -17,6 +17,7 @@ deploy_custom_install_profile: ''
 # Set by configure.sh
 deploy_drush_make_enabled: False
 deploy_drush_makefile: ''
+deploy_composer_enabled: ''
 
 # Set by configure.sh
 deploy_codebase_tarball_filename: ''
