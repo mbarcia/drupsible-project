@@ -342,6 +342,52 @@ if [ "${DRUPAL_VERSION}" == '7' ]; then
 	# Write APP_HTTPS_ENABLED
 	sed -i "s|APP_HTTPS_ENABLED=.*$|APP_HTTPS_ENABLED=\"${APP_HTTPS_ENABLED}\"|g" "${APP_NAME}.profile.tmp"
 fi
+# Gather input about SMTP enabled
+echo "Want to make use of a SMTP service? (y|n)"
+echo "(you will next be asked for username and password)"
+if askyesno; then
+	if [ "$APP_POSTFIX_CLIENT_ENABLED" != "yes" ]; then
+		echo "SMTP server? [smtp.gmail.com]"
+		read -r SMTP_SERVER
+		if [ "$SMTP_SERVER" == "" ]; then
+			SMTP_SERVER='smtp.gmail.com'
+		fi
+		# Write SMTP_SERVER
+		sed -i "s/SMTP_SERVER=.*$/SMTP_SERVER=\"${SMTP_SERVER}\"/g" "${APP_NAME}.profile.tmp"
+		echo "SMTP port? [587]"
+		read -r SMTP_PORT
+		if [ "$SMTP_PORT" == "" ]; then
+			SMTP_PORT='587'
+		fi
+		# Write SMTP_PORT
+		sed -i "s/SMTP_PORT=.*$/SMTP_PORT=\"${SMTP_PORT}\"/g" "${APP_NAME}.profile.tmp"
+		echo "SMTP username?"
+		echo "For example, ${APP_NAME}@gmail.com"
+		read -r SMTP_USER
+		# Write SMTP_USER
+		sed -i "s/SMTP_USER=.*$/SMTP_USER=\"${SMTP_USER}\"/g" "${APP_NAME}.profile.tmp"
+		echo "SMTP password?"
+		read -r -s SMTP_PASS
+		read -p "Please confirm SMTP password" -r -s SMTP_PASS2
+		if [ "${SMTP_PASS}" != "${SMTP_PASS2}" ]; then 
+			echo "Password missmatch" 
+			echo "SMTP password?"
+			read -r -s SMTP_PASS
+			read -p "Please confirm SMTP password" -r -s SMTP_PASS2
+			if [ "${SMTP_PASS}" != "${SMTP_PASS2}" ]; then 
+				echo "Password missmatch for 2nd. time, exiting."
+				clean_up
+				exit 1
+			fi
+		fi
+		# Passwords match, write SMTP_PASS to the secret dir
+		if [ ! "${SMTP_PASS}" == "" ]; then
+			mkdir -p "./ansible/secret/credentials/postfix/smtp_sasl_password_map/[${SMTP_SERVER}]:${SMTP_PORT}"
+			touch "./ansible/secret/credentials/postfix/smtp_sasl_password_map/[${SMTP_SERVER}]:${SMTP_PORT}/${SMTP_USER}"
+			cat "${SMTP_PASS}" > "./ansible/secret/credentials/postfix/smtp_sasl_password_map/[${SMTP_SERVER}]:${SMTP_PORT}/${SMTP_USER}"
+		fi
+	fi
+fi
 # Gather input about varnish enabled
 # Varnish does not perform SSL termination, so don't ask if HTTPS is enabled
 if [ "$APP_HTTPS_ENABLED" != "yes" ]; then
