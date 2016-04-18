@@ -1,6 +1,14 @@
 #!/bin/bash
 
-askyesno () 
+start_over ()
+{
+	# Create APP_NAME.profile.tmp from the empty project template
+	cp default.profile "${APP_NAME}.profile.tmp"
+	# Write APP_NAME
+	sed -i "s/APP_NAME=.*/APP_NAME=\"${APP_NAME}\"/g" "${APP_NAME}.profile.tmp"
+}
+
+askyesno ()
 {
 	while read -r -n 1 -s answer; do
 		if [[ $answer = [YyNn] ]]; then
@@ -52,15 +60,14 @@ else
 fi
 
 if [ ! -f "${APP_NAME}.profile" ]; then
-	# Create APP_NAME.profile.tmp from the empty project template
-	cp default.profile "${APP_NAME}.profile.tmp"
-	# Write APP_NAME
-	sed -i "s/APP_NAME=.*/APP_NAME=\"${APP_NAME}\"/g" "${APP_NAME}.profile.tmp"
+	start_over
 else
 	echo "${APP_NAME}.profile already exists. Do you want to start over? (y|n)"
 	if ! askyesno; then
 		./bin/generate.sh "${APP_NAME}.profile"
 		exit
+	else
+		start_over
 	fi
 fi
 #
