@@ -1,5 +1,44 @@
 #!/bin/bash
 
+enter_password ()
+{
+	password=''
+	while IFS= read -r -s -n1 char; do
+	  [[ -z $char ]] && { printf '\n'; break; } # ENTER pressed; output \n and break.
+	  if [[ $char == $'\x7f' ]]; then # backspace was pressed
+	      # Remove last char from output variable.
+	      [[ -n $password ]] && password=${password%?}
+	      # Erase '*' to the left.
+	      printf '\b \b' 
+	  else
+	    # Add typed char to output variable.
+	    password+=$char
+	    # Print '*' in its stead.
+	    printf '*'
+	  fi
+	done
+	
+	echo ${password}
+}
+
+matched_password ()
+{
+	p1=$(enter_password)
+	p2=$(enter_password)
+	if [ "${p1}" != "${p2}" ]; then 
+		echo "Password missmatch, one more try (backspace is your friend):" 
+		p1=$(enter_password)
+		p2=$(enter_password)
+		if [ "${p1}" != "${p2}" ]; then
+			echo "Password missmatch, now exiting." 
+			clean_up
+			exit 1
+		fi
+	fi
+	
+	echo ${p1}
+}
+
 start_over ()
 {
 	# Create APP_NAME.profile.tmp from the empty project template
@@ -17,23 +56,33 @@ askyesno ()
     		break
 		fi
 	done
-	return $retval
+	return ${retval}
 }
 
 function clean_up {
-	echo "---------------------------------------------------------"
+	echo "-------------------------------------------------------------------------------"
 	echo "Configuration script terminated."
 	# Perform program exit housekeeping
 	if [ ! -f "${APP_NAME}.profile.tmp" ]; then
 		rm "${APP_NAME}.profile.tmp"
 	fi
 	echo "Run bin/configure.sh to start over."
-	echo "---------------------------------------------------------"
+	echo "-------------------------------------------------------------------------------"
 		
 	exit
 }
 
 trap clean_up SIGHUP SIGINT SIGTERM
+
+echo "-------------------------------------------------------------------------------"
+echo "Welcome to the Drupsible wizard"
+echo "==============================="
+echo "Take this brief questionnaire and you will be up and running in no time!
+echo "You may configure Drupsible to install any of these: core profiles (minimal, "
+echo "standard) contributed distributions (bear, thunder), or your own project."
+echo "Available options are prompted between parenthesis, like (y|n)."
+echo "Default values (when you hit Enter) are prompted between brackets []."
+echo "-------------------------------------------------------------------------------"
 
 #
 # Chdir to top-level folder if needed.
@@ -321,7 +370,7 @@ if [ "$USE_INSTALL_PROFILE" != "yes" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] &
 		sed -i "s|GIT_PATH=.*$|GIT_PATH=\"${GIT_PATH}\"|g" "${APP_NAME}.profile.tmp"
 		echo "Git password?"
 		echo "(leave this empty if you use SSH deployment keys)"
-		read -r -s GIT_PASS
+		GIT_PASS=matched_password
 		# Write GIT_PASS
 		if [ ! "$GIT_PASS" == "" ]; then
 			sed -i "s|GIT_PASS=.*$|GIT_PASS=\"${GIT_PASS}\"|g" "${APP_NAME}.profile.tmp"
@@ -340,7 +389,7 @@ fi
 if [ "${DRUPAL_VERSION}" == '7' ]; then
 	echo "Want your website deployed as HTTPS://, instead of just http://? (y|n)"
 	echo "HTTPS will require a few more minutes to process a self-signed certificate."
-	echo "HTTPS needs to patches to Drupal 7 core, other than that it can be considered 'safe for development'."
+	echo "This will patch Drupal core, as instructed in securepages. It can be considered 'safe for development'."
 	if askyesno; then
 		APP_HTTPS_ENABLED='yes'
 	else
@@ -351,7 +400,8 @@ if [ "${DRUPAL_VERSION}" == '7' ]; then
 fi
 # Gather input about SMTP enabled
 echo "Want to make use of a SMTP service? (y|n)"
-echo "(you will next be asked for username and password)"
+echo "(you will next be asked for server, port, username and password)"
+echo "Defaults are provided for using a free Gmail account."
 if askyesno; then
 	if [ "$APP_POSTFIX_CLIENT_ENABLED" != "yes" ]; then
 		echo "SMTP server? [smtp.gmail.com]"
@@ -374,24 +424,12 @@ if askyesno; then
 		# Write SMTP_USER
 		sed -i "s/SMTP_USER=.*$/SMTP_USER=\"${SMTP_USER}\"/g" "${APP_NAME}.profile.tmp"
 		echo "SMTP password?"
-		read -r -s SMTP_PASS
-		read -p "Please confirm SMTP password" -r -s SMTP_PASS2
-		if [ "${SMTP_PASS}" != "${SMTP_PASS2}" ]; then 
-			echo "Password missmatch" 
-			echo "SMTP password?"
-			read -r -s SMTP_PASS
-			read -p "Please confirm SMTP password" -r -s SMTP_PASS2
-			if [ "${SMTP_PASS}" != "${SMTP_PASS2}" ]; then 
-				echo "Password missmatch for 2nd. time, exiting."
-				clean_up
-				exit 1
-			fi
-		fi
-		# Passwords match, write SMTP_PASS to the secret dir
+		SMTP_PASS=$(matched_password)
+		# Write SMTP_PASS to the secret dir
 		if [ ! "${SMTP_PASS}" == "" ]; then
 			mkdir -p "./ansible/secret/credentials/postfix/smtp_sasl_password_map/[${SMTP_SERVER}]:${SMTP_PORT}"
 			touch "./ansible/secret/credentials/postfix/smtp_sasl_password_map/[${SMTP_SERVER}]:${SMTP_PORT}/${SMTP_USER}"
-			cat "${SMTP_PASS}" > "./ansible/secret/credentials/postfix/smtp_sasl_password_map/[${SMTP_SERVER}]:${SMTP_PORT}/${SMTP_USER}"
+			echo "${SMTP_PASS}" > "./ansible/secret/credentials/postfix/smtp_sasl_password_map/[${SMTP_SERVER}]:${SMTP_PORT}/${SMTP_USER}"
 		fi
 	fi
 fi
