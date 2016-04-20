@@ -77,9 +77,12 @@ trap clean_up SIGHUP SIGINT SIGTERM
 echo "-------------------------------------------------------------------------------"
 echo "Welcome to the Drupsible wizard"
 echo "==============================="
-echo "Take this brief questionnaire and you will be up and running in no time!
+echo
+echo "Take this brief questionnaire and you will be up and running in no time!"
+echo
 echo "You may configure Drupsible to install any of these: core profiles (minimal, "
 echo "standard) contributed distributions (bear, thunder), or your own project."
+echo
 echo "Available options are prompted between parenthesis, like (y|n)."
 echo "Default values (when you hit Enter) are prompted between brackets []."
 echo "-------------------------------------------------------------------------------"
@@ -122,10 +125,12 @@ fi
 #
 # Start interactive questionnaire
 #
+echo
 echo "What is the primary internet domain of your web application?"
 read -r DOMAIN
 # Write DOMAIN
 sed -i "s/DOMAIN=.*$/DOMAIN=\"${DOMAIN}\"/g" "${APP_NAME}.profile.tmp"
+echo
 echo "Host name in your local environment? [local]"
 read -r HOSTNAME
 if [ "$HOSTNAME" == "" ]; then
@@ -134,6 +139,7 @@ if [ "$HOSTNAME" == "" ]; then
 fi
 # Write HOSTNAME
 sed -i "s/HOSTNAME=.*$/HOSTNAME=\"${HOSTNAME}\"/g" "${APP_NAME}.profile.tmp"
+echo
 echo "What Drupal version are you using? (7|8) [8])"
 read -r DRUPAL_VERSION
 if [ "$DRUPAL_VERSION" == "" ]; then
@@ -141,6 +147,7 @@ if [ "$DRUPAL_VERSION" == "" ]; then
 fi
 # Write DRUPAL_VERSION
 sed -i "s|DRUPAL_VERSION=.*$|DRUPAL_VERSION=\"${DRUPAL_VERSION}\"|g" "${APP_NAME}.profile.tmp"
+echo
 echo "Are you setting up a multilingual website? (y|n)"
 if askyesno; then
 	MULTILINGUAL='yes'
@@ -157,6 +164,7 @@ if [ "$MULTILINGUAL" == "yes" ]; then
 	# Write LANGUAGES
 	sed -i "s|LANGUAGES=.*$|LANGUAGES=\"${LANGUAGES_NO_WHITESPACE}\"|g" "${APP_NAME}.profile.tmp"
 fi
+echo
 echo "Will you be using a distribution or install profile? (y|n)"
 if askyesno; then
 	USE_INSTALL_PROFILE='yes'
@@ -166,7 +174,7 @@ fi
 # Write USE_INSTALL_PROFILE
 sed -i "s|USE_INSTALL_PROFILE=.*$|USE_INSTALL_PROFILE=\"${USE_INSTALL_PROFILE}\"|g" "${APP_NAME}.profile.tmp"
 if [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$D_O_INSTALL_PROFILE" == "" ]; then
-	echo "Name of contrib distribution, or core profile? []"
+	echo "Name of contrib distribution, or core profile?"
 	echo "If you are using a custom profile, leave this empty now."
 	echo "For example, here you could type 'bear', or 'minimal'"
 	read -r D_O_INSTALL_PROFILE
@@ -174,7 +182,7 @@ if [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$D_O_INSTALL_PROFILE" == "" ]; then
 	sed -i "s|D_O_INSTALL_PROFILE=.*$|D_O_INSTALL_PROFILE=\"${D_O_INSTALL_PROFILE}\"|g" "${APP_NAME}.profile.tmp"
 fi
 if [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$D_O_INSTALL_PROFILE" == "" ] && [ "$CUSTOM_INSTALL_PROFILE" == "" ]; then
-	echo "Custom profile name? []"
+	echo "Custom profile name?"
 	echo "You will be able to configure the Git-related information in a moment."
 	read -r CUSTOM_INSTALL_PROFILE
 	# Write CUSTOM_INSTALL_PROFILE
@@ -184,6 +192,7 @@ if [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$D_O_INSTALL_PROFILE" == "" ] && [ 
 	echo "WARNING: You have not specified a profile name. The core standard profile will be used."
 	echo "======="
 fi
+echo
 if [ "$USE_INSTALL_PROFILE" == "yes" ]; then
 	if [ "$CUSTOM_INSTALL_PROFILE" != "" ] || ([ "$D_O_INSTALL_PROFILE" != "" ] && [ "$D_O_INSTALL_PROFILE" != "standard" ] && [ "$D_O_INSTALL_PROFILE" != "minimal" ] && [ "$D_O_INSTALL_PROFILE" != "testing" ]); then
 		echo "Are you using drush make? (y|n)"
@@ -228,6 +237,7 @@ if [ "$USE_INSTALL_PROFILE" == "yes" ]; then
 		fi
 	fi
 fi
+echo
 if [ "$USE_INSTALL_PROFILE" == "yes" ]; then
 	echo "Are you using drush site-install? (y|n)"
 	echo "Hint: an install profile usually needs this so, if in doubt, press 'y'"
@@ -239,6 +249,7 @@ if [ "$USE_INSTALL_PROFILE" == "yes" ]; then
 	# Write USE_SITE_INSTALL
 	sed -i "s|USE_SITE_INSTALL=.*$|USE_SITE_INSTALL=\"${USE_SITE_INSTALL}\"|g" "${APP_NAME}.profile.tmp"
 fi
+echo
 if [ "$USE_SITE_INSTALL" != "yes" ]; then
 	echo "Are you importing the content from another Drupal site? (y|n)"
 	echo "You will need to inform its remote host, user, and base path."
@@ -332,6 +343,7 @@ if [ "$USE_SITE_INSTALL" != "yes" ]; then
 		sed -i "s|FILES_TARBALL=.*$|FILES_TARBALL=\"${FILES_TARBALL}\"|g" "${APP_NAME}.profile.tmp"
 	fi
 fi
+echo
 if [ "$USE_INSTALL_PROFILE" != "yes" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$CUSTOM_INSTALL_PROFILE" != "" ]); then
 	echo "Will you be using a codebase tarball? (y|n)"
 	if askyesno; then
@@ -384,6 +396,7 @@ if [ "$USE_INSTALL_PROFILE" != "yes" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] &
 		sed -i "s|GIT_BRANCH=.*$|GIT_BRANCH=\"${GIT_BRANCH}\"|g" "${APP_NAME}.profile.tmp"
 	fi
 fi
+echo
 # Gather input about https enabled
 # HTTPS is currently available only on D7, so don't bother asking in D8
 if [ "${DRUPAL_VERSION}" == '7' ]; then
@@ -398,6 +411,7 @@ if [ "${DRUPAL_VERSION}" == '7' ]; then
 	# Write APP_HTTPS_ENABLED
 	sed -i "s|APP_HTTPS_ENABLED=.*$|APP_HTTPS_ENABLED=\"${APP_HTTPS_ENABLED}\"|g" "${APP_NAME}.profile.tmp"
 fi
+echo
 # Gather input about SMTP enabled
 echo "Want to make use of a SMTP service? (y|n)"
 echo "(you will next be asked for server, port, username and password)"
@@ -433,6 +447,7 @@ if askyesno; then
 		fi
 	fi
 fi
+echo
 # Gather input about varnish enabled
 # Varnish does not perform SSL termination, so don't ask if HTTPS is enabled
 if [ "$APP_HTTPS_ENABLED" != "yes" ]; then
@@ -445,6 +460,8 @@ if [ "$APP_HTTPS_ENABLED" != "yes" ]; then
 	fi
 	# Write APP_VARNISH_ENABLED
 	sed -i "s|APP_VARNISH_ENABLED=.*$|APP_VARNISH_ENABLED=\"${APP_VARNISH_ENABLED}\"|g" "${APP_NAME}.profile.tmp"
+fi
+echo
 fi
 #
 # Connect to a new or existing ssh-agent
