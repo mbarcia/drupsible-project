@@ -2,41 +2,25 @@
 
 enter_password ()
 {
-	password=''
+	local __resultvarname=$1
+	local password_input=''
 	while IFS= read -r -s -n1 char; do
 	  [[ -z $char ]] && { printf '\n'; break; } # ENTER pressed; output \n and break.
 	  if [[ $char == $'\x7f' ]]; then # backspace was pressed
 	      # Remove last char from output variable.
-	      [[ -n $password ]] && password=${password%?}
+	      [[ -n $password_input ]] && password_input=${password_input%?}
 	      # Erase '*' to the left.
 	      printf '\b \b' 
 	  else
 	    # Add typed char to output variable.
-	    password+=$char
+	    password_input+=$char
 	    # Print '*' in its stead.
 	    printf '*'
 	  fi
 	done
+	unset IFS
 	
-	echo ${password}
-}
-
-matched_password ()
-{
-	p1=$(enter_password)
-	p2=$(enter_password)
-	if [ "${p1}" != "${p2}" ]; then 
-		echo "Password missmatch, one more try (backspace is your friend):" 
-		p1=$(enter_password)
-		p2=$(enter_password)
-		if [ "${p1}" != "${p2}" ]; then
-			echo "Password missmatch, now exiting." 
-			clean_up
-			exit 1
-		fi
-	fi
-	
-	echo ${p1}
+	eval $__resultvarname="'${password_input}'"
 }
 
 start_over ()
@@ -382,7 +366,7 @@ if [ "$USE_INSTALL_PROFILE" != "yes" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] &
 		sed -i "s|GIT_PATH=.*$|GIT_PATH=\"${GIT_PATH}\"|g" "${APP_NAME}.profile.tmp"
 		echo "Git password?"
 		echo "(leave this empty if you use SSH deployment keys)"
-		GIT_PASS=matched_password
+		enter_password "GIT_PASS"
 		# Write GIT_PASS
 		if [ ! "$GIT_PASS" == "" ]; then
 			sed -i "s|GIT_PASS=.*$|GIT_PASS=\"${GIT_PASS}\"|g" "${APP_NAME}.profile.tmp"
@@ -438,7 +422,7 @@ if askyesno; then
 		# Write SMTP_USER
 		sed -i "s/SMTP_USER=.*$/SMTP_USER=\"${SMTP_USER}\"/g" "${APP_NAME}.profile.tmp"
 		echo "SMTP password?"
-		SMTP_PASS=$(matched_password)
+		enter_password "SMTP_PASS"
 		# Write SMTP_PASS to the secret dir
 		if [ ! "${SMTP_PASS}" == "" ]; then
 			mkdir -p "./ansible/secret/credentials/postfix/smtp_sasl_password_map/[${SMTP_SERVER}]:${SMTP_PORT}"
@@ -462,7 +446,6 @@ if [ "$APP_HTTPS_ENABLED" != "yes" ]; then
 	sed -i "s|APP_VARNISH_ENABLED=.*$|APP_VARNISH_ENABLED=\"${APP_VARNISH_ENABLED}\"|g" "${APP_NAME}.profile.tmp"
 fi
 echo
-fi
 #
 # Connect to a new or existing ssh-agent
 #
