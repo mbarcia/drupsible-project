@@ -16,6 +16,9 @@ if [ "$2" == "is_windows" ]; then
 	if [ ! -L /home/vagrant/ansible/playbooks ]; then
 		ln -s /vagrant/ansible/playbooks /home/vagrant/ansible/playbooks
 	fi
+	if [ ! -L /home/vagrant/ansible/secret ]; then
+		ln -s /vagrant/ansible/secret /home/vagrant/ansible/secret
+	fi
 	# Copy inventory files
 	for ENV in "-local"
 	do

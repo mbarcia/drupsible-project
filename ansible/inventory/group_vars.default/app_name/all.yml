@@ -50,6 +50,13 @@ app_i18n_enabled: False
 app_languages: []
 
 #
+# Postfix defaults
+#
+
+# Credentials are global
+postfix_smtp_sasl_password_map_per_host: False
+
+#
 # PKI defaults
 #
 

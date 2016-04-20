@@ -21,7 +21,7 @@
   version: v0.2.5
   name: debops.pki
 - src: https://github.com/debops/ansible-postfix
-  version: v0.1.1
+  version: c427bf30b1fdfe0e196f08a2191fea4524932205
   name: debops.postfix
 - src: https://github.com/debops/ansible-sshkeys
   version: 52e8497a37c764b79efd97ee31a38974620a27f1
