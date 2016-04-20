@@ -71,8 +71,6 @@ GIT_USER=""
 #
 GIT_PATH=""
 #
-GIT_PASS=""
-#
 GIT_BRANCH="master"
 #
 SMTP_SERVER=
