@@ -125,6 +125,8 @@ fi
 sed -i "s/HOSTNAME=.*$/HOSTNAME=\"${HOSTNAME}\"/g" "${APP_NAME}.profile.tmp"
 echo
 echo "What Drupal version are you using? (7|8) [8])"
+echo "8 (or 7) will get you the latest stable, but you can also specify any "
+echo "particular Drupal core version, like 8.0.5 (or 7.43)"
 read -r DRUPAL_VERSION
 if [ "$DRUPAL_VERSION" == "" ]; then
 	DRUPAL_VERSION="8"
