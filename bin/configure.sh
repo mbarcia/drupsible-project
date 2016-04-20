@@ -369,7 +369,9 @@ if [ "$USE_INSTALL_PROFILE" != "yes" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] &
 		enter_password "GIT_PASS"
 		# Write GIT_PASS
 		if [ ! "$GIT_PASS" == "" ]; then
-			sed -i "s|GIT_PASS=.*$|GIT_PASS=\"${GIT_PASS}\"|g" "${APP_NAME}.profile.tmp"
+			mkdir -p "./ansible/secret/credentials/${APP_NAME}/git"
+			touch "./ansible/secret/credentials/${APP_NAME}/git/${GIT_USER}"
+			echo "${GIT_PASS}" > "./ansible/secret/credentials/${APP_NAME}/git/${GIT_USER}"
 		fi
 		echo "Branch/version of your codebase? [master]"
 		read -r GIT_BRANCH
