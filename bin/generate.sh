@@ -202,16 +202,20 @@ do
 	cd - > /dev/null || exit 2
 done
 # Finish execution with a final message
-echo "---------------------------------------------------------"
-echo "Your webapp has been reconfigured for Drupsible."
-echo "If this is your Ansible controller, refer to the docs to properly run ansible-playbook."
-echo "You will probably need to run the bootstrap playbook for each host in your infrastructure."
-echo "Have the root password at hand and run:"
+echo "-------------------------------------------------------------------------------"
+echo "Thank you, all of the Drupsible defaults have been properly generated."
+echo "You may override them by creating YAML files under "
+echo "ansible/playbooks/groups_vars."
+echo
+echo "If this is your Ansible controller, refer to the docs to properly run "
+echo "ansible-playbook. You may need to run the bootstrap playbook for each host." 
+echo "If so, have the root password at hand and run:"
+echo
 echo "ansible-playbook -l <host> -u root -k ansible/playbooks/bootstrap.yml"
-echo "---------------------------------------------------------"
-echo "If this is your local environment, just run vagrant up."
-echo "                                            =========="
+echo "-------------------------------------------------------------------------------"
+echo "Or, if this is your local environment, just run vagrant up."
+echo "                                                =========="
 echo "Vagrant will run the drupsible VM by default."
-echo "You can edit vagrant.yml to change this and other custom config values."
-echo "In case vagrant up hangs, make sure VT-x/AMD-V is enabled in your BIOS settings."
-echo "---------------------------------------------------------"
+echo "You can edit vagrant.yml to change this and other VM custom config values."
+echo "In case vagrant hangs, make sure VT-x/AMD-V is enabled in your BIOS settings."
+echo "-------------------------------------------------------------------------------"
