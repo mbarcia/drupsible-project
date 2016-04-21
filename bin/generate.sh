@@ -196,6 +196,7 @@ do
 	cd - > /dev/null || exit 2
 done
 # Finish execution with a final message
+echo
 echo "-------------------------------------------------------------------------------"
 echo "Thank you, all of the Drupsible defaults have been properly generated."
 echo "You may override them by creating YAML files under "
