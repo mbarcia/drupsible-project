@@ -11,7 +11,7 @@
     deploy_varnish_mgmt_port: "{{ app_varnish_mgmt_port|default('6082') }}"
     deploy_target: "{{ app_target }}"
     deploy_webhost: "{{ app_webhost }}"
-    deploy_trusted_host_patterns: [ "(?i)^.+\\.{{ webdomain|regex_replace('[.]', '\\.') }}$" ]
+    deploy_trusted_host_patterns: [ "(?i)^.+\\.{{ app_webdomain|regex_replace('[.]', '\\.') }}$" ]
     deploy_mysql_host: "{{ groups[ app_name + '-' + app_target + '_mysql' ][0] }}"
     deploy_db_name: "{{ app_db_name }}"
     deploy_db_user: "{{ app_db_user }}"
