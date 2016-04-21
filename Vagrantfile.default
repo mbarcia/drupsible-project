@@ -13,13 +13,6 @@ VAGRANTFILE_API_VERSION = "2"
 # Minimum Vagrant version required
 Vagrant.require_version ">= 1.8.1"
 
-# Use rbconfig to determine if we're on a windows host or not.
-require 'rbconfig'
-is_windows = (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin|msys|bccwin|wince|emc/)
-if is_windows
-  install_windows_param = 'is_windows'
-end
-
 settings = YAML.load_file 'vagrant.yml'
 HOSTS = settings['hosts']
 APPS = settings['apps']
@@ -112,7 +105,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # Scaffold directories and symlinks
         machine.vm.provision "shell" do |sh|
           sh.path = "scripts/scaffold.sh"
-          sh.args = [app['name'], install_windows_param.to_s]
+          sh.args = [app['name']]
         end
 
         # Run config-deploy.yml playbook
