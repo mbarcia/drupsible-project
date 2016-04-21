@@ -99,6 +99,11 @@ do
 	cd "ansible/inventory/group_vars/${APP_NAME}${ENV}" || exit 2
 	# Perform the regexp replacements in the final config files
 	sed -i "s/app_name:.*/app_name: '${APP_NAME}'/g" all.yml
+	if [ "$ENV" != "-local" ]; then
+		sed -i "s/app_user:.*/app_user: ${APP_NAME}/g" all.yml
+	else
+		sed -i "s/app_user:.*/app_user: vagrant/g" all.yml
+	fi
 	sed -i "s/app_drupal_version:.*/app_drupal_version: '${DRUPAL_VERSION}'/g" all.yml
 	if [ "$MULTILINGUAL" == "yes" ]; then
 		sed -i "s|app_i18n_enabled:.*$|app_i18n_enabled: yes|g" all.yml
