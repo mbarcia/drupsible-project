@@ -150,6 +150,7 @@
     drush_min_version: "{{ app_drush_min_version|default('8.0.5') }}"
     tags: [ 'role::drush' ]
   - role: drupsible.samba
+    samba_webdomain: "{{ app_webdomain }}"
     samba_webhost: "{{ app_webhost }}"
     when: app_target == 'local'
     tags: [ 'role::samba' ]
@@ -169,6 +170,7 @@
     - '{{ varnish_ferm_dependent_rules }}'
   - role: drupsible.varnish
     tags: [ 'role::varnish' ]
+    varnish_webdomain: "{{ app_webdomain }}"
     varnish_trusted_hosts: "{{ app_server_aliases }}"
     varnish_pipe_timeout: 600
     varnish_apache2_port: "{{ app_apache2_alt_port|default('8080') }}"
