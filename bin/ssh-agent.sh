@@ -20,37 +20,37 @@ echo "Checking connection to SSH agent..."
 if [ -n "$SSH_AUTH_SOCK" ]; then
 	ssh-add -l &>/dev/null
 fi
-if ([ -n "$SSH_AUTH_SOCK" ] && [ "$?" == 2 ]) || [ -z "$SSH_AUTH_SOCK" ]; then
+if ([ -n "$SSH_AUTH_SOCK" ] && [ $? -eq 2 ]) || [ -z "$SSH_AUTH_SOCK" ]; then
 	# ssh-add exit status is 0 on success, 1 if the specified command fails, 
 	# and 2 if ssh-add is unable to contact the authentication agent.
 	echo "Connection not active: connecting to any previous SSH agent..."
 	test -r "$SSH_AGENT_DATA" && eval "$(<${SSH_AGENT_DATA/#\~/$HOME})" >/dev/null
-	if [ "$?" != 0 ]; then
+	if [ $? -ne 0 ]; then
 		echo "Existing agent not found or not active: launching a new SSH agent..."
 		(umask 066; ssh-agent > "${SSH_AGENT_DATA/#\~/$HOME}")
 		echo "Connecting to it..."
 		eval "$(<${SSH_AGENT_DATA/#\~/$HOME})" >/dev/null
 		ssh-add -l &>/dev/null
-		if [ "$?" == 2 ]; then
+		if [ $? -eq 2 ]; then
 			echo "ERROR: Connection FAILED. Check your environment."
 			exit 1
-		elif [ "$?" == 0 ]; then
+		elif [ $? -eq 0 ]; then
 			echo "Connection successful."
 		else 
 			echo "Unknown error from ssh-add. Check your environment."
 			exit 3
 		fi
 	fi
-elif [ -n "$SSH_AUTH_SOCK" ] && [ "$?" == 0 ]; then
+elif [ -n "$SSH_AUTH_SOCK" ] && [ $? -eq 0 ]; then
 	echo "Connection successful."
 fi
 #
 # Add specified SSH key
 #
 ssh-add "$ID_FILE"
-if [ "$?" == 0 ]; then
+if [ $? -eq 0 ]; then
 	echo "SSH key was successfully added: you may proceed with Drupsible plays."
-elif [ "$?" == 2 ]; then
+elif [ $? -eq 2 ]; then
 	echo "ERROR: Connection to the SSH agent unexpectedly FAILED. Check your environment."
 	exit 1
 else 
