@@ -28,31 +28,20 @@ if [ "$DBDUMP" != "" ] && [ ! -f "ansible/playbooks/dbdumps/$DBDUMP" ]; then
 	echo "WARNING: Please copy $DBDUMP to ansible/playbooks/dbdumps/"
 	echo "======="
 fi
-FILES_LIST=""
-# .gitignore
-if [ ! -f .gitignore ]; then
-	cp default.gitignore .gitignore
-	FILES_LIST="${FILES_LIST}.gitignore"
+for file in ".gitignore" "ansible.cfg" "Vagrantfile" "vagrant.yml" 
+do
+if [ ! -f "${file}" ]; then
+		cp "${file}".default "${file}"
+		if [ "${FILES_LIST}" != "" ]; then
+			FILES_LIST="${FILES_LIST}, ${file}"
+		else
+			FILES_LIST="${file}"	
+		fi
+	fi
+done
+if [ "${FILES_LIST}" != "" ]; then
+	echo "${FILES_LIST} have been created locally for your convenience."
 fi
-#
-if [ ! -f ansible.cfg ]; then
-	cp ansible.cfg.default ansible.cfg
-	FILES_LIST="${FILES_LIST}, ansible.cfg"
-fi
-# Vagrantfile
-#
-if [ ! -f Vagrantfile ]; then
-	cp Vagrantfile.default Vagrantfile
-	FILES_LIST="${FILES_LIST}, Vagrantfile"
-fi
-#
-# vagrant.yml
-#
-if [ ! -f vagrant.yml ]; then
-	cp vagrant.default.yml vagrant.yml
-	FILES_LIST="${FILES_LIST}, vagrant.yml"
-fi
-echo "${FILES_LIST} have been created locally for your convenience."
 sed -i "s/domain:.*/domain: '${DOMAIN}'/g" vagrant.yml
 # Remove any possible app duplicates
 sed -i "s|^- name\: '${APP_NAME}'$||g" vagrant.yml
