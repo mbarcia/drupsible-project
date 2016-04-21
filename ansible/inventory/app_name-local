@@ -23,4 +23,4 @@ localhost
 [app_name:vars]
 app_target=local
 app_webhost=local
-webdomain=example.com
+app_webdomain=example.com
