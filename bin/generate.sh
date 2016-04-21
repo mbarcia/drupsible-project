@@ -68,7 +68,7 @@ do
 	if [ ! -f "ansible/inventory/${APP_NAME}${ENV}" ]; then
 		cp "ansible/inventory/app_name${ENV}" "ansible/inventory/${APP_NAME}${ENV}"
 		# Assign web domain
-		sed -i "s/webdomain=.*/webdomain=${DOMAIN}/g" "ansible/inventory/${APP_NAME}${ENV}"
+		sed -i "s/app_webdomain=.*/app_webdomain=${DOMAIN}/g" "ansible/inventory/${APP_NAME}${ENV}"
 		# Replace app_name by the actual app name
 		sed -i "s/app_name/${APP_NAME}/g" "ansible/inventory/${APP_NAME}${ENV}"
 		# Assign hostname

@@ -9,7 +9,7 @@
   - role: debops.bootstrap
     become: yes
     bootstrap_raw: False
-    bootstrap_domain: "{{ webdomain }}"
+    bootstrap_domain: "{{ app_webdomain }}"
     bootstrap_admin_name: "{{ app_user }}"
     bootstrap_admin_comment: "{{ app_name }}/Drupsible administrator"
     bootstrap_admin_system: False
