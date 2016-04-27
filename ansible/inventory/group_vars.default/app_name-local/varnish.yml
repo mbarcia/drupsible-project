@@ -12,3 +12,6 @@ varnish_be_between_bytes_timeout: 10s
 varnish_be_probe_interval: 10s
 varnish_be_probe_threshold: 2
 varnish_be_probe_initial: 1
+
+varnish_development_enabled: yes
+varnish_cache_static_files_enabled: no
