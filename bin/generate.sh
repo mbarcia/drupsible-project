@@ -149,13 +149,13 @@ do
 			sed -i "s|deploy_composer_enabled:.*$|deploy_composer_enabled: 'no'|g" deploy.yml
 		fi
 	else
+		if [ ! "$CODEBASE_TARBALL" == "" ]; then
+			sed -i "s|deploy_codebase_tarball_filename:.*$|deploy_codebase_tarball_filename: '${CODEBASE_TARBALL}'|g" deploy.yml
+			sed -i "s|deploy_codebase_import_enabled:.*$|deploy_codebase_import_enabled: yes|g" deploy.yml
+		else
+			sed -i "s|deploy_codebase_import_enabled:.*$|deploy_codebase_import_enabled: no|g" deploy.yml
+		fi
 		sed -i "s/deploy_install_profile_enabled:.*$/deploy_install_profile_enabled: 'no'/g" deploy.yml
-	fi
-	if [ ! "$CODEBASE_TARBALL" == "" ] && [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$CUSTOM_INSTALL_PROFILE" != "" ]; then
-		sed -i "s|deploy_codebase_tarball_filename:.*$|deploy_codebase_tarball_filename: '${CODEBASE_TARBALL}'|g" deploy.yml
-		sed -i "s|deploy_codebase_import_enabled:.*$|deploy_codebase_import_enabled: yes|g" deploy.yml
-	else
-		sed -i "s|deploy_codebase_import_enabled:.*$|deploy_codebase_import_enabled: no|g" deploy.yml
 	fi
 	if [ "$USE_UPSTREAM_SITE" == "yes" ]; then
 		sed -i "s|deploy_db_sync_enabled:.*$|deploy_db_sync_enabled: '${SYNC_DB}'|g" deploy.yml
