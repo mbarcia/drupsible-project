@@ -27,7 +27,7 @@ cp "/vagrant/ansible/inventory/${APP_NAME}-local" /home/vagrant/ansible/inventor
 # Remove exec permission from it (Ansible tries to execute otherwise)
 chmod -x "/home/vagrant/ansible/inventory/${APP_NAME}-local"
 # Copy secrets (eventually gathered by configure.sh) to the guest OS
-cp -pr "/vagrant/ansible/secret/*" /home/vagrant/ansible/secret/
+cp -pr "/vagrant/ansible/secret" /home/vagrant/ansible/
 # Change owner (note that this cannot be done on a synced folder in Windows)
 chown -R vagrant:vagrant /home/vagrant/
 echo "Done with the scaffolding."
