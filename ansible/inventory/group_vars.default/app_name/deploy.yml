@@ -63,7 +63,6 @@ deploy_git_repo_protocol: ''
 deploy_git_repo_server: ''
 deploy_git_repo_user: ''
 deploy_git_repo_path: ''
-deploy_git_repo_pass: ''
 deploy_git_repo_version: ''
 
 #

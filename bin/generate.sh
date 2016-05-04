@@ -190,7 +190,6 @@ do
 	sed -i "s/deploy_git_repo_server:.*$/deploy_git_repo_server: \"${GIT_SERVER}\"/g" deploy.yml
 	sed -i "s/deploy_git_repo_user:.*$/deploy_git_repo_user: \"${GIT_USER}\"/g" deploy.yml
 	sed -i "s|deploy_git_repo_path:.*$|deploy_git_repo_path: \"${GIT_PATH}\"|g" deploy.yml
-	sed -i "s/deploy_git_repo_pass:.*$/deploy_git_repo_pass: \"${GIT_PASS}\"/g" deploy.yml
 	sed -i "s|deploy_git_repo_version:.*$|deploy_git_repo_version: \"${GIT_BRANCH}\"|g" deploy.yml
 	# Change directory out of group vars
 	cd - > /dev/null || exit 2
