@@ -5,11 +5,11 @@
 varnish_allowed_hosts: [ "127.0.0.1", "10.0.2.2" ]
 
 # Backend default parameters
-varnish_be_connect_timeout: 5s
-varnish_be_first_byte_timeout: 10s
+varnish_be_connect_timeout: 10s
+varnish_be_first_byte_timeout: 60s
 varnish_be_between_bytes_timeout: 10s
 # Probe default parameters
-varnish_be_probe_interval: 10s
+varnish_be_probe_interval: 60s
 varnish_be_probe_threshold: 2
 varnish_be_probe_initial: 1
 
