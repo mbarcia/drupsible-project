@@ -387,18 +387,16 @@ fi
 echo
 # Gather input about https enabled
 # HTTPS is currently available only on D7, so don't bother asking in D8
-if [ "${DRUPAL_VERSION}" == '7' ]; then
-	echo "Want your website deployed as HTTPS://, instead of just http://? (y|n)"
-	echo "HTTPS will require a few more minutes to process a self-signed certificate."
-	echo "This will patch Drupal core, as instructed in securepages. It can be considered 'safe for development'."
-	if askyesno; then
-		APP_HTTPS_ENABLED='yes'
-	else
-		APP_HTTPS_ENABLED='no'
-	fi
-	# Write APP_HTTPS_ENABLED
-	sed -i "s|APP_HTTPS_ENABLED=.*$|APP_HTTPS_ENABLED=\"${APP_HTTPS_ENABLED}\"|g" "${APP_NAME}.profile.tmp"
+echo "Want your website deployed as HTTPS://, instead of just http://? (y|n)"
+echo "HTTPS will require a few more minutes to process a self-signed certificate."
+echo "This will patch Drupal core, as instructed in securepages. It can be considered 'safe for development'."
+if askyesno; then
+	APP_HTTPS_ENABLED='yes'
+else
+	APP_HTTPS_ENABLED='no'
 fi
+# Write APP_HTTPS_ENABLED
+sed -i "s|APP_HTTPS_ENABLED=.*$|APP_HTTPS_ENABLED=\"${APP_HTTPS_ENABLED}\"|g" "${APP_NAME}.profile.tmp"
 echo
 # Gather input about SMTP enabled
 echo "Want to make use of a SMTP service? (y|n)"
