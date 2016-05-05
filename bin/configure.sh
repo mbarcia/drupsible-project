@@ -389,7 +389,9 @@ echo
 # HTTPS is currently available only on D7, so don't bother asking in D8
 echo "Want your website deployed as HTTPS://, instead of just http://? (y|n)"
 echo "HTTPS will require a few more minutes to process a self-signed certificate."
-echo "This will patch Drupal core, as instructed in securepages. It can be considered 'safe for development'."
+if [ "${DRUPAL_VERSION}" == '7' ]; then
+	echo "Drupsible will install and configure securepages and patch D7's core, as instructed by securepages."
+fi
 if askyesno; then
 	APP_HTTPS_ENABLED='yes'
 else
