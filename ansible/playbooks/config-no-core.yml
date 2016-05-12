@@ -141,6 +141,7 @@
     apache2_fpm_listen: "{{ app_fpm_listen }}"
     apache2_fpm_listen_uds: "{{ app_fpm_listen_uds }}"
     apache2_https_enabled: "{{ app_https_enabled|default(False)|bool }}"
+    apache2_varnish_enabled: "{{ app_varnish_enabled }}"
   - role: debops.php5
     tags: [ 'role::php5' ]
     when: ansible_local.apache2.mpm != 'prefork'
