@@ -90,6 +90,7 @@ if [ "$1" == "" ]; then
 	read -r APP_NAME
 	if [ "${APP_NAME}" == "" ]; then
 		APP_NAME="${PROJ_NAME}"
+		echo "Application name set to ${PROJ_NAME}" 
 	fi
 else
 	APP_NAME="$1"
@@ -100,7 +101,12 @@ if [ ! -f "${APP_NAME}.profile" ]; then
 else
 	echo "${APP_NAME}.profile already exists. Do you want to start over? (y|n)"
 	if ! askyesno; then
-		./bin/generate.sh "${APP_NAME}.profile"
+		echo "Do you want to re-generate ${APP_NAME}'s configuration? (y|n)"
+		if askyesno; then
+			./bin/generate.sh "${APP_NAME}.profile"
+		else
+			echo "Done (nothing changed)."
+		fi
 		exit
 	else
 		start_over
@@ -120,6 +126,7 @@ read -r HOSTNAME
 if [ "$HOSTNAME" == "" ]; then
 	# Set hostname to default: local
 	HOSTNAME="local"
+	echo "Host name set to local"
 fi
 # Write HOSTNAME
 sed -i "s/HOSTNAME=.*$/HOSTNAME=\"${HOSTNAME}\"/g" "${APP_NAME}.profile.tmp"
@@ -130,6 +137,7 @@ echo "particular Drupal core version, like 8.0.5 (or 7.43)"
 read -r DRUPAL_VERSION
 if [ "$DRUPAL_VERSION" == "" ]; then
 	DRUPAL_VERSION="8"
+	echo "Drupal version set to 8"
 fi
 # Write DRUPAL_VERSION
 sed -i "s|DRUPAL_VERSION=.*$|DRUPAL_VERSION=\"${DRUPAL_VERSION}\"|g" "${APP_NAME}.profile.tmp"
@@ -207,6 +215,7 @@ if [ "$USE_INSTALL_PROFILE" == "yes" ]; then
 				elif [ "$CUSTOM_INSTALL_PROFILE" != "" ]; then
 					DRUSH_MAKEFILE="build-${CUSTOM_INSTALL_PROFILE}.make"
 				fi
+				echo "Makefile set to ${DRUSH_MAKEFILE}"
 			fi
 			# Write DRUSH_MAKEFILE
 			sed -i "s|DRUSH_MAKEFILE=.*$|DRUSH_MAKEFILE=\"${DRUSH_MAKEFILE}\"|g" "${APP_NAME}.profile.tmp"
@@ -296,6 +305,7 @@ if [ "$USE_SITE_INSTALL" != "yes" ]; then
 			read -r REMOTE_UPSTREAM_FILES_PATH
 			if [ "$REMOTE_UPSTREAM_FILES_PATH" == "" ]; then
 				REMOTE_UPSTREAM_FILES_PATH='sites/default/files'
+				echo "Path set to ${REMOTE_UPSTREAM_FILES_PATH}"
 			fi
 			# Write REMOTE_UPSTREAM_FILES_PATH
 			sed -i "s|REMOTE_UPSTREAM_FILES_PATH=.*$|REMOTE_UPSTREAM_FILES_PATH=\"${REMOTE_UPSTREAM_FILES_PATH}\"|g" "${APP_NAME}.profile.tmp"
@@ -379,6 +389,7 @@ if [ "$USE_INSTALL_PROFILE" != "yes" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] &
 		read -r GIT_BRANCH
 		if [ "$GIT_BRANCH" == "" ]; then
 			GIT_BRANCH='master'
+			echo "Branch/version set to master"
 		fi
 		# Write GIT_BRANCH
 		sed -i "s|GIT_BRANCH=.*$|GIT_BRANCH=\"${GIT_BRANCH}\"|g" "${APP_NAME}.profile.tmp"
@@ -410,6 +421,7 @@ if askyesno; then
 		read -r SMTP_SERVER
 		if [ "$SMTP_SERVER" == "" ]; then
 			SMTP_SERVER='smtp.gmail.com'
+			echo "SMTP server set to smtp.gmail.com"
 		fi
 		# Write SMTP_SERVER
 		sed -i "s/SMTP_SERVER=.*$/SMTP_SERVER=\"${SMTP_SERVER}\"/g" "${APP_NAME}.profile.tmp"
@@ -417,6 +429,7 @@ if askyesno; then
 		read -r SMTP_PORT
 		if [ "$SMTP_PORT" == "" ]; then
 			SMTP_PORT='587'
+			echo "SMTP port set to 587"
 		fi
 		# Write SMTP_PORT
 		sed -i "s/SMTP_PORT=.*$/SMTP_PORT=\"${SMTP_PORT}\"/g" "${APP_NAME}.profile.tmp"
@@ -459,6 +472,7 @@ if ([ "$GIT_PASS" == "" ] && [ "$USE_INSTALL_PROFILE" != "yes" ]) || [ "$USE_UPS
 	if [ "$KEY_FILENAME" == "" ]; then
 		# Set key to default: ~/.ssh/id_rsa
 		KEY_FILENAME="$HOME/.ssh/id_rsa"
+		echo "Using key ${KEY_FILENAME}"
 	fi
 	# Write KEY_FILENAME
 	sed -i "s|KEY_FILENAME=.*$|KEY_FILENAME=\"${KEY_FILENAME}\"|g" "${APP_NAME}.profile.tmp"
@@ -488,6 +502,7 @@ fi
 read -r DRUPSIBLE_TZ
 if [ "${DRUPSIBLE_TZ}" == "" ] && [ ! "${CURRENT_TZ}" == "" ]; then
 	DRUPSIBLE_TZ=${CURRENT_TZ}
+	echo "Time zone set to ${DRUPSIBLE_TZ}"
 fi
 # Write TIME_ZONE
 sed -i "s|TIME_ZONE=.*$|TIME_ZONE=\"${DRUPSIBLE_TZ}\"|g" "${APP_NAME}.profile.tmp"
