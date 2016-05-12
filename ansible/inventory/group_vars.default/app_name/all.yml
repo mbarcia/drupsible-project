@@ -22,7 +22,7 @@ app_server_aliases:
 - "{{ app_webdomain }}"
 # Listen socket for PHP-FPM to communicate with Apache2
 app_fpm_listen_uds: '/var/run/php5-fpm-{{ app_name }}.sock'
-# Listen port for PHP-FPM to communicate with Apache2. Socket is faster, but 
+# Listen port for PHP-FPM to communicate with Apache2. Socket is faster, but
 # only available on Apache 2.4.10+
 app_fpm_listen: '127.0.0.1:9000'
 # Website administrator's email
@@ -48,6 +48,9 @@ app_i18n_enabled: False
 # Please place default language first in this list
 # Set by configure.sh
 app_languages: []
+
+# Default timezone
+app_timezone: 'Europe/Madrid'
 
 #
 # Postfix defaults

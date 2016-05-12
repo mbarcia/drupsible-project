@@ -10,7 +10,7 @@ enter_password ()
 	      # Remove last char from output variable.
 	      [[ -n $password_input ]] && password_input=${password_input%?}
 	      # Erase '*' to the left.
-	      printf '\b \b' 
+	      printf '\b \b'
 	  else
 	    # Add typed char to output variable.
 	    password_input+=$char
@@ -19,7 +19,7 @@ enter_password ()
 	  fi
 	done
 	unset IFS
-	
+
 	eval $__resultvarname="'${password_input}'"
 }
 
@@ -52,7 +52,7 @@ function clean_up {
 	fi
 	echo "Run bin/configure.sh to start over."
 	echo "-------------------------------------------------------------------------------"
-		
+
 	exit
 }
 
@@ -467,7 +467,33 @@ if ([ "$GIT_PASS" == "" ] && [ "$USE_INSTALL_PROFILE" != "yes" ]) || [ "$USE_UPS
 		./bin/ssh-agent.sh "${KEY_FILENAME/#\~/$HOME}"
 	fi
 fi
+#
+# Timezone configuration
+#
+# Try to detect current timezone in Mac, Cygwin and Linux
+if hash systemsetup 2>/dev/null; then
+	CURRENT_TZ=$(systemsetup -gettimezone | sed "s|.*Time Zone: \(.*/.*\)$|\1|g")
+elif hash tzset 2>/dev/null; then
+	CURRENT_TZ=$(tzset)
+elif hash timedatectl 2>/dev/null; then
+	CURRENT_TZ=$(timedatectl | grep "Time zone" | sed "s|.*Time zone: \(.*/.*\) (.*)$|\1|g")
+else
+	CURRENT_TZ=""
+fi
+if [ ! "${CURRENT_TZ}" == "" ]; then
+	echo "Time Zone? [${CURRENT_TZ}]"
+else
+	echo "Time Zone?"
+fi
+read -r DRUPSIBLE_TZ
+if [ "${DRUPSIBLE_TZ}" == "" ] && [ ! "${CURRENT_TZ}" == "" ]; then
+	DRUPSIBLE_TZ=${CURRENT_TZ}
+fi
+# Write TIME_ZONE
+sed -i "s|TIME_ZONE=.*$|TIME_ZONE=\"${DRUPSIBLE_TZ}\"|g" "${APP_NAME}.profile.tmp"
+#
 # Append last-mod
+#
 DATE_LEGEND=$(date +"%c %Z")
 PHRASE="Last reconfigured on"
 sed -i "s/${PHRASE}:.*$/${PHRASE}: ${DATE_LEGEND}/g" "${APP_NAME}.profile.tmp"
