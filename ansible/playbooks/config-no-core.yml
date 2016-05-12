@@ -3,6 +3,7 @@
   hosts: [ '{{ app_name }}' ]
   gather_facts: True
   become: True
+
   roles:
   - role: debops.secret
     tags: [ 'role::secret', 'role::pki', 'role::pki:secret' ]
@@ -20,10 +21,32 @@
     tags: [ 'role::sshkeys' ]
   - role: debops.sshd
     tags: [ 'role::sshd' ]
+
+  tasks:
+  - name: Get current time zone
+    shell: '/usr/bin/timedatectl status | grep "Time zone" | sed "s|.*Time zone: \(.*/.*\) (.*)$|\1|g"'
+    register: current_timezone
+    changed_when: False
+    tags: [ tz ]
+  - name: Set time zone in /etc/localtime
+    command: "/usr/bin/timedatectl set-timezone {{ app_timezone|default('Europe/Madrid') }}"
+    tags: [ tz ]
+    when: current_timezone.stdout != app_timezone|default('Europe/Madrid')
+  - name: Get current ntp status
+    shell: '/usr/bin/timedatectl status | grep "NTP enabled" | sed "s|.*NTP enabled: \(.*\)$|\1|g"'
+    register: current_ntp_status
+    changed_when: False
+    tags: [ tz ]
+  - name: Set NTP enabled
+    command: /usr/bin/timedatectl set-ntp true
+    when: current_ntp_status.stdout|bool != True
+    tags: [ tz ]
+
 - name: MySQL
   hosts: [ '{{ app_name }}-{{ app_target }}_mysql' ]
   become: True
   roles:
+
   - role: drupsible.mysql
     tags: [ 'role::mysql' ]
     mysql_databases:
@@ -52,35 +75,37 @@
       state: 'present'
       password: '{{ app_db_password | default(lookup("password", secret + "/credentials/" + app_name + "/mysql/" + app_db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
       priv: '{{ app_db_name }}%.*:ALL'
+
 - name: Ferm/Postfix/PHP/Composer/New Relic/Apache/uploadprogress
   hosts: [ '{{ app_name }}-{{ app_target }}_deploy' ]
   become: True
+
   roles:
   - role: debops.pki/env
     tags: [ 'role::pki', 'role::secret' ]
-    when: app_https_enabled|default(False)|bool or 
-      (smtp_server is defined and 
-      smtp_port is defined and 
+    when: app_https_enabled|default(False)|bool or
+      (smtp_server is defined and
+      smtp_port is defined and
       smtp_user is defined)
   - role: debops.secret
     tags: [ 'role::secret', 'role::pki', 'role::pki:secret' ]
     secret_directories:
     - "{{ pki_env_secret_directories|default('') }}"
-    when: app_https_enabled|default(False)|bool or 
-      (smtp_server is defined and 
-      smtp_port is defined and 
+    when: app_https_enabled|default(False)|bool or
+      (smtp_server is defined and
+      smtp_port is defined and
       smtp_user is defined)
   - role: debops.dhparam
     tags: [ 'role::dhparam' ]
-    when: app_https_enabled|default(False)|bool or 
-      (smtp_server is defined and 
-      smtp_port is defined and 
+    when: app_https_enabled|default(False)|bool or
+      (smtp_server is defined and
+      smtp_port is defined and
       smtp_user is defined)
   - role: debops.pki
     tags: [ 'role::pki' ]
-    when: app_https_enabled|default(False)|bool or 
-      (smtp_server is defined and 
-      smtp_port is defined and 
+    when: app_https_enabled|default(False)|bool or
+      (smtp_server is defined and
+      smtp_port is defined and
       smtp_user is defined)
   - role: debops.ferm
     tags: [ 'role::ferm:deploy' ]
@@ -158,10 +183,12 @@
     when: app_drupal_version|version_compare('8', '==')
     twigc_composer_working_dir: "/home/{{ app_user }}/{{ app_name }}"
     tags: [ 'role::twigc' ]
+
 - name: Varnish
   hosts: [ '{{ app_name }}-{{ app_target }}_varnish' ]
   become: True
   roles:
+
   - role: debops.secret
     tags: [ 'role::secret', 'role::varnish:secret' ]
   - role: debops.ferm

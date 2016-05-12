@@ -28,14 +28,14 @@ if [ "$DBDUMP" != "" ] && [ ! -f "ansible/playbooks/dbdumps/$DBDUMP" ]; then
 	echo "WARNING: Please copy $DBDUMP to ansible/playbooks/dbdumps/"
 	echo "======="
 fi
-for file in ".gitignore" "ansible.cfg" "Vagrantfile" "vagrant.yml" 
+for file in ".gitignore" "ansible.cfg" "Vagrantfile" "vagrant.yml"
 do
 if [ ! -f "${file}" ]; then
 		cp "${file}".default "${file}"
 		if [ "${FILES_LIST}" != "" ]; then
 			FILES_LIST="${FILES_LIST}, ${file}"
 		else
-			FILES_LIST="${file}"	
+			FILES_LIST="${file}"
 		fi
 	fi
 done
@@ -124,6 +124,7 @@ do
 			sed -i "s|app_varnish_enabled:.*$|app_varnish_enabled: no|g" all.yml
 		fi
 	fi
+	sed -i "s|app_timezone:.*$|app_timezone: '${APP_TIMEZONE}'|g" all.yml
 	if [ "$USE_INSTALL_PROFILE" == "yes" ]; then
 		sed -i "s/deploy_install_profile_enabled:.*$/deploy_install_profile_enabled: 'yes'/g" deploy.yml
 		if [ "$D_O_INSTALL_PROFILE" != "" ]; then
@@ -132,15 +133,15 @@ do
 		elif [ "$CUSTOM_INSTALL_PROFILE" != "" ]; then
 			sed -i "s/deploy_custom_install_profile:.*$/deploy_custom_install_profile: '${CUSTOM_INSTALL_PROFILE}'/g" deploy.yml
 			sed -i "s/deploy_d_o_install_profile:.*$/deploy_d_o_install_profile: ''/g" deploy.yml
-		else 
+		else
 			sed -i "s/deploy_d_o_install_profile:.*$/deploy_d_o_install_profile: standard/g" deploy.yml
-		fi		
+		fi
 		if [ "$USE_DRUSH_MAKE" == "yes" ]; then
 			sed -i "s|deploy_drush_make_enabled:.*$|deploy_drush_make_enabled: 'yes'|g" deploy.yml
 			sed -i "s|deploy_composer_enabled:.*$|deploy_composer_enabled: 'no'|g" deploy.yml
 			if [ "$DRUSH_MAKEFILE" != "" ]; then
 				sed -i "s|deploy_drush_makefile:.*$|deploy_drush_makefile: '${DRUSH_MAKEFILE}'|g" deploy.yml
-			fi		
+			fi
 		elif [ "$USE_COMPOSER" == "yes" ]; then
 			sed -i "s|deploy_composer_enabled:.*$|deploy_composer_enabled: 'yes'|g" deploy.yml
 			sed -i "s|deploy_drush_make_enabled:.*$|deploy_drush_make_enabled: 'no'|g" deploy.yml
@@ -172,7 +173,7 @@ do
 	if [ "$USE_SITE_INSTALL" == "yes" ]; then
 		sed -i "s|deploy_site_install_enabled:.*$|deploy_site_install_enabled: yes|g" deploy.yml
 	else
-		if [ ! "$DBDUMP" == "" ]; then 
+		if [ ! "$DBDUMP" == "" ]; then
 			sed -i "s|deploy_db_dump_filename:.*$|deploy_db_dump_filename: '${DBDUMP}'|g" deploy.yml
 			sed -i "s|deploy_db_import_enabled:.*$|deploy_db_import_enabled: yes|g" deploy.yml
 		else
@@ -202,7 +203,7 @@ echo "You may override them by creating YAML files under "
 echo "ansible/playbooks/groups_vars."
 echo
 echo "If this is your Ansible controller, refer to the docs to properly run "
-echo "ansible-playbook. You may need to run the bootstrap playbook for each host." 
+echo "ansible-playbook. You may need to run the bootstrap playbook for each host."
 echo "If so, have the root password at hand and run:"
 echo
 echo "ansible-playbook -l <host> -u root -k ansible/playbooks/bootstrap.yml"

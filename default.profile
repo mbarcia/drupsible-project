@@ -79,5 +79,6 @@ SMTP_USER=
 #
 APP_HTTPS_ENABLED=""
 APP_VARNISH_ENABLED=""
-
+#
+APP_TIMEZONE=""
 # Last reconfigured on:
