@@ -407,16 +407,23 @@ echo "the DHCP server in your workstation's network."
 echo
 echo "Choose the first option if you are not sure what this means."
 PS3="Regarding your VM's IP, please enter your choice: "
-options=(${IP_OPTION1} ${IP_OPTION2} ${IP_OPTION3})
+optionstring="${IP_OPTION1},${IP_OPTION2},${IP_OPTION3}"
+# Save the current IFS (Internal Field Separator)
+OIFS=$IFS
+# New IFS
+IFS=','
+options=( $optionstring )
+# Restore the IFS
+IFS=${OIFS}
 set $(dd if=/dev/urandom bs=2 count=1 2>/dev/null | od -An -tu1)
-IP_ADDR_RANDOM="192.168.$1.$2"
+IP_ADDR_RANDOM="192.168.${1}.${2}"
 IP_ADDR=""
 select opt in "${options[@]}"
 do
 	case $opt in
         "${IP_OPTION1}")
 			IP_ADDR="${IP_ADDR_RANDOM}"
-            echo "Static IP ${IP_ADDR_RANDOM} has been assigned to your VM."
+            echo "Static IP ${IP_ADDR} has been assigned to your VM."
             break
             ;;
 	        "${IP_OPTION2}")
@@ -449,8 +456,10 @@ do
         	;;
     esac
 done
-sed -i "s/ip_addr:.*/ip_addr: '${IP_ADDR}'/g" vagrant.yml
+# Write IP_ADDR
+sed -i "s|IP_ADDR=.*$|IP_ADDR=\"${IP_ADDR}\"|g" "${APP_NAME}.profile.tmp"
 
+echo
 if [ "${DRUPAL_VERSION}" == '7' ]; then
 	echo "Drupsible will install and configure securepages and patch D7's core, as instructed by securepages."
 fi

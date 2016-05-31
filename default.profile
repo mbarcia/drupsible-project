@@ -81,4 +81,6 @@ APP_HTTPS_ENABLED=""
 APP_VARNISH_ENABLED=""
 #
 APP_TIMEZONE=""
+#
+IP_ADDR=""
 # Last reconfigured on:
