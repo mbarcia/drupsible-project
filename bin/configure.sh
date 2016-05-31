@@ -569,7 +569,7 @@ if [ "${DRUPSIBLE_TZ}" == "" ] && [ ! "${CURRENT_TZ}" == "" ]; then
 	echo "Time zone set to ${DRUPSIBLE_TZ}"
 fi
 # Write TIME_ZONE
-sed -i "s|APP_TIME_ZONE=.*$|APP_TIME_ZONE=\"${DRUPSIBLE_TZ}\"|g" "${APP_NAME}.profile.tmp"
+sed -i "s|APP_TIMEZONE=.*$|APP_TIMEZONE=\"${DRUPSIBLE_TZ}\"|g" "${APP_NAME}.profile.tmp"
 #
 # Append last-mod
 #
