@@ -42,6 +42,7 @@ done
 if [ "${FILES_LIST}" != "" ]; then
 	echo "${FILES_LIST} have been created locally for your convenience."
 fi
+sed -i "s/ip_addr:.*/ip_addr: '${IP_ADDR}'/g" vagrant.yml
 sed -i "s/domain:.*/domain: '${DOMAIN}'/g" vagrant.yml
 # Remove any possible app duplicates
 sed -i "s|^- name\: '${APP_NAME}'$||g" vagrant.yml
