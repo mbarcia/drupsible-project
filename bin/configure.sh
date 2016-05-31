@@ -90,7 +90,7 @@ if [ "$1" == "" ]; then
 	read -r APP_NAME
 	if [ "${APP_NAME}" == "" ]; then
 		APP_NAME="${PROJ_NAME}"
-		echo "Application name set to ${PROJ_NAME}" 
+		echo "Application name set to ${PROJ_NAME}"
 	fi
 else
 	APP_NAME="$1"
@@ -395,6 +395,72 @@ if [ "$USE_INSTALL_PROFILE" != "yes" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] &
 		sed -i "s|GIT_BRANCH=.*$|GIT_BRANCH=\"${GIT_BRANCH}\"|g" "${APP_NAME}.profile.tmp"
 	fi
 fi
+echo
+# Gather input about VM IP mode (static or dynamic)
+IP_OPTION1='Static IP (Drupsible)'
+IP_OPTION2='Static IP (Yours)'
+IP_OPTION3='Dynamic IP (DHCP)'
+echo "${IP_OPTION1} means Drupsible will generate and use a valid static IP."
+echo "${IP_OPTION2} means you can type your own specific IP."
+echo "${IP_OPTION3} means Drupsible will use DHCP to get an IP from "
+echo "the DHCP server in your workstation's network."
+echo
+echo "Choose the first option if you are not sure what this means."
+PS3="Regarding your VM's IP, please enter your choice: "
+options=(${IP_OPTION1} ${IP_OPTION2} ${IP_OPTION3})
+set $(dd if=/dev/urandom bs=2 count=1 2>/dev/null | od -An -tu1)
+IP_ADDR_RANDOM="192.168.$1.$2"
+IP_ADDR=""
+select opt in "${options[@]}"
+do
+	case $opt in
+        "${IP_OPTION1}")
+			IP_ADDR="${IP_ADDR_RANDOM}"
+            echo "Static IP ${IP_ADDR_RANDOM} has been assigned to your VM."
+            break
+            ;;
+	        "${IP_OPTION2}")
+			echo "IP address? [${IP_ADDR_RANDOM}]"
+			read -r IP_ADDR_CUSTOM
+			if [ "$IP_ADDR_CUSTOM" == "" ]; then
+				IP_ADDR_CUSTOM="${IP_ADDR_RANDOM}"
+			fi
+			IP_ADDR="${IP_ADDR_CUSTOM}"
+	        echo "Static IP ${IP_ADDR_CUSTOM} has been assigned to your VM."
+	        break
+            ;;
+        "${IP_OPTION3}")
+			echo "${IP_OPTION3} makes it possible to access your local website from other workstations in your network."
+			echo "With ${IP_OPTION3}, the VM will be provisioned but afterwards, in order to "
+			echo "access your website, you will need to manually add the IP your /etc/hosts "
+			echo "file (in Windows systems, this file can be found at "
+			echo "C:\Windows\System32\drivers\etc\hosts)."
+			echo
+			echo "After your VM has been provisioned, run 'vagrant ssh' and type"
+			echo "sudo ifconfig -a"
+			echo "Take note of the inet address of your eth1 and add this line to /etc/hosts."
+			echo "<ip_addr> ${HOSTNAME}.${DOMAIN}"
+			echo
+			echo "Add the same line to the etc/hosts of every workstation that needs access to your website."
+			echo "Warning: the docroot and home folders of your VM will be shared with other machines within your network."
+            break
+            ;;
+        *) echo "Invalid option"
+        	;;
+    esac
+done
+sed -i "s/ip_addr:.*/ip_addr: '${IP_ADDR}'/g" vagrant.yml
+
+if [ "${DRUPAL_VERSION}" == '7' ]; then
+	echo "Drupsible will install and configure securepages and patch D7's core, as instructed by securepages."
+fi
+if askyesno; then
+	APP_HTTPS_ENABLED='yes'
+else
+	APP_HTTPS_ENABLED='no'
+fi
+# Write APP_HTTPS_ENABLED
+sed -i "s|APP_HTTPS_ENABLED=.*$|APP_HTTPS_ENABLED=\"${APP_HTTPS_ENABLED}\"|g" "${APP_NAME}.profile.tmp"
 echo
 # Gather input about https enabled
 # HTTPS is currently available only on D7, so don't bother asking in D8

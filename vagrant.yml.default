@@ -3,11 +3,8 @@ apps:
 hosts:
 - name: local
   domain: 'example.com'
-# Drupsible will let your DHCP assign the IP address. If you would like to use
-# a fixed IP, remove the comments from the following lines, specify the IP 
-# address of your choice. Netmask is usually good as it is.
-#  ip_addr: ''
-#  netmask: '255.255.255.0'
+  ip_addr: ''
+  netmask: '255.255.255.0'
   ram: 1024
   gui: false
   box: 'mbarcia/drupsible'

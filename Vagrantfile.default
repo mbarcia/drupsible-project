@@ -61,10 +61,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         p.update_guest_tools = true
       end
 
-      if host['ip_addr'] && host['netmask']
-        machine.vm.network 'private_network', ip: host['ip_addr'], netmask: host['netmask']
-      else
+      if host['ip_addr'].to_s.empty?
         machine.vm.network 'public_network', type: 'dhcp'
+      else
+        machine.vm.network 'private_network', ip: host['ip_addr'], netmask: host['netmask']
       end
 
       if APPS.length < 2
@@ -94,12 +94,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         sh.path = "scripts/drupsible-provision.sh"
       end
 
-      machine.vm.provision "shell", 
+      machine.vm.provision "shell",
         inline: 'cat /vagrant/scripts/shortcuts.sh >> /home/vagrant/.profile'
 
       # Config-deploy each of the apps
       APPS.each do |app|
-        machine.vm.provision "shell", 
+        machine.vm.provision "shell",
           inline: 'sed "s|pitiribi|' + app['name'] + '|g" /vagrant/scripts/app-aliases.sh >> /home/vagrant/.profile'
 
         # Scaffold directories and symlinks
