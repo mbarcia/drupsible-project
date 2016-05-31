@@ -426,7 +426,7 @@ do
             echo "Static IP ${IP_ADDR} has been assigned to your VM."
             break
             ;;
-	        "${IP_OPTION2}")
+         "${IP_OPTION2}")
 			echo "IP address? [${IP_ADDR_RANDOM}]"
 			read -r IP_ADDR_CUSTOM
 			if [ "$IP_ADDR_CUSTOM" == "" ]; then
@@ -459,17 +459,6 @@ done
 # Write IP_ADDR
 sed -i "s|IP_ADDR=.*$|IP_ADDR=\"${IP_ADDR}\"|g" "${APP_NAME}.profile.tmp"
 
-echo
-if [ "${DRUPAL_VERSION}" == '7' ]; then
-	echo "Drupsible will install and configure securepages and patch D7's core, as instructed by securepages."
-fi
-if askyesno; then
-	APP_HTTPS_ENABLED='yes'
-else
-	APP_HTTPS_ENABLED='no'
-fi
-# Write APP_HTTPS_ENABLED
-sed -i "s|APP_HTTPS_ENABLED=.*$|APP_HTTPS_ENABLED=\"${APP_HTTPS_ENABLED}\"|g" "${APP_NAME}.profile.tmp"
 echo
 # Gather input about https enabled
 # HTTPS is currently available only on D7, so don't bother asking in D8
@@ -580,7 +569,7 @@ if [ "${DRUPSIBLE_TZ}" == "" ] && [ ! "${CURRENT_TZ}" == "" ]; then
 	echo "Time zone set to ${DRUPSIBLE_TZ}"
 fi
 # Write TIME_ZONE
-sed -i "s|TIME_ZONE=.*$|TIME_ZONE=\"${DRUPSIBLE_TZ}\"|g" "${APP_NAME}.profile.tmp"
+sed -i "s|APP_TIME_ZONE=.*$|APP_TIME_ZONE=\"${DRUPSIBLE_TZ}\"|g" "${APP_NAME}.profile.tmp"
 #
 # Append last-mod
 #
