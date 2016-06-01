@@ -30,7 +30,7 @@
   version: v0.2.3
   name: debops.sshd
 - src: https://github.com/debops/ansible-php5
-  version: c0391381facab1ee8098875703a819b6b7566229
+  version: v0.1.0
   name: debops.php5
 - src: https://github.com/debops/ansible-etc_services
   version: 9cde2a0c287d485dee73d705c4c95170cc4b6070
