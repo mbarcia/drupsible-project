@@ -27,7 +27,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.define host['name'] do |machine|
       machine.vm.box     = host['box']
       machine.vm.box_url = host['box_url']
-      machine.vm.guest = :debian
+      machine.vm.guest = host['guest_distro']
 
       # Virtualbox
       machine.vm.provider "virtualbox" do |vb|
@@ -48,7 +48,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # VMWare
       machine.vm.provider "vmware_fusion" do |vmw, o|
         o.vm.box = host['box']
-        o.vm.guest = :ubuntu
+        o.vm.guest = host['guest_distro']
         vmw.gui = host['gui']
         vmw.vmx["memsize"] = host['ram']
       end
@@ -56,7 +56,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Parallels
       machine.vm.provider "parallels" do |p, o|
         o.vm.box = host['box']
-        o.vm.guest = :ubuntu
+        o.vm.guest = host['guest_distro']
         p.memory = host['ram']
         p.update_guest_tools = true
       end
