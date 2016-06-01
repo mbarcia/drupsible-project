@@ -3,11 +3,19 @@ apps:
 hosts:
 - name: local
   domain: 'example.com'
+# Drupsible will retrieve an IP from DHCP if ip_addr is left empty
   ip_addr: ''
   netmask: '255.255.255.0'
+# Amount of memory assigned to the VM in Megs
   ram: 1024
   gui: false
+# mbarcia/drupsible has 6GB of disk space: use 'mbarcia/drupsible-large' for 30G disk space
   box: 'mbarcia/drupsible'
+# Box does not need a URL if present in Atlas service
+  box_url: ''
+# guest_distro can also be 'ubuntu'
+  guest_distro: 'debian'
+# Following settings only applicable to Virtualbox
   pae: 'on'
   acpi: 'on'
   ioapic: 'on'
