@@ -111,16 +111,13 @@ apache2_mod_php_memory_limit: "256M"
 apache2_allow_override_htaccess: None
 
 #
-# debops.php5 defaults
+# PHP defaults
 #
 
 php5_packages:
 - php-pear
 - php-soap
-- php5-curl
-- php5-gd
 - php5-gmp
-- php5-mcrypt
 - php5-mysql
 
 php5_post_max_size: '32M'
