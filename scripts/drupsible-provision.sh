@@ -27,5 +27,3 @@ else
 	echo "Drupsible requirements not found"
 	exit -1
 fi
-# Workaround to Ansible bug https://github.com/ansible/ansible-modules-core/issues/2585 
-sed -i "s|errno.EEXISTS|errno.EEXIST|g" /usr/local/lib/python2.7/dist-packages/ansible/modules/core/files/file.py
