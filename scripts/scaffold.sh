@@ -22,6 +22,8 @@ fi
 if [ ! -d /home/vagrant/ansible/secret ]; then
 	mkdir /home/vagrant/ansible/secret
 fi
+# Copy ansible.cfg
+cp /vagrant/ansible/ansible.cfg /home/vagrant
 # Copy (local) inventory file
 cp "/vagrant/ansible/inventory/${APP_NAME}-local" /home/vagrant/ansible/inventory/
 # Remove exec permission from it (Ansible tries to execute otherwise)

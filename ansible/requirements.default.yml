@@ -29,9 +29,9 @@
 - src: https://github.com/debops/ansible-sshd
   version: v0.2.3
   name: debops.sshd
-- src: https://github.com/debops/ansible-php5
-  version: v0.1.0
-  name: debops.php5
+- src: https://github.com/mbarcia/ansible-php
+  version: v1.0
+  name: drupsible.php
 - src: https://github.com/debops/ansible-etc_services
   version: 9cde2a0c287d485dee73d705c4c95170cc4b6070
   name: debops.etc_services

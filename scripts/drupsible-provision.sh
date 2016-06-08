@@ -7,14 +7,14 @@ else
 	echo "Installing Ansible dependencies..."
 	export DEBIAN_FRONTEND=noninteractive
 	apt-get update
+	apt-get install -y zlib1g-dev libssl-dev libreadline-gplv2-dev libffi-dev
+	apt-get install -y curl unzip
 	apt-get install -y git python python-dev python-setuptools python-pip python-netaddr
-	# Make sure setuptools are installed crrectly.
-	pip install setuptools --upgrade
-	echo "Installing required python modules..."
-	pip install paramiko pyyaml jinja2 markupsafe
+	# Make sure setuptools are installed correctly.
+	pip install setuptools setupext-pip cryptography --upgrade
+	pip install paramiko PyYAML Jinja2 httplib2 six markupsafe
+	pip install ansible==2.0.2.0
 fi
-echo "Installing Ansible scripts in /usr/local/bin..."
-pip install ansible
 echo "Installing Debops support..."
 pip install debops
 # Download Drupsible roles
