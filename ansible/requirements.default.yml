@@ -15,7 +15,7 @@
   version: v0.1.4
   name: debops.core
 - src: https://github.com/debops/ansible-users
-  version: v0.1.5
+  version: v0.1.6
   name: debops.users
 - src: https://github.com/debops/ansible-pki
   version: v0.2.5
@@ -33,7 +33,7 @@
   version: v1.0
   name: drupsible.php
 - src: https://github.com/debops/ansible-etc_services
-  version: 9cde2a0c287d485dee73d705c4c95170cc4b6070
+  version: v0.3.0
   name: debops.etc_services
 - src: https://github.com/debops/ansible-dhparam
   version: v0.1.2
