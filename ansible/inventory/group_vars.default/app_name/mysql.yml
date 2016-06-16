@@ -8,10 +8,10 @@ mysql_mysqld_bind_address: '0.0.0.0'
 # Use this hash variable to set additional mysqld options
 mysql_mysqld_options: {
   # INNODB
-  'key_buffer': '16M',
+  'key_buffer_size': '16M',
   'innodb_buffer_pool_size': '64M',
-  # In order to change this, you have to first shutdown, 
-  # then move away the log files (ib_logfile0, ib_logfile1, and so on), 
+  # In order to change this, you have to first shutdown,
+  # then move away the log files (ib_logfile0, ib_logfile1, and so on),
   # then restart mysql.
   #'innodb_log_file_size = '32M'
   'innodb_file_per_table': '1',

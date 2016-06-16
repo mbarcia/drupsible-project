@@ -11,7 +11,6 @@ hosts:
   gui: false
 # mbarcia/drupsible has 6GB of disk space: use 'mbarcia/drupsible-large' for 30G disk space
   box: 'mbarcia/drupsible'
-# Box does not need a URL if present in Atlas service
   box_url: ''
 # guest_distro can also be 'ubuntu'
   guest_distro: 'debian'

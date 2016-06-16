@@ -33,7 +33,7 @@
     tags: [ tz ]
     when: current_timezone.stdout != app_timezone|default('Europe/Madrid')
   - name: Get current ntp status
-    shell: '/usr/bin/timedatectl status | grep "NTP enabled" | sed "s|.*NTP enabled: \(.*\)$|\1|g"'
+    shell: '/usr/bin/timedatectl status | grep -e "NTP enabled" -e "Network time on" | sed "s/.*[NTP enabled|Network time on]: \(.*\)$/\1/g"'
     register: current_ntp_status
     changed_when: False
     tags: [ tz ]
@@ -142,24 +142,23 @@
     apache2_fpm_listen_uds: "{{ app_fpm_listen_uds }}"
     apache2_https_enabled: "{{ app_https_enabled|default(False)|bool }}"
     apache2_varnish_enabled: "{{ app_varnish_enabled }}"
-  - role: debops.php5
-    tags: [ 'role::php5' ]
+  - role: drupsible.php
+    tags: [ 'role::php' ]
     when: ansible_local.apache2.mpm != 'prefork'
     become: yes
-    php5_app_pool:
+    deploy_php_app_pool:
       enabled: True
       name: "{{ app_name }}"
       listen: "{{ ansible_local.apache2.uds_available|default(True)|bool|ternary(app_fpm_listen_uds, app_fpm_listen) }}"
       user: "{{ app_user }}"
       group: "{{ app_group }}"
-      php_flag: "{{ php_flag }}"
-      php_value: "{{ php_value }}"
-    php5_pools: [ '{{ php5_app_pool }}' ]
+    php__pools: [ '{{ deploy_php_app_pool }}' ]
   - role: drupsible.newrelic
     tags: [ 'role::newrelic' ]
     when: provision_new_relic|default(False)|bool and 'newrelic-php5' in apache2_php5_packages_ontop|default([]) and ansible_local.apache2.mpm == 'prefork'
   - role: drupsible.uploadprogress
     tags: [ 'role::uploadprogress' ]
+    when: ansible_distribution_release != 'xenial'
   - role: drupsible.xdebug
     tags: [ 'role::xdebug' ]
     xdebug_cli_enabled: "{{ deploy_xdebug_cli_enabled|default(False)|bool }}"
@@ -181,7 +180,7 @@
     when: app_target == 'local'
     tags: [ 'role::samba' ]
   - role: drupsible.twigc
-    when: app_drupal_version|version_compare('8', '==')
+    when: app_drupal_version|version_compare('8', '==') and ansible_distribution_release != 'xenial'
     twigc_composer_working_dir: "/home/{{ app_user }}/{{ app_name }}"
     tags: [ 'role::twigc' ]
 

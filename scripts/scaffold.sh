@@ -22,12 +22,18 @@ fi
 if [ ! -d /home/vagrant/ansible/secret ]; then
 	mkdir /home/vagrant/ansible/secret
 fi
+# Copy ansible.cfg
+if [ -f /vagrant/ansible.cfg ]; then
+	cp /vagrant/ansible.cfg /home/vagrant
+fi
 # Copy (local) inventory file
 cp "/vagrant/ansible/inventory/${APP_NAME}-local" /home/vagrant/ansible/inventory/
 # Remove exec permission from it (Ansible tries to execute otherwise)
 chmod -x "/home/vagrant/ansible/inventory/${APP_NAME}-local"
 # Copy secrets (eventually gathered by configure.sh) to the guest OS
-cp -pr "/vagrant/ansible/secret" /home/vagrant/ansible/
+if [ -d /vagrant/ansible/secret ]; then
+	cp -pr "/vagrant/ansible/secret" /home/vagrant/ansible/
+fi
 # Change owner (note that this cannot be done on a synced folder in Windows)
 chown -R vagrant:vagrant /home/vagrant/
 echo "Done with the scaffolding."
