@@ -145,7 +145,6 @@
   - role: drupsible.php
     tags: [ 'role::php' ]
     when: ansible_local.apache2.mpm != 'prefork'
-    become: yes
     deploy_php_app_pool:
       enabled: True
       name: "{{ app_name }}"
