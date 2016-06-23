@@ -17,6 +17,16 @@ deploy_xdebug_enabled: yes
 php5_max_execution_time: '0'
 php5_max_input_time: '-1'
 
+# SQLite added in local for Drupal Console
+php__packages:
+# Add xml in Xenial if you need PECL (like when downgrading to PHP 5.6)
+#- xml
+- php-pear
+- php-soap
+- gmp
+- mysql
+- sqlite
+
 # No New Relic in local
 apache2_mod_php5_packages_ontop:
 - php-pear

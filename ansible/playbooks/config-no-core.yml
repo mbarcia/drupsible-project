@@ -168,6 +168,7 @@
     when: app_memcached_enabled|default(True)|bool
     tags: [ 'role::memcached' ]
   - role: drupsible.drupal-console
+    when: deploy_drupal_console_enabled|default(True)|bool
     tags: [ 'role::drupal-console' ]
   - role: drupsible.newrelic
     when: provision_new_relic|default(False)|bool
