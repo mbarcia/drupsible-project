@@ -68,13 +68,14 @@ echo "You may configure Drupsible to install any of these: core profiles (minima
 echo "standard) contributed distributions (bear, thunder), or your own project."
 echo
 echo "Available options are prompted between parenthesis, like (y|n)."
-echo "Default values (when you hit Enter) are prompted between brackets []."
+echo "Default values (so you just hit Enter) are showed between brackets []."
 echo "-------------------------------------------------------------------------------"
 
 #
 # Chdir to top-level folder if needed.
 #
 if [ -f "../default.profile" ]; then
+	echo
 	echo "Changed current dir to the project's top level folder, for your convenience."
 	cd .. || exit 2
 fi
@@ -86,6 +87,7 @@ if [ "$1" == "" ]; then
 	DIR_NAME=${PWD##*/}
 	# But remove suffix -drupsible if any.
 	PROJ_NAME=${DIR_NAME%-drupsible}
+	echo
 	echo "Application name? [$PROJ_NAME]: "
 	read -r APP_NAME
 	if [ "${APP_NAME}" == "" ]; then
@@ -321,19 +323,17 @@ if [ "$USE_SITE_INSTALL" != "yes" ]; then
 		sed -i "s|SYNC_DB=.*$|SYNC_DB=\"${SYNC_DB}\"|g" "${APP_NAME}.profile.tmp"
 	fi
 	if [ "$SYNC_DB" != "yes" ]; then
-		echo "NO to site install, NO to sync DB, means the only option left for the DB is a dump."
+		echo "The DB dump is a SQL file, in plain text (.sql) or gzipped (.sql.gz), and must be present in ansible/playbooks/dbdumps."
+		echo "Make sure the SQL statements do NOT start with a CREATE DATABASE."
 		echo "DB dump filename?"
-		echo "This archive/file (the DB dump) is a SQL file, in plain text or gzipped, and must be present in ansible/playbooks/dbdumps."
-		echo "For example, ${APP_NAME}.sql.gz"
 		read -r DBDUMP
 		# Write DBDUMP
 		sed -i "s|DBDUMP=.*$|DBDUMP=\"${DBDUMP}\"|g" "${APP_NAME}.profile.tmp"
 	fi
 	if [ "$SYNC_FILES" != "yes" ]; then
-		echo "NO to install profile, NO to sync files, means the only option left for the files is a tarball."
+		echo "The files archive can be a tar (.tar), a gzip (.tar.gz), a bzip2 or a xz archive, and must be present in ansible/playbooks/files-tarballs."
+		echo "Make sure the archive you provide produces a 'files' folder when decompressed."
 		echo "Files tarball filename?"
-		echo "This archive can be a tar, a gzip, a bzip2 or a xz, and must be present in ansible/playbooks/files-tarballs."
-		echo "For example, ${APP_NAME}-files.tar.gz"
 		read -r FILES_TARBALL
 		# Write FILES_TARBALL
 		sed -i "s|FILES_TARBALL=.*$|FILES_TARBALL=\"${FILES_TARBALL}\"|g" "${APP_NAME}.profile.tmp"
@@ -348,14 +348,13 @@ if [ "$USE_INSTALL_PROFILE" != "yes" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] &
 		USE_CODEBASE_TARBALL='no'
 	fi
 	if [ "$USE_CODEBASE_TARBALL" == "yes" ]; then
+		echo "The codebase archive can be a tar (.tar), a gzip (.tar.gz), a bzip2 or a xz archive, and must be present in ansible/playbooks/codebase-tarballs."
+		echo "Make sure the archive you provide produces index.php at the top-most level when decompressed (a.k.a. 'tarbomb') and does not include sites/default/files."
 		echo "Codebase tarball filename?"
-		echo "This archive can be a tar, a gzip, a bzip2 or a xz, and must be located in ansible/playbooks/codebase-tarballs."
-		echo "For example, ${APP_NAME}-codebase.tar.gz"
 		read -r CODEBASE_TARBALL
 		# Write CODEBASE_TARBALL
 		sed -i "s|CODEBASE_TARBALL=.*$|CODEBASE_TARBALL=\"${CODEBASE_TARBALL}\"|g" "${APP_NAME}.profile.tmp"
 	else
-		echo "NO to install profile, and NO to codebase tarball, means the only option left for the codebase is Git (sorry, SVN not supported)."
 		# GIT config values
 		echo "Protocol to access your Git clone URL? (ssh|https|git|http)"
 		read -r GIT_PROTOCOL
@@ -397,8 +396,8 @@ if [ "$USE_INSTALL_PROFILE" != "yes" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] &
 fi
 echo
 # Gather input about VM IP mode (static or dynamic)
-IP_OPTION1='Static IP (Drupsible)'
-IP_OPTION2='Static IP (Yours)'
+IP_OPTION1='Static IP (set by Drupsible recommended)'
+IP_OPTION2='Static IP (set by yourself)'
 IP_OPTION3='Dynamic IP (DHCP)'
 echo "${IP_OPTION1} means Drupsible will generate and use a valid static IP."
 echo "${IP_OPTION2} means you can type your own specific IP."
@@ -406,7 +405,7 @@ echo "${IP_OPTION3} means Drupsible will use DHCP to get an IP from "
 echo "the DHCP server in your workstation's network."
 echo
 echo "Choose the first option if you are not sure what this means."
-PS3="Regarding your VM's IP, please enter your choice: "
+PS3="Your choice: "
 optionstring="${IP_OPTION1},${IP_OPTION2},${IP_OPTION3}"
 # Save the current IFS (Internal Field Separator)
 OIFS=$IFS
@@ -530,7 +529,7 @@ echo
 #
 # Connect to a new or existing ssh-agent
 #
-if ([ "$GIT_PASS" == "" ] && [ "$USE_INSTALL_PROFILE" != "yes" ]) || [ "$USE_UPSTREAM_SITE" == "yes" ]; then
+if ([ "$GIT_PASS" == "" ] && [ "$USE_INSTALL_PROFILE" != "yes" ] && [ "$USE_CODEBASE_TARBALL" != "yes" ]) || [ "$USE_UPSTREAM_SITE" == "yes" ]; then
 	echo "SSH key filename (to git clone, and/or sync with the upstream host)? [$HOME/.ssh/id_rsa]"
 	read -r KEY_FILENAME
 	if [ "$KEY_FILENAME" == "" ]; then
@@ -568,6 +567,7 @@ if [ "${DRUPSIBLE_TZ}" == "" ] && [ ! "${CURRENT_TZ}" == "" ]; then
 	DRUPSIBLE_TZ=${CURRENT_TZ}
 	echo "Time zone set to ${DRUPSIBLE_TZ}"
 fi
+echo
 # Write TIME_ZONE
 sed -i "s|APP_TIMEZONE=.*$|APP_TIMEZONE=\"${DRUPSIBLE_TZ}\"|g" "${APP_NAME}.profile.tmp"
 #
