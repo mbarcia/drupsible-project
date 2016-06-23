@@ -486,6 +486,11 @@ if askyesno; then
 			SMTP_SERVER='smtp.gmail.com'
 			echo "SMTP server set to smtp.gmail.com"
 		fi
+		if [ "$SMTP_SERVER" == "smtp.gmail.com" ]; then
+			echo
+			echo "IMPORTANT: now change your Gmail's security as in https://support.google.com/accounts/answer/6010255"
+			echo
+		fi
 		# Write SMTP_SERVER
 		sed -i "s/SMTP_SERVER=.*$/SMTP_SERVER=\"${SMTP_SERVER}\"/g" "${APP_NAME}.profile.tmp"
 		echo "SMTP port? [587]"
