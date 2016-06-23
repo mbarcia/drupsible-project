@@ -74,3 +74,6 @@
 - src: https://github.com/mbarcia/drupsible-twigc
   version: master
   name: drupsible.twigc
+- src: https://github.com/mbarcia/drupsible-drupal-console
+  version: master
+  name: drupsible.drupal-console
