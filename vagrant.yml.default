@@ -1,18 +1,35 @@
 apps:
 
 hosts:
+# name and domain set by configure.sh
 - name: local
   domain: 'example.com'
 # Drupsible will retrieve an IP from DHCP if ip_addr is left empty
+# ip_addr set by configure.sh
   ip_addr: ''
   netmask: '255.255.255.0'
 # Amount of memory assigned to the VM in Megs
   ram: 1024
   gui: false
-# mbarcia/drupsible has 6GB of disk space: use 'mbarcia/drupsible-large' for 30G disk space
+# mbarcia/drupsible is a Debian Jessie box with 6GB of disk space and Ansible 2 pre-installed
   box: 'mbarcia/drupsible'
-  box_url: ''
-# guest_distro can also be 'ubuntu'
+  box_url: 'https://atlas.hashicorp.com/mbarcia/boxes/drupsible'
+#
+# Other boxes you can use
+#
+# Identical to drupsible box only with 30G of disk space
+# box: 'mbarcia/drupsible-large'
+# box_url: 'https://atlas.hashicorp.com/mbarcia/boxes/drupsible-large'
+#
+# Ubuntu Trusty64 (default is 10G of disk space)
+# box: 'ubuntu/trusty64'
+# box_url: 'https://atlas.hashicorp.com/ubuntu/boxes/trusty64'
+#
+# Ubuntu Xenial64 (default is 10G of disk space)
+# box: 'ubuntu/xenial64'
+# box_url: 'https://vagrantcloud.com/ubuntu/boxes/xenial64'
+#
+# Switch to 'ubuntu' if using any Ubuntu box
   guest_distro: 'debian'
 # Following settings only applicable to Virtualbox
   pae: 'on'
