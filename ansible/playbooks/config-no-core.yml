@@ -49,7 +49,7 @@
   roles:
   - role: drupsible.mysql
     tags: [ 'role::mysql' ]
-    mysql_mysqld_allow_group: "{{ app_name + '-' + app_target + '_deploy' }}"
+    mysql_mysqld_allow_groups: [ "{{ app_name + '-' + app_target + '_deploy' }}" ]
     mysql_databases:
     - name: "{{ app_name }}"
       state: 'present'
