@@ -36,7 +36,6 @@ HOSTS.each do |host|
     system "echo The hostsupdater plugin enables Drupsible to update /etc/hosts with ie., \"#{huplugin[:legend]}\""
     system "echo This makes your Drupal webapp in the guest VM accessible from your host's browser."
     system "echo Drupsible will now proceed to its installation (one-time only)."
-    system "echo"
     system "vagrant plugin install --plugin-version '#{huplugin[:version]}' #{huplugin[:name]}"
   end
 end
