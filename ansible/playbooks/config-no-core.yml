@@ -208,4 +208,5 @@
     varnish_fpm_ping_path: "{{ app_fpm_ping_path | default('/ping') }}"
     varnish_webhost: "{{ app_webhost }}"
     varnish_app_name: "{{ app_name }}"
+    varnish_allow_groups: [ "{{ app_name + '-' + app_target + '_deploy' }}" ]
     when: app_varnish_enabled|bool
