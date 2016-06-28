@@ -12,7 +12,7 @@ Drupsible project is the starting point of Drupsible, and it is the only thing y
 * 1G of free RAM, 6G of free disk space (or alternatively, 30G for the 'mbarcia/drupsible-large' VirtualBox box)
 * A Virtual Machine provider
   * [Virtualbox](https://www.virtualbox.org/wiki/Downloads), or
-  * VMWare Fusion or VMWare Workstation, or 
+  * VMWare Fusion or VMWare Workstation, or
   * Parallels Desktop 10+ for Mac
 * [Vagrant](http://www.vagrantup.com/downloads) 1.8.1+
   * requires commercial plug-in for VMWare
@@ -25,19 +25,15 @@ Drupsible project is the starting point of Drupsible, and it is the only thing y
 
     This setting must be enabled for 64-bit OS guests like the Drupsible VM.
 * If you want to import an ongoing development:
-  * Have your Drupal website codebase, either managed through a GIT repository or simply stored in a tarball/archive. Ideally, without sites/default/files in it!.
-  * Optionally, have a "deployment key" setup for your Git repository.
-  * Have a DB dump of your Drupal website.
-  * Optionally, have a separate files tarball/archive of sites/default/files.
-  * If your project is a distibution with a Makefile, you can also use Drupsible to manage it.
-* If you want to try a Drupal distribution, 
-  * you will be able to type its name (interactively) and 
-  * run it locally in no time.
-* You can configure multiple applications in the same VM, that you may deploy to a single server in PROD as well.
-  ```bin/configure.sh <app_name>```
+  * Have your Drupal website codebase. If using a tarball/archive, make sure the archive you provide produces index.php at the top-most level when decompressed (a.k.a. 'tarbomb') and does not include sites/default/files.
+  * If using a Git repository, have a "deployment key" setup and present in your local workstation.
+  * Have a separate files tarball/archive of sites/default/files. Make sure the archive you provide produces a files folder when decompressed.
+  * Have a DB dump of your Drupal website. Make sure the SQL statements do NOT start with a CREATE DATABASE.
+  * If your project is a distibution (using drush make and/or composer), you can also use Drupsible to manage it.
+* If you want to try a Drupal distribution, type its name during bin/configure.sh when asked.
 
 ## Remote servers
-All remote target servers must be Debian (wheezy/jessie) or Ubuntu (trusty/vivid) stock boxes (although currently testing Jessie only). 
+All remote target servers must be Debian (wheezy/jessie) or Ubuntu (trusty/xenial) stock boxes.
 In the future, Drupsible may run on other *nix platforms.
 
 # Basic usage
@@ -53,23 +49,27 @@ In the future, Drupsible may run on other *nix platforms.
     ```
 1. Although the master branch is considered stable, you can optionally switch to the latest tag
     ```
-    git checkout tags/0.9.9
+    git checkout tags/1.0
     ```
 1. Run the configuration wizard
     ```
     bin/configure.sh
     ```
 1. Drupsible will start an interactive session, asking for the handful of values that really matter (app name, domain name, etc.).
-1. Next, run ```vagrant up``` 
+1. Drupsible will
+    1. create your app's drupsible profile in a file called myproject.profile
+    2. customize your vagrant.yml for development (although you can edit it as well, for advanced usage)
+    3. generate all the needed Ansible configuration for you
+1. Next, run ```vagrant up```
 1. Grab a cup of green tea, well deserved!
-1. For one time only, it will download the drupsible box (~400M) and the vagrant-cachier plugin.
+1. For one time only, it will download the drupsible box (~400M).
 1. If your user is not admin, Vagrant should ask for your OS admin password
 1. When you see it's done, you will see a message like this:
     ```
     ==> local: local.doma.in        : ok=493  changed=190  unreachable=0    failed=0
     ==> local: Drupsible box has been provisioned and configured. Go to your app URL and have a happy development.
     ```
-1. Your Drupal app has been deployed! Only one last step is needed: 
+1. Your Drupal app has been deployed! Only one last step is needed:
     ```
     vagrant ssh
     sudo ifconfig -a
@@ -81,28 +81,61 @@ In the future, Drupsible may run on other *nix platforms.
     ```
 1. Now, point your browser to your website: http://local.doma.in. Voilà.
 
+## No multisite but multiple apps
+Drupal is able to accomodate multiple applications in the same VM, that you may deploy to a single server in PROD as well. Just run
+  ```bin/configure.sh myotherproject```
+in the same directory and Drupsible will:
+1. Add a "myotherproject" line (in apps section) to vagrant.yml for developing with Vagrant
+1. Create a myotherproject.profile 
+1. Generate all the Ansible default configuration for this other project
+
+As a final step, simply run
+```
+vagrant provision
+```
+
+Drupsible does not support the Drupal multisite approach, freeing you from future pains and handling multiple Drupal websites in a more flexible way.
+
 ### Comments and observations ###
 * Your default credentials at http://local.doma.in/user/login are admin/drups1ble. You can override it later, per environment.
-* In your file manager (Windows Explorer look for \\LOCAL, or Samba shares), there will be a shared folder:
-  local.doma.in app
-  Check out [the Samba role documentation](https://github.com/mbarcia/drupsible-samba#work-your-drupal-code), and work your Drupal code!
+* In your file manager (Windows Explorer look for \\LOCAL, or Samba shares), there will be a shared folder: local.doma.in app. Check out [the Samba role documentation](https://github.com/mbarcia/drupsible-samba#work-your-drupal-code), and work your Drupal code!
 * You will then be able to connect your IDE of choice to this folder, or use any editor to develop and test. After you are done, just commit to your GIT repository.
 * If anything changes, ie. your Git credentials, run bin/configure.sh again but this time
-  * You will be automatically presented with the edition of ```<app_name>.profile```
-  * After saving ```<app_name>.profile```, run ```vagrant provision``` (instead of ```vagrant up```)
-* The rest of workstations in your LAN would be able see your website if they also added this line to their /etc/hosts file. Although this is considered a feature (and not a security hole!), you should take your precautions if needed.
-* If you want to customize more, please read section "Advanced usage" below. 
+    * You will be asked if you want to start over
+    * Say no, and you will be automatically presented with the edition of ```myproject.profile```
+    * Edit your new value, save, and run ```bin/generate.sh```
+    * Run ```vagrant provision``` (instead of ```vagrant up```)
+* If you have chosen Dynamic IP for your VM, potentially all of the workstations in your LAN will be able to access your website docroot. Although this is considered a feature (and not a security hole!), please use with caution.
+* If you have chosen Static IP for your VM, you may take advantage of installing the vagrant plugin vagrant-hostsupdater. Install it with
+    ```
+    vagrant plugin install vagrant-hostsupdater
+    ```
+    This plugin will  mantain /etc/hosts for you, so you can access http(s)://local.doma.in from your browser.
+* If you want to customize more, please read section "Advanced usage" below.
 * In your local environment, and on a per-app basis, Drupsible sets up these very handy shell aliases:
-  <app_name>-config
-  <app_name>-deploy
-  <app_name>-config-deploy
-  You can even use these with tags or more extra-vars as if you were using ```ansible-playbook```. 
-  Type ```alias``` at the command prompt for more info.
+    * myproject-config
+    * myproject-deploy
+    * myproject-config-deploy
+    You can even use these with tags or more extra-vars as if you were using ```ansible-playbook```.
+    Type ```alias``` at the command prompt for more info.
 
 ## Other target environments
 Once your Drupal website is working on your local, you can proceed to deploy to the upper environments.
 
-1. Write your Ansible inventory for the target environment
+1. Write your Ansible inventory for the target environment. This inventory _must_ have 5 groups:
+    ```
+    myproject
+    └── myproject-prod
+        ├── deploy
+        │   ├── web-server1
+        │   ├── web-server2
+        │   └── web-server3
+        ├── mysql
+        │   └── db-server
+        └── varnish
+            └── server1
+    ```
+    Check out the [local inventory](https://github.com/mbarcia/drupsible-project/blob/master/ansible/inventory/app_name-local) provided for details.
 1. Choose an Ansible controller server. A good starting point is to use the VM itself as a controller, since it has already provisioned and configured your local. However, it is wise to consider having a separate "production" Ansible controller.
 1. In your controller, make sure you have your public key in ~/.ssh/id_rsa.pub. This key will authorize your Drupsible SSH connections to all the hosts.
 
@@ -123,7 +156,7 @@ If you just want to re-configure, say a parameter in Varnish, you would just run
 ```
 vagrant@local:~$ ansible-playbook -i ansible/inventory/<app_name>-prod ansible/playbooks/config.yml --extra-vars "app_name=<app_name> app_target=prod" --tags role::varnish
 ```
-This will reconfigure Varnish, without triggering a new deployment of you Drupal webapp. 
+This will reconfigure Varnish, without triggering a new deployment of you Drupal webapp.
 
 ### Restarting the local VM ###
 Whenever your local VM may go down (ie. after your workstation has been restarted), you need to
@@ -148,68 +181,16 @@ or to the webservers group, no matter in which environment they are in
  ansible/playbooks/group_vars/<app_name>/deploy.yml
  ```
 
-A good example (SMTP) follows.
-### Email sending capability ###
-Your Drupal webservers will need to send emails to notify the admin (and the registered users, if any) of several important events.
-
-In order to do that, a SMTP service must be made available to PHP. The default behavior is to relay all email to the MX host of the domain. But what if that's not what you want?
-
-Say you would like to send emails trough Gmail. You can do so by following these steps:
-#### Setup Gmail SMTP server
-Edit
-```
-ansible/playbooks/group_vars/<app_name>-prod/deploy.yml
-```
-adding this:
-```
-# This below is smtp.gmail.com IPv4 address
-#smtp_server: '74.125.136.108'
-smtp_server: 'smtp.gmail.com'
-smtp_port: 587
-smtp_user: 'someusername@gmail.com'
-```
-
-#### Specify your Gmail password
-Create a file with your password under the secret folder (properly replacing <smtp_host>, <smtp_port>, <smtp_user>, <mypassword> and <ansible_fqdn> below):
-
-```
-mkdir -p "$HOME/ansible/secret/credentials/<ansible_fqdn>/postfix/smtp_sasl_password_map/[<smtp_host>]:<smtp_port>" && touch "$HOME/ansible/secret/credentials/<ansible_fqdn>/postfix/smtp_sasl_password_map/[<smtp_host>]:<smtp_port>/<smtp_user>"
-echo "<mypassword>" > "$HOME/ansible/secret/credentials/<ansible_fqdn>/postfix/smtp_sasl_password_map/[<smtp_host>]:<smtp_port>/<smtp_user>"
-```
-
-Now in your TARGET server (the same server, when in local/Vagrant), delete a .lock file to regenerate the .db
-
-```
-sudo rm /etc/postfix/private_hash_tables/smtp_sasl_password_map.lock
-```
-
-Notes:
-* There is no need to install the [SMTP drupal module](https://drupal.org/project/smtp), which also requires software installed in the server to connect to Gmail. 
-* Some hosting companies, like DigitalOcean, block outgoing SMTP traffic in IPv6. You can workaround that external restriction by setting smtp_port to a IPv4 address.
-
-#### Run Drupsible config playbook
-Finally, from /home/vagrant, run
-```
-<app_name>-config --tags role::postfix
-```
-and Drupsible will automatically configure Postfix through DebOps.
-
-Now your web server is ready to send out notification emails through Google Mail. YAY!
-
-*Important* - If you want to use the Gmail SMTP service, you will have to [relax the security measures of your Gmail account]
-(https://support.google.com/accounts/answer/6010255) to let Drupsible send emails via Gmail.
-
 ## Git keys and SSH-agent forwarding
-
 If you are NOT using a codebase tarball/archive, and have your Drupal codebase in a Git repository, you are aware that, in order to deploy a new version of your codebase,
- 
-1. your session needs to be running an ssh-agent with a deployment key loaded. 
+
+1. your session needs to be running an ssh-agent with a deployment key loaded.
 1. your Git repository will authorize Drupsible through this deployment key. For a real world example, see the [docs at Bitbucket](https://confluence.atlassian.com/bitbucket/how-to-install-a-public-key-on-your-bitbucket-account-276628835.html).
 
 The following is managed automatically by the bin/configure.sh script, so you will not need to worry. However, just in case you are not using configure.sh, you can check that you have an SSH agent running, and that it has your private keys loaded with this command:
 ```
 ssh-add -l
-``` 
+```
 
 If nothings pops up, then your SSH agent needs to load your Git repository SSH key, like this
 ```
