@@ -32,11 +32,14 @@ HOSTS.each do |host|
   end
 
   # Install vagrant-hostsupdater if any IP is static
-  unless huplugin.empty? or Vagrant.has_plugin?(huplugin[:name], huplugin[:version])
-    system "echo The hostsupdater plugin enables Drupsible to update /etc/hosts with ie., \"#{huplugin[:legend]}\""
-    system "echo This makes your Drupal webapp in the guest VM accessible from your host's browser."
-    system "echo Drupsible will now proceed to its installation (one-time only)."
-    system "vagrant plugin install --plugin-version '#{huplugin[:version]}' #{huplugin[:name]}"
+  unless ARGV[0] == "destroy" or ARGV[0] == "halt" or ARGV[0] == "suspend"
+    unless huplugin.empty? or Vagrant.has_plugin?(huplugin[:name], huplugin[:version])
+      system "echo The hostsupdater plugin enables Drupsible to update /etc/hosts with ie.,"
+      system "echo \"#{huplugin[:legend]}\""
+      system "echo This makes your website in the guest VM accessible from your host's browser."
+      system "echo Drupsible will now proceed to its installation (one-time only)."
+      system "vagrant plugin install --plugin-version '#{huplugin[:version]}' #{huplugin[:name]}"
+    end
   end
 end
 
