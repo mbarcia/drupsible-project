@@ -64,11 +64,15 @@ echo "==============================="
 echo
 echo "Take this brief questionnaire and you will be up and running in no time!"
 echo
-echo "You may configure Drupsible to install any of these: core profiles (minimal, "
-echo "standard) contributed distributions (bear, thunder), or your own project."
+echo "You can start a new project from core profiles (minimal, standard), contributed"
+echo "distributions (bear, thunder), or import any existing project."
+echo "You can import a project from tarballs, from a live site, from a Git repo, or"
+echo "from a combination."
 echo
 echo "Available options are prompted between parenthesis, like (y|n)."
 echo "Default values (so you just hit Enter) are showed between brackets []."
+echo
+echo "You can Ctrl-C any time to start over."
 echo "-------------------------------------------------------------------------------"
 
 #
@@ -88,7 +92,10 @@ if [ "$1" == "" ]; then
 	# But remove suffix -drupsible if any.
 	PROJ_NAME=${DIR_NAME%-drupsible}
 	echo
-	echo "Application name? [$PROJ_NAME]: "
+	echo "Application name?"
+	echo "Your application/project name must be a good ID, as it will be used"
+	echo "by Drupsible for things like naming config files, or MySQL users."
+	echo "Type your application name, or just press Enter for $PROJ_NAME:"
 	read -r APP_NAME
 	if [ "${APP_NAME}" == "" ]; then
 		APP_NAME="${PROJ_NAME}"
@@ -119,32 +126,37 @@ fi
 #
 echo
 echo "What is the primary internet domain of your web application?"
+echo "This is not 'something.localhost' but the real domain, like wikipedia.org."
+echo "Type the domain of your web application:"
 read -r DOMAIN
 # Write DOMAIN
 sed -i "s/DOMAIN=.*$/DOMAIN=\"${DOMAIN}\"/g" "${APP_NAME}.profile.tmp"
 echo
-echo "Host name in your local environment? [local]"
+echo "Hostname for your local environment? Default is local, so you can use"
+echo "http://local.${DOMAIN} for developing in your local workstation."
+echo "Press Enter for 'local' or type a hostname:"
 read -r HOSTNAME
 if [ "$HOSTNAME" == "" ]; then
 	# Set hostname to default: local
 	HOSTNAME="local"
-	echo "Host name set to local"
+	echo "FQDN set to local.${DOMAIN}"
 fi
 # Write HOSTNAME
 sed -i "s/HOSTNAME=.*$/HOSTNAME=\"${HOSTNAME}\"/g" "${APP_NAME}.profile.tmp"
 echo
-echo "What Drupal version are you using? (7|8) [8])"
-echo "8 (or 7) will get you the latest stable, but you can also specify any "
+echo "What Drupal version are you using?"
+echo "8 (or 7) will get you the latest stable, but you can also specify any"
 echo "particular Drupal core version, like 8.0.5 (or 7.43)"
+echo "Say the Drupal core version, or type Enter for Drupal 8:"
 read -r DRUPAL_VERSION
 if [ "$DRUPAL_VERSION" == "" ]; then
 	DRUPAL_VERSION="8"
-	echo "Drupal version set to 8"
+	echo "Drupal version set to 8 (latest stable)"
 fi
 # Write DRUPAL_VERSION
 sed -i "s|DRUPAL_VERSION=.*$|DRUPAL_VERSION=\"${DRUPAL_VERSION}\"|g" "${APP_NAME}.profile.tmp"
 echo
-echo "Are you setting up a multilingual website? (y|n)"
+echo "Are you setting up a multilingual or non-english website? (y|n)"
 if askyesno; then
 	MULTILINGUAL='yes'
 else
@@ -161,7 +173,7 @@ if [ "$MULTILINGUAL" == "yes" ]; then
 	sed -i "s|LANGUAGES=.*$|LANGUAGES=\"${LANGUAGES_NO_WHITESPACE}\"|g" "${APP_NAME}.profile.tmp"
 fi
 echo
-echo "Will you be using a distribution or install profile? (y|n)"
+echo "Using a distribution or install profile? (y|n)"
 if askyesno; then
 	USE_INSTALL_PROFILE='yes'
 else
@@ -341,7 +353,7 @@ if [ "$USE_SITE_INSTALL" != "yes" ]; then
 fi
 echo
 if [ "$USE_INSTALL_PROFILE" != "yes" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$CUSTOM_INSTALL_PROFILE" != "" ]); then
-	echo "Will you be using a codebase tarball? (y|n)"
+	echo "Using a codebase tarball? (y|n)"
 	if askyesno; then
 		USE_CODEBASE_TARBALL='yes'
 	else
