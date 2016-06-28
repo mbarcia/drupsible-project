@@ -4,7 +4,6 @@
 #
 # Drupsible Vagrantfile
 #
-
 require 'yaml'
 
 # Vagrantfile API/syntax version.
@@ -16,6 +15,31 @@ Vagrant.require_version ">= 1.8.1"
 settings = YAML.load_file 'vagrant.yml'
 HOSTS = settings['hosts']
 APPS = settings['apps']
+
+HOSTS.each do |host|
+  huplugin = {}
+
+  # Decide the Fully Qualified Domain Name for the host
+  if APPS.length < 2
+    host['fqdn'] = host['name'] + '.' + host['domain']
+  else
+    host['fqdn'] = 'drupsible.multi.app'
+  end
+
+  # Prepare vagrant-hostsupdater with a legend containing the FQDN
+  unless host['ip_addr'].to_s.empty?
+    huplugin = { :name => "vagrant-hostsupdater", :version => ">= 1.0.2", :legend => host['ip_addr'] + ' ' + host['fqdn'] }
+  end
+
+  # Install vagrant-hostsupdater if any IP is static
+  unless huplugin.empty? or Vagrant.has_plugin?(huplugin[:name], huplugin[:version])
+    system "echo The hostsupdater plugin enables Drupsible to update /etc/hosts with ie., \"#{huplugin[:legend]}\""
+    system "echo This makes your Drupal webapp in the guest VM accessible from your host's browser."
+    system "echo Drupsible will now proceed to its installation (one-time only)."
+    system "echo"
+    system "vagrant plugin install --plugin-version '#{huplugin[:version]}' #{huplugin[:name]}"
+  end
+end
 
 #
 # Vagrant configuration main
@@ -67,11 +91,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         machine.vm.network 'private_network', ip: host['ip_addr'], netmask: host['netmask']
       end
 
-      if APPS.length < 2
-        machine.vm.hostname = host['name'] + '.' + host['domain']
-      else
-        machine.vm.hostname = 'drupsible.multi.app'
-      end
+      machine.vm.hostname = host['fqdn']
 
       # Prevent annoying "stdin: not a tty" errors
       config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
@@ -111,7 +131,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # Run config-deploy.yml playbook
         machine.vm.provision "shell" do |sh|
           sh.path = "scripts/drupsible-deploy.sh"
-          sh.args = [ app['name'], "local", ENV['DEPLOY_ARGS'].to_s, ENV['TAGS'].to_s,  ENV['SKIP_TAGS'].to_s ]
+          sh.args = [ app['name'], "local", ENV['DEPLOY_ARGS'].to_s, ENV['TAGS'].to_s,  ENV['SKIP_TAGS'].to_s, host['fqdn'], host['ip_addr'].to_s ]
           sh.privileged = false
           sh.keep_color = true
         end

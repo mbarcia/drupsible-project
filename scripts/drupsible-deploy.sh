@@ -1,13 +1,15 @@
 #!/bin/bash
 
-export PYTHONUNBUFFERED=1 
-export ANSIBLE_FORCE_COLOR=true 
+export PYTHONUNBUFFERED=1
+export ANSIBLE_FORCE_COLOR=true
 
 APP_NAME="$1"
 APP_TARGET="$2"
 DEPLOY_ARGS="$3"
 TAGS="$4"
 SKIP_TAGS="$5"
+APP_FQDN="$6"
+HOST_IP_ADDR="$7"
 
 ANSIBLE_PLAYBOOK="$HOME/ansible/playbooks/config-deploy.yml"
 ANSIBLE_INVENTORY="$HOME/ansible/inventory/${APP_NAME}-${APP_TARGET}"
@@ -42,11 +44,26 @@ else
 	else
 		ansible-playbook -i $ANSIBLE_INVENTORY $ANSIBLE_PLAYBOOK --extra-vars "$EXTRA_VARS" --tags "$TAGS" --skip-tags "$SKIP_TAGS"
 	fi
-fi 
+fi
 
 if [ $? -eq 0 ]; then
-	echo "Drupsible box has been provisioned and configured. Go to your app URL and have a happy development."
-else  
-	echo "Drupsible box has NOT been provisioned or configured."
+	echo "Drupsible box has been provisioned and configured, YAY!"
+	echo "======================================================="
+	if [ "$HOST_IP_ADDR" == "" ]; then
+		echo "Make sure your local /etc/hosts is able to resolve the IP
+		echo "properly, by following these steps:"
+		echo "  1. Log into your VM with 'vagrant ssh'"
+		echo "  2. Run 'sudo ifconfig -a', and take note of the eth1 IPv4"
+		echo "	   address, and the MAC address (HWaddr) reported"
+		echo "  3. Edit your /etc/hosts and add this line:"
+		echo "     <IP> ${APP_FQDN}"
+		echo "  4. Try to fix/reserve that same IP to the MAC address in your"
+		echo "     LAN's DHCP server, so you don't have to change it later on"
+	fi
+	echo
+	echo "Type http://${APP_FQDN} in your browser, and happy development!"
+else
+	echo "WARNING: Drupsible box has NOT been provisioned or configured"
+	echo "============================================================="
 	exit 1
 fi
