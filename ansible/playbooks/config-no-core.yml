@@ -45,10 +45,11 @@
 - name: MySQL
   hosts: [ '{{ app_name }}-{{ app_target }}_mysql' ]
   become: True
-  roles:
 
+  roles:
   - role: drupsible.mysql
     tags: [ 'role::mysql' ]
+    mysql_mysqld_allow_group: "{{ app_name + '-' + app_target + '_deploy' }}"
     mysql_databases:
     - name: "{{ app_name }}"
       state: 'present'
