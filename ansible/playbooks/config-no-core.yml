@@ -44,7 +44,15 @@
 
 - name: MySQL
   hosts: [ '{{ app_name }}-{{ app_target }}_mysql' ]
+  gather_facts: True
   become: True
+
+  pre_tasks:
+  - name: Gather facts of deploy servers
+    setup:
+    delegate_to: "{{ item }}"
+    delegate_facts: True
+    with_items: "{{ groups[app_name + '-' + app_target + '_deploy'] }}"
 
   roles:
   - role: drupsible.mysql
@@ -189,9 +197,17 @@
 
 - name: Varnish
   hosts: [ '{{ app_name }}-{{ app_target }}_varnish' ]
+  gather_facts: True
   become: True
-  roles:
 
+  pre_tasks:
+  - name: Gather facts of deploy servers
+    setup:
+    delegate_to: "{{ item }}"
+    delegate_facts: True
+    with_items: "{{ groups[app_name + '-' + app_target + '_deploy'] }}"
+
+  roles:
   - role: debops.secret
     tags: [ 'role::secret', 'role::varnish:secret' ]
   - role: debops.ferm
