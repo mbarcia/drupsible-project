@@ -1,6 +1,15 @@
 ---
 - name: Deploy
   hosts: [ '{{ app_name }}-{{ app_target }}_deploy' ]
+  gather_facts: True
+
+  pre_tasks:
+  - name: Gather facts of Varnish servers
+    setup:
+    delegate_to: "{{ item }}"
+    delegate_facts: True
+    with_items: "{{ groups[app_name + '-' + app_target + '_varnish'] }}"
+
   roles:
   - role: debops.secret
     tags: [ 'role::secret', 'role::deploy:secret' ]
@@ -12,6 +21,7 @@
     deploy_target: "{{ app_target }}"
     deploy_webhost: "{{ app_webhost }}"
     deploy_trusted_host_patterns: [ "(?i)^.+\\.{{ app_webdomain|regex_replace('[.]', '\\.') }}$" ]
+    deploy_varnish_servers: "{{ groups[ app_name + '-' + app_target + '_varnish' ] }}"
     deploy_mysql_host: "{{ groups[ app_name + '-' + app_target + '_mysql' ][0] }}"
     deploy_db_name: "{{ app_db_name }}"
     deploy_db_user: "{{ app_db_user }}"
