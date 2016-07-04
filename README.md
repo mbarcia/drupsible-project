@@ -7,6 +7,7 @@ Drupsible is a DevOps tool for Drupal continuous delivery, based on Ansible. By 
 Drupsible project is the starting point of Drupsible, and it is the only thing you need to download/clone, as every other component will be handled by Drupsible automatically.
 
 # Requirements
+
 ## Local
 * Any Windows, Linux or MacOS workstation
 * 1G of free RAM, 6G of free disk space (or alternatively, 30G for the 'mbarcia/drupsible-large' VirtualBox box)
@@ -53,12 +54,14 @@ In the future, Drupsible may run on other *nix platforms.
     ```
 1. Run the configuration wizard
     ```
-    bin/configure.sh
+    . ./bin/configure.sh
     ```
 1. Drupsible will start an interactive session, asking for the handful of values that really matter (app name, domain name, etc.).
 1. Drupsible will
     1. create your app's drupsible profile in a file called myproject.profile
-    2. customize your vagrant.yml for development (although you can edit it as well, for advanced usage)
+    2. setup SSH keys and SSH forwarding as needed
+    2. customize your vagrant.yml for development (which you can edit further for advanced usage)
+    3. create an Ansible inventory file for your local environment (which you can edit further for advanced usage)
     3. generate all the needed Ansible configuration for you
 1. Next, run ```vagrant up```
 1. Grab a cup of green tea, well deserved!
@@ -67,34 +70,23 @@ In the future, Drupsible may run on other *nix platforms.
 1. When you see it's done, you will see a message like this:
     ```
     ==> local: local.doma.in        : ok=493  changed=190  unreachable=0    failed=0
-    ==> local: Drupsible box has been provisioned and configured. Go to your app URL and have a happy development.
+    ==> local: Drupsible box has been provisioned and configured, YAY!
+    ==> local: =======================================================
     ```
-1. Your Drupal app has been deployed! Only one last step is needed:
-    ```
-    vagrant ssh
-    sudo ifconfig -a
-    ```
-    eth1 will normally inform the IP you need, ie. 192.168.1.33
-1. Then, add a line to your Host OS /etc/hosts file (in Windows, that file would be ```C:\Windows\System32\drivers\etc\hosts```).
-    ```
-    192.168.1.33 local.doma.in
-    ```
-1. Now, point your browser to your website: http://local.doma.in. Voilà.
+1. Your Drupal app has been deployed! Point your browser to your website: http://local.doma.in. Voilà.
+2. If your browser is not able to resolve local.doma.in, follow the instructions after the YAY! message and edit /etc/hosts if needed.
 
 ## No multisite but multiple apps
 Drupal is able to accomodate multiple applications in the same VM, that you may deploy to a single server in PROD as well. Just run
-  ```bin/configure.sh myotherproject```
-in the same directory and Drupsible will:
-1. Add a "myotherproject" line (in apps section) to vagrant.yml for developing with Vagrant
-1. Create a myotherproject.profile 
-1. Generate all the Ansible default configuration for this other project
-
+```
+. ./bin/configure.sh myotherproject
+```
+answering to the questionnaire.
 As a final step, simply run
 ```
 vagrant provision
 ```
-
-Drupsible does not support the Drupal multisite approach, freeing you from future pains and handling multiple Drupal websites in a more flexible way.
+*Drupsible does not (on purpose) support the Drupal multisite approach, avoiding future pains and handling multiple Drupal websites in a more flexible way.*
 
 ### Comments and observations ###
 * Your default credentials at http://local.doma.in/user/login are admin/drups1ble. You can override it later, per environment.
@@ -106,11 +98,11 @@ Drupsible does not support the Drupal multisite approach, freeing you from futur
     * Edit your new value, save, and run ```bin/generate.sh```
     * Run ```vagrant provision``` (instead of ```vagrant up```)
 * If you have chosen Dynamic IP for your VM, potentially all of the workstations in your LAN will be able to access your website docroot. Although this is considered a feature (and not a security hole!), please use with caution.
-* If you have chosen Static IP for your VM, you may take advantage of installing the vagrant plugin vagrant-hostsupdater. Install it with
+* If you use Static IP for your VMs, you may want vagrant-hostsupdater. Install it with
     ```
     vagrant plugin install vagrant-hostsupdater
     ```
-    This plugin will  mantain /etc/hosts for you, so you can access http(s)://local.doma.in from your browser.
+    This plugin will  mantain /etc/hosts for you (also on Windows), so you can access http(s)://local.doma.in immediately from your browser.
 * If you want to customize more, please read section "Advanced usage" below.
 * In your local environment, and on a per-app basis, Drupsible sets up these very handy shell aliases:
     * myproject-config
@@ -154,7 +146,7 @@ vagrant@local:~$ ansible-playbook -i ansible/inventory/<app_name>-prod ansible/p
 ```
 If you just want to re-configure, say a parameter in Varnish, you would just run the config playbook:
 ```
-vagrant@local:~$ ansible-playbook -i ansible/inventory/<app_name>-prod ansible/playbooks/config.yml --extra-vars "app_name=<app_name> app_target=prod" --tags role::varnish
+vagrant@local:~$ ansible-playbook -i ansible/inventory/<app_name>-prod ansible/playbooks/config.yml --extra-vars "app_name=<app_name> app_target=prod" --tags varnish
 ```
 This will reconfigure Varnish, without triggering a new deployment of you Drupal webapp.
 
@@ -164,7 +156,9 @@ Whenever your local VM may go down (ie. after your workstation has been restarte
 $ vagrant up
 ```
 in your myproject directory.
+
 # Advanced usage
+
 ## Advanced customization
 In line with Ansible's best practices, you can customize and override any value of your Drupsible stock/default by creating/editing any of the following:
 * ```ansible/playbooks/group_vars/<app_name>-<app_target>/all.yml```
@@ -194,10 +188,10 @@ ssh-add -l
 
 If nothings pops up, then your SSH agent needs to load your Git repository SSH key, like this
 ```
-bin/ssh-agent.sh <your-private-key-filename>
-eval $(<~/.ssh-agent)
+. ./bin/ssh-agent.sh <your-private-key-filename>
 ```
-Drupsible will, from where the codebase needs to be cloned/checked-out, automatically present the credentials to the Git server.
+Drupsible will then present proper credentials to the Git server when the codebase needs to be cloned or checked out.
+
 ### Note to OSX host users
 Make sure your private key is in the keychain before trying to clone from a secured git repo.
 
