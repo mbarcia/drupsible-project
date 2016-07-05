@@ -98,11 +98,7 @@ vagrant provision
     * Edit your new value, save, and run ```bin/generate.sh```
     * Run ```vagrant provision``` (instead of ```vagrant up```)
 * If you have chosen Dynamic IP for your VM, potentially all of the workstations in your LAN will be able to access your website docroot. Although this is considered a feature (and not a security hole!), please use with caution.
-* If you use Static IP for your VMs, you may want vagrant-hostsupdater. Install it with
-    ```
-    vagrant plugin install vagrant-hostsupdater
-    ```
-    This plugin will  mantain /etc/hosts for you (also on Windows), so you can access http(s)://local.doma.in immediately from your browser.
+* If you use Static IP for your VMs, Drupsible will manage /etc/hosts for you (also on Windows), so you can access http(s)://local.doma.in immediately from your browser.
 * If you want to customize more, please read section "Advanced usage" below.
 * In your local environment, and on a per-app basis, Drupsible sets up these very handy shell aliases:
     * myproject-config
