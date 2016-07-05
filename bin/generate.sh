@@ -35,6 +35,7 @@ if [ "$DBDUMP" != "" ] && [ ! -f "ansible/playbooks/dbdumps/$DBDUMP" ]; then
 	echo "======="
 	echo "Make sure the SQL statements do NOT start with a CREATE DATABASE."
 fi
+FILES_LIST=""
 for file in ".gitignore" "ansible.cfg" "Vagrantfile" "vagrant.yml"
 do
 if [ ! -f "${file}" ]; then
