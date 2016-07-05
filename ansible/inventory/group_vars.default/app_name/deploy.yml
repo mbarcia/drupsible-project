@@ -69,10 +69,6 @@ deploy_git_repo_version: ''
 # drupsible.apache2 defaults
 #
 
-# Here's the list of all IP's from Cloudflare
-# https://www.cloudflare.com/ips/
-apache2_allowed_hosts: [ "127.0.0.1" ]
-
 apache2_modules:
 - alias
 - auth_basic
