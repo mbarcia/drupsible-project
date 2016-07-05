@@ -12,9 +12,9 @@
 
   roles:
   - role: debops.secret
-    tags: [ 'role::secret', 'role::deploy:secret' ]
+    tags: [ secret, secret-deploy, deploy-secret ]
   - role: drupsible.deploy
-    tags: deploy
+    tags: [ deploy ]
     deploy_build_id: "{{ app_build_id }}"
     deploy_varnish_enabled: "{{ app_varnish_enabled }}"
     deploy_varnish_mgmt_port: "{{ app_varnish_mgmt_port|default('6082') }}"
