@@ -37,7 +37,7 @@ if ([ -n "$SSH_AUTH_SOCK" ] && [ "$FIRST" -eq 2 ]) || [ -z "$SSH_AUTH_SOCK" ]; t
 		(umask 066; ssh-agent > "${SSH_AGENT_DATA/#\~/$HOME}")
 		echo "SSH agent launched, new connection details stored. Now connecting to it..."
 		eval "$(<${SSH_AGENT_DATA/#\~/$HOME})" >/dev/null
-		ssh-add -l &>/dev/null
+		SSH_ADD_STATUS=$(ssh-add -l)
 		THIRD="$?"
 		if [ "$THIRD" -eq 2 ]; then
 			echo "ERROR: Connection FAILED. Check your environment."
