@@ -1,27 +1,28 @@
 ---
 - name: Common configuration (DebOps) for all hosts
   hosts: [ '{{ app_name }}' ]
-  gather_facts: True
   become: True
 
   roles:
+# Common tasks for all servers
   - role: debops.secret
-    tags: [ 'role::secret', 'role::pki', 'role::pki:secret' ]
+    tags: [ secret, secret-all, pki, sshd, mysql, varnish ]
   - role: debops.etc_services
-    tags: [ 'role::etc_services' ]
-  - role: debops.ferm
-    tags: [ 'role::ferm' ]
-    ferm_dependent_rules:
-    - '{{ sshd__ferm__dependent_rules }}'
-  - role: debops.tcpwrappers
-    tags: [ 'role::tcpwrappers' ]
-    tcpwrappers_dependent_allow:
-    - '{{ sshd__tcpwrappers__dependent_allow }}'
-  - role: debops.sshkeys
-    tags: [ 'role::sshkeys' ]
-  - role: debops.sshd
-    tags: [ 'role::sshd' ]
+    tags: [ etc_services ]
 
+# Basic configuration of the SSH daemon for all servers
+  - role: debops.ferm
+    tags: [ ferm, sshd, sshd-ferm, ferm-sshd ]
+    ferm__dependent_rules: '{{ sshd__ferm__dependent_rules }}'
+  - role: debops.tcpwrappers
+    tags: [ sshd ]
+    tcpwrappers_dependent_allow: '{{ sshd__tcpwrappers__dependent_allow }}'
+  - role: debops.sshkeys
+    tags: [ sshkeys, sshd, sshd-sshkeys, sshd-sshkeys ]
+  - role: debops.sshd
+    tags: [ sshd ]
+
+# Timezone configuration for all servers
   tasks:
   - name: Get current time zone
     shell: '/usr/bin/timedatectl status | grep "Time zone" | sed "s|.*Time zone: \(.*/.*\) (.*)$|\1|g"'
@@ -44,20 +45,14 @@
 
 - name: MySQL
   hosts: [ '{{ app_name }}-{{ app_target }}_mysql' ]
-  gather_facts: True
   become: True
 
-  pre_tasks:
-  - name: Gather facts of deploy servers
-    setup:
-    delegate_to: "{{ item }}"
-    delegate_facts: True
-    with_items: "{{ groups[app_name + '-' + app_target + '_deploy'] }}"
-
   roles:
+  - role: debops.secret
+    tags: [ secret, mysql, secret-mysql, mysql-secret ]
   - role: drupsible.mysql
-    tags: [ 'role::mysql' ]
-    mysql_mysqld_allow_groups: [ "{{ app_name + '-' + app_target + '_deploy' }}" ]
+    tags: [ mysql ]
+    mysql_mysqld_allow_group: "{{ app_name + '-' + app_target + '_deploy' }}"
     mysql_databases:
     - name: "{{ app_name }}"
       state: 'present'
@@ -84,6 +79,12 @@
       state: 'present'
       password: '{{ app_db_password | default(lookup("password", secret + "/credentials/" + app_name + "/mysql/" + app_db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
       priv: '{{ app_db_name }}%.*:ALL'
+  - role: debops.ferm
+    tags: [ ferm, mysql, mysql-ferm, ferm-mysql ]
+    ferm__dependent_rules: '{{ mysql_ferm_dependent_rules_exported }}'
+  - role: debops.tcpwrappers
+    tags: [ tcpwrappers, mysql, mysql-tcpwrappers, tcpwrappers-mysql ]
+    tcpwrappers_dependent_allow: '{{ mysql_tcpwrappers_dependent_allow_exported }}'
 
 - name: Ferm/Postfix/PHP/Composer/New Relic/Apache/uploadprogress
   hosts: [ '{{ app_name }}-{{ app_target }}_deploy' ]
@@ -91,44 +92,38 @@
 
   roles:
   - role: debops.pki/env
-    tags: [ 'role::pki', 'role::secret' ]
+    tags: [ pki, secret ]
     when: app_https_enabled|default(False)|bool or
       (smtp_server is defined and
       smtp_port is defined and
       smtp_user is defined)
   - role: debops.secret
-    tags: [ 'role::secret', 'role::pki', 'role::pki:secret' ]
-    secret_directories:
-    - "{{ pki_env_secret_directories|default('') }}"
+    tags: [ secret, pki, pki-secret, secret-pki ]
+    secret_directories: "{{ pki_env_secret_directories|default('') }}"
     when: app_https_enabled|default(False)|bool or
       (smtp_server is defined and
       smtp_port is defined and
       smtp_user is defined)
   - role: debops.dhparam
-    tags: [ 'role::dhparam' ]
+    tags: [ dhparam, pki, pki-dhparam, dhparam-pki ]
     when: app_https_enabled|default(False)|bool or
       (smtp_server is defined and
       smtp_port is defined and
       smtp_user is defined)
   - role: debops.pki
-    tags: [ 'role::pki' ]
+    tags: [ pki ]
     when: app_https_enabled|default(False)|bool or
       (smtp_server is defined and
       smtp_port is defined and
       smtp_user is defined)
-  - role: debops.ferm
-    tags: [ 'role::ferm:deploy' ]
-    ferm_dependent_rules:
-    - '{{ postfix_ferm_dependent_rules|default([]) }}'
-    - '{{ apache2_ferm_dependent_rules }}'
-    - '{{ samba_ferm_dependent_rules|default([]) }}'
   - role: debops.postfix
-    tags: [ 'role::postfix' ]
+    tags: [ postfix ]
     postfix: [ 'client' ]
     postfix_relayhost: "[{{ smtp_server }}]:{{ smtp_port }}"
     postfix_smtp_sasl_password_map: "{ '[{{ smtp_server }}]:{{ smtp_port }}': '{{ smtp_user }}' }"
     when: smtp_server is defined and smtp_port is defined and smtp_user is defined
   - role: debops.users
+    tags: [ users ]
     users_enabled: True
     users_list:
     - name: "{{ app_user }}"
@@ -136,9 +131,8 @@
       shell: '/bin/bash'
       state: 'present'
     users_admins: [ "{{ app_user }}" ]
-    tags: [ 'role::users' ]
   - role: drupsible.apache2
-    tags: [ 'role::apache2' ]
+    tags: [ apache2 ]
     apache2_site_name: "{{ app_name }}"
     apache2_webdomain: "{{ app_webdomain }}"
     apache2_pki_crt: "{{ deploy_pki_crt|default('/etc/pki/realms/domain/default.crt') }}"
@@ -151,8 +145,9 @@
     apache2_fpm_listen_uds: "{{ app_fpm_listen_uds }}"
     apache2_https_enabled: "{{ app_https_enabled|default(False)|bool }}"
     apache2_varnish_enabled: "{{ app_varnish_enabled }}"
+    apache2_ping_group: "{{ app_name + '-' + app_target + '_varnish' }}"
   - role: drupsible.php
-    tags: [ 'role::php' ]
+    tags: [ php ]
     when: ansible_local.apache2.mpm != 'prefork'
     deploy_php_app_pool:
       enabled: True
@@ -162,60 +157,52 @@
       group: "{{ app_group }}"
     php__pools: [ '{{ deploy_php_app_pool }}' ]
   - role: drupsible.newrelic
-    tags: [ 'role::newrelic' ]
+    tags: [ newrelic ]
     when: provision_new_relic|default(False)|bool and 'newrelic-php5' in apache2_php5_packages_ontop|default([]) and ansible_local.apache2.mpm == 'prefork'
   - role: drupsible.uploadprogress
-    tags: [ 'role::uploadprogress' ]
+    tags: [ uploadprogress ]
     when: ansible_distribution_release != 'xenial'
   - role: drupsible.xdebug
-    tags: [ 'role::xdebug' ]
+    tags: [ xdebug ]
     xdebug_cli_enabled: "{{ deploy_xdebug_cli_enabled|default(False)|bool }}"
     when: deploy_xdebug_enabled|default(False)|bool
   - role: drupsible.composer
-    tags: [ 'role::composer' ]
+    tags: [ composer ]
   - role: drupsible.memcached
+    tags: [ memcached ]
     when: app_memcached_enabled|default(True)|bool
-    tags: [ 'role::memcached' ]
   - role: drupsible.drupal-console
+    tags: [ drupal-console ]
     when: deploy_drupal_console_enabled|default(True)|bool
-    tags: [ 'role::drupal-console' ]
   - role: drupsible.newrelic
+    tags: [ newrelic ]
     when: provision_new_relic|default(False)|bool
-    tags: [ 'role::newrelic' ]
   - role: drupsible.drush
+    tags: [ drush ]
     drush_min_version: "{{ app_drush_min_version|default('8.0.5') }}"
-    tags: [ 'role::drush' ]
   - role: drupsible.samba
+    tags: [ samba ]
     samba_webdomain: "{{ app_webdomain }}"
     samba_webhost: "{{ app_webhost }}"
     when: app_target == 'local'
-    tags: [ 'role::samba' ]
   - role: drupsible.twigc
+    tags: [ twigc ]
     when: app_drupal_version|version_compare('8', '==') and ansible_distribution_release != 'xenial'
     twigc_composer_working_dir: "/home/{{ app_user }}/{{ app_name }}"
-    tags: [ 'role::twigc' ]
+  - role: debops.ferm
+    tags: [ ferm, ferm-deploy, postfix, apache2, samba ]
+    apache2_port: "{{ app_varnish_enabled|default(False)|bool|ternary(app_apache2_alt_port|default('8080'), '80') }}"
+    ferm__dependent_rules: '{{ postfix_ferm_dependent_rules|default([]) + apache2_ferm_dependent_rules + samba_ferm_dependent_rules|default([]) }}'
 
 - name: Varnish
   hosts: [ '{{ app_name }}-{{ app_target }}_varnish' ]
-  gather_facts: True
   become: True
-
-  pre_tasks:
-  - name: Gather facts of deploy servers
-    setup:
-    delegate_to: "{{ item }}"
-    delegate_facts: True
-    with_items: "{{ groups[app_name + '-' + app_target + '_deploy'] }}"
 
   roles:
   - role: debops.secret
-    tags: [ 'role::secret', 'role::varnish:secret' ]
-  - role: debops.ferm
-    tags: [ 'role::ferm:varnish' ]
-    ferm_dependent_rules:
-    - '{{ varnish_ferm_dependent_rules }}'
+    tags: [ secret, varnish, secret-varnish, varnish-secret ]
   - role: drupsible.varnish
-    tags: [ 'role::varnish' ]
+    tags: [ varnish ]
     varnish_webdomain: "{{ app_webdomain }}"
     varnish_trusted_hosts: "{{ app_server_aliases }}"
     varnish_pipe_timeout: 600
@@ -224,5 +211,8 @@
     varnish_fpm_ping_path: "{{ app_fpm_ping_path | default('/ping') }}"
     varnish_webhost: "{{ app_webhost }}"
     varnish_app_name: "{{ app_name }}"
-    varnish_allow_groups: [ "{{ app_name + '-' + app_target + '_deploy' }}" ]
+    varnish_deploy_group: "{{ app_name + '-' + app_target + '_deploy' }}"
     when: app_varnish_enabled|bool
+  - role: debops.ferm
+    tags: [ ferm, varnish, varnish-ferm, ferm-varnish ]
+    ferm__dependent_rules: "{{ varnish_ferm_dependent_rules_exported }}"
