@@ -114,26 +114,26 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Run Ansible playbooks only from the controller machine
       if host['is_controller']
 
-        machine.vm.provision "shell" do |sh|
+        machine.vm.provision "drupsible", type: "shell" do |sh|
           sh.path = "scripts/drupsible-provision.sh"
         end
 
-        machine.vm.provision "shell",
+        machine.vm.provision "shortcuts", type: "shell",
           inline: 'cat /vagrant/scripts/shortcuts.sh >> /home/vagrant/.profile'
 
         # Config-deploy each of the apps
         APPS.each do |app|
-          machine.vm.provision "shell",
+          machine.vm.provision "alias", type: "shell",
             inline: 'sed "s|pitiribi|' + app['name'] + '|g" /vagrant/scripts/app-aliases.sh >> /home/vagrant/.profile'
 
           # Scaffold directories and symlinks
-          machine.vm.provision "shell" do |sh|
+          machine.vm.provision "scaffold", type: "shell" do |sh|
             sh.path = "scripts/scaffold.sh"
             sh.args = [app['name']]
           end
 
           # Run config-deploy.yml playbook
-          machine.vm.provision "shell" do |sh|
+          machine.vm.provision "playbooks", type: "shell" do |sh|
             sh.path = "scripts/drupsible-deploy.sh"
             sh.args = [ app['name'], "local", ENV['DEPLOY_ARGS'].to_s, ENV['TAGS'].to_s,  ENV['SKIP_TAGS'].to_s, host['fqdn'], host['ip_addr'].to_s ]
             sh.privileged = false
