@@ -5,5 +5,7 @@
 app_aliases: []
 app_user: 'vagrant'
 
-# Add vagrant to the default groups defined in debops.sshd
+# Add Vagrant to the default groups defined in debops.sshd
 sshd__allow_groups: [ 'vagrant' , 'root', 'admins', 'sshusers', 'sftponly' ]
+# Allow Vagrant subnet to connect
+sshd__whitelist: [ '10.0.2.0/24' ]
