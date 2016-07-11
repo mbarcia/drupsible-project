@@ -212,7 +212,7 @@ echo
 echo "-------------------------------------------------------------------------------"
 echo "Thank you, all of the Drupsible defaults have been properly generated."
 echo "You may override them by creating YAML files under "
-echo "ansible/playbooks/groups_vars."
+echo "ansible/playbooks/group_vars."
 echo
 echo "If this is your Ansible controller, refer to the docs to properly run "
 echo "ansible-playbook. You may need to run the bootstrap playbook for each host."
