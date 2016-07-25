@@ -52,7 +52,7 @@ function clean_up {
   fi
   echo "Run bin/configure.sh to start over."
   echo "-------------------------------------------------------------------------------"
-  return
+  exit
 }
 
 trap clean_up SIGHUP SIGINT SIGTERM
