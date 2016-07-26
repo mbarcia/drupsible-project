@@ -34,7 +34,7 @@ app_db_user: "{{ app_name|truncate(16) }}"
 # Should Drupsible create a new DB for the build DB
 app_db_create_for_build_enabled: False
 # Should Drupsible setup and configure memcached?
-app_memcached_enabled: True
+app_memcached_enabled: "{{ 'memcache_storage' in deploy_modules_present_app or 'memcache_storage' in deploy_modules_present_env or 'memcache' in deploy_modules_present_app or 'memcache' in deploy_modules_present_env }}"
 # Should Drupsible setup everything for the website to be accessed with https?
 app_https_enabled: no
 # Should Drupsible setup everything for the website to have a Varnish front-end?
