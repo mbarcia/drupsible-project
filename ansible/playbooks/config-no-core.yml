@@ -70,7 +70,7 @@
       password: '{{ app_db_password | default(lookup("password", secret + "/credentials/" + app_name + "/mysql/" + app_db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
       priv: '{{ app_db_name }}%.*:ALL'
     - name: "{{ app_db_user }}"
-      host: "{{ ansible_hostname }}"
+      host: "{{ ansible_hostname|default(inventory_hostname) }}"
       state: 'present'
       password: '{{ app_db_password | default(lookup("password", secret + "/credentials/" + app_name + "/mysql/" + app_db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
       priv: '{{ app_db_name }}%.*:ALL'
@@ -81,10 +81,10 @@
       priv: '{{ app_db_name }}%.*:ALL'
   - role: debops.ferm
     tags: [ ferm, mysql, mysql-ferm, ferm-mysql ]
-    ferm__dependent_rules: '{{ mysql_ferm_dependent_rules_exported }}'
+    ferm__dependent_rules: '{{ mysql_ferm_dependent_rules_exported|default([]) }}'
   - role: debops.tcpwrappers
     tags: [ tcpwrappers, mysql, mysql-tcpwrappers, tcpwrappers-mysql ]
-    tcpwrappers_dependent_allow: '{{ mysql_tcpwrappers_dependent_allow_exported }}'
+    tcpwrappers_dependent_allow: '{{ mysql_tcpwrappers_dependent_allow_exported|default([]) }}'
 
 - name: Ferm/Postfix/PHP/Composer/New Relic/Apache/uploadprogress
   hosts: [ '{{ app_name }}-{{ app_target }}_deploy' ]
@@ -215,4 +215,4 @@
     when: app_varnish_enabled|bool
   - role: debops.ferm
     tags: [ ferm, varnish, varnish-ferm, ferm-varnish ]
-    ferm__dependent_rules: "{{ varnish_ferm_dependent_rules_exported }}"
+    ferm__dependent_rules: "{{ varnish_ferm_dependent_rules_exported|default([]) }}"
