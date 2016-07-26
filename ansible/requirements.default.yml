@@ -3,7 +3,7 @@
   version: v0.2.3
   name: debops.secret
 - src: https://github.com/debops/ansible-ferm
-  version: v0.1.5
+  version: v0.2.1
   name: debops.ferm
 - src: https://github.com/debops/ansible-bootstrap
   version: v0.1.2
