@@ -30,6 +30,8 @@ deploy_site_install_enabled: False
 deploy_modules_present_env: []
 # devel module should always be disabled in PROD
 deploy_modules_absent_env: [ 'devel' ]
+deploy_modules_present_app: []
+deploy_modules_absent_app: []
 
 #
 # Upstream host to sync db/files with
