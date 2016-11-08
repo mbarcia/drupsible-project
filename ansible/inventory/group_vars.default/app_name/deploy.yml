@@ -66,6 +66,8 @@ deploy_git_repo_server: ''
 deploy_git_repo_user: ''
 deploy_git_repo_path: ''
 deploy_git_repo_version: ''
+# The root folder needs to be prefixed with a slash, like '/www'
+deploy_codebase_root_folder: ''
 
 #
 # drupsible.apache2 defaults
