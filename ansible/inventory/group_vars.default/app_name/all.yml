@@ -67,10 +67,32 @@ postfix_smtp_sasl_password_map_per_host: False
 pki_ca_domain: "{{ app_webdomain }}"
 
 #
-# sshd defaults
+# Debops sshd defaults
 #
 
 sshd__custom_options: |
   # Drupsible - disable DNS lookups and negotiation of slow GSSAPI
   UseDNS no
   GSSAPIAuthentication no
+
+#
+# Debops console configuration.
+#
+
+# Do NOT manage root account for now.
+console_root: False
+
+# Copy .nanorc from Ansible Controller to remote hosts.
+console_custom_files:
+- src: 'files/filedotnanorc'
+  dest: '/home/{{ app_user }}/.nanorc'
+  owner: '{{ app_user }}'
+  group: '{{ app_group }}'
+
+# Make nano the preferred editor.
+console_preferred_editors:
+- '/bin/nano'
+- '/usr/bin/vim.basic'
+- '/usr/bin/emacs24'
+- '/usr/bin/vim.tiny'
+- '/bin/ed'
