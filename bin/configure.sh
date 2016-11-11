@@ -28,7 +28,7 @@ start_over ()
   # Create APP_NAME.profile.tmp from the empty project template
   cp default.profile "${APP_NAME}.profile.tmp"
   # Write APP_NAME
-  sed -i "s/APP_NAME=.*/APP_NAME=\"${APP_NAME}\"/g" "${APP_NAME}.profile.tmp"
+  sed -i.bak "s/APP_NAME=.*/APP_NAME=\"${APP_NAME}\"/g" "${APP_NAME}.profile.tmp"
 }
 
 askyesno ()
@@ -129,7 +129,7 @@ echo "This is not 'something.localhost' but the real domain, like wikipedia.org.
 echo "Type the domain of your web application:"
 read -r DOMAIN
 # Write DOMAIN
-sed -i "s/DOMAIN=.*$/DOMAIN=\"${DOMAIN}\"/g" "${APP_NAME}.profile.tmp"
+sed -i.bak "s/DOMAIN=.*$/DOMAIN=\"${DOMAIN}\"/g" "${APP_NAME}.profile.tmp"
 echo
 echo "Hostname for your local environment? Default is local, so you can use"
 echo "http://local.${DOMAIN} for developing in your local workstation."
@@ -141,7 +141,7 @@ if [ "$HOSTNAME" == "" ]; then
   echo "FQDN set to local.${DOMAIN}"
 fi
 # Write HOSTNAME
-sed -i "s/HOSTNAME=.*$/HOSTNAME=\"${HOSTNAME}\"/g" "${APP_NAME}.profile.tmp"
+sed -i.bak "s/HOSTNAME=.*$/HOSTNAME=\"${HOSTNAME}\"/g" "${APP_NAME}.profile.tmp"
 echo
 echo "What Drupal version are you using?"
 echo "8 (or 7) will get you the latest stable, but you can also specify any"
@@ -153,7 +153,7 @@ if [ "$DRUPAL_VERSION" == "" ]; then
   echo "Drupal version set to 8 (latest stable)"
 fi
 # Write DRUPAL_VERSION
-sed -i "s|DRUPAL_VERSION=.*$|DRUPAL_VERSION=\"${DRUPAL_VERSION}\"|g" "${APP_NAME}.profile.tmp"
+sed -i.bak "s|DRUPAL_VERSION=.*$|DRUPAL_VERSION=\"${DRUPAL_VERSION}\"|g" "${APP_NAME}.profile.tmp"
 echo
 echo "Are you setting up a multilingual or non-english website? (y|n)"
 if askyesno; then
@@ -162,14 +162,14 @@ else
   MULTILINGUAL='no'
 fi
 # Write MULTILINGUAL
-sed -i "s|MULTILINGUAL=.*$|MULTILINGUAL=\"${MULTILINGUAL}\"|g" "${APP_NAME}.profile.tmp"
+sed -i.bak "s|MULTILINGUAL=.*$|MULTILINGUAL=\"${MULTILINGUAL}\"|g" "${APP_NAME}.profile.tmp"
 if [ "$MULTILINGUAL" == "yes" ]; then
   echo "Enumerate the languages, comma-separated, starting with the default language:"
   echo "For example, you could type es,en"
   read -r LANGUAGES
   LANGUAGES_NO_WHITESPACE="$(echo -e "${LANGUAGES}" | tr -d '[[:space:]]')"
   # Write LANGUAGES
-  sed -i "s|LANGUAGES=.*$|LANGUAGES=\"${LANGUAGES_NO_WHITESPACE}\"|g" "${APP_NAME}.profile.tmp"
+  sed -i.bak "s|LANGUAGES=.*$|LANGUAGES=\"${LANGUAGES_NO_WHITESPACE}\"|g" "${APP_NAME}.profile.tmp"
 fi
 echo
 echo "Using a distribution or install profile? (y|n)"
@@ -179,21 +179,21 @@ else
   USE_INSTALL_PROFILE='no'
 fi
 # Write USE_INSTALL_PROFILE
-sed -i "s|USE_INSTALL_PROFILE=.*$|USE_INSTALL_PROFILE=\"${USE_INSTALL_PROFILE}\"|g" "${APP_NAME}.profile.tmp"
+sed -i.bak "s|USE_INSTALL_PROFILE=.*$|USE_INSTALL_PROFILE=\"${USE_INSTALL_PROFILE}\"|g" "${APP_NAME}.profile.tmp"
 if [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$D_O_INSTALL_PROFILE" == "" ]; then
   echo "Name of contrib distribution, or core profile?"
   echo "If you are using a custom profile, leave this empty now."
   echo "For example, here you could type 'bear', or 'minimal'"
   read -r D_O_INSTALL_PROFILE
   # Write D_O_INSTALL_PROFILE
-  sed -i "s|D_O_INSTALL_PROFILE=.*$|D_O_INSTALL_PROFILE=\"${D_O_INSTALL_PROFILE}\"|g" "${APP_NAME}.profile.tmp"
+  sed -i.bak "s|D_O_INSTALL_PROFILE=.*$|D_O_INSTALL_PROFILE=\"${D_O_INSTALL_PROFILE}\"|g" "${APP_NAME}.profile.tmp"
 fi
 if [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$D_O_INSTALL_PROFILE" == "" ] && [ "$CUSTOM_INSTALL_PROFILE" == "" ]; then
   echo "Custom profile name?"
   echo "You will be able to configure the Git-related information in a moment."
   read -r CUSTOM_INSTALL_PROFILE
   # Write CUSTOM_INSTALL_PROFILE
-  sed -i "s|CUSTOM_INSTALL_PROFILE=.*$|CUSTOM_INSTALL_PROFILE=\"${CUSTOM_INSTALL_PROFILE}\"|g" "${APP_NAME}.profile.tmp"
+  sed -i.bak "s|CUSTOM_INSTALL_PROFILE=.*$|CUSTOM_INSTALL_PROFILE=\"${CUSTOM_INSTALL_PROFILE}\"|g" "${APP_NAME}.profile.tmp"
 fi
 if [ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$D_O_INSTALL_PROFILE" == "" ] && [ "$CUSTOM_INSTALL_PROFILE" == "" ]; then
   echo "WARNING: You have not specified a profile name. The core standard profile will be used."
@@ -212,7 +212,7 @@ if [ "$USE_INSTALL_PROFILE" == "yes" ]; then
       USE_DRUSH_MAKE='no'
     fi
     # Write USE_DRUSH_MAKE
-    sed -i "s|USE_DRUSH_MAKE=.*$|USE_DRUSH_MAKE=\"${USE_DRUSH_MAKE}\"|g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s|USE_DRUSH_MAKE=.*$|USE_DRUSH_MAKE=\"${USE_DRUSH_MAKE}\"|g" "${APP_NAME}.profile.tmp"
     if [ "$USE_DRUSH_MAKE" == "yes" ]; then
       if [ "$D_O_INSTALL_PROFILE" != "" ]; then
         echo "Makefile? [build-${D_O_INSTALL_PROFILE}.make]"
@@ -231,7 +231,7 @@ if [ "$USE_INSTALL_PROFILE" == "yes" ]; then
         echo "Makefile set to ${DRUSH_MAKEFILE}"
       fi
       # Write DRUSH_MAKEFILE
-      sed -i "s|DRUSH_MAKEFILE=.*$|DRUSH_MAKEFILE=\"${DRUSH_MAKEFILE}\"|g" "${APP_NAME}.profile.tmp"
+      sed -i.bak "s|DRUSH_MAKEFILE=.*$|DRUSH_MAKEFILE=\"${DRUSH_MAKEFILE}\"|g" "${APP_NAME}.profile.tmp"
     else
       echo "Are you using composer? (y|n)"
       echo "Warning: support for composer is experimental"
@@ -241,7 +241,7 @@ if [ "$USE_INSTALL_PROFILE" == "yes" ]; then
         USE_COMPOSER='no'
       fi
       # Write USE_COMPOSER
-      sed -i "s|USE_COMPOSER=.*$|USE_COMPOSER=\"${USE_COMPOSER}\"|g" "${APP_NAME}.profile.tmp"
+      sed -i.bak "s|USE_COMPOSER=.*$|USE_COMPOSER=\"${USE_COMPOSER}\"|g" "${APP_NAME}.profile.tmp"
     fi
   fi
 fi
@@ -255,7 +255,7 @@ if [ "$USE_INSTALL_PROFILE" == "yes" ]; then
     USE_SITE_INSTALL='no'
   fi
   # Write USE_SITE_INSTALL
-  sed -i "s|USE_SITE_INSTALL=.*$|USE_SITE_INSTALL=\"${USE_SITE_INSTALL}\"|g" "${APP_NAME}.profile.tmp"
+  sed -i.bak "s|USE_SITE_INSTALL=.*$|USE_SITE_INSTALL=\"${USE_SITE_INSTALL}\"|g" "${APP_NAME}.profile.tmp"
 fi
 echo
 if [ "$USE_SITE_INSTALL" != "yes" ]; then
@@ -267,43 +267,43 @@ if [ "$USE_SITE_INSTALL" != "yes" ]; then
     USE_UPSTREAM_SITE='no'
   fi
   # Write USE_UPSTREAM_SITE
-  sed -i "s|USE_UPSTREAM_SITE=.*$|USE_UPSTREAM_SITE=\"${USE_UPSTREAM_SITE}\"|g" "${APP_NAME}.profile.tmp"
+  sed -i.bak "s|USE_UPSTREAM_SITE=.*$|USE_UPSTREAM_SITE=\"${USE_UPSTREAM_SITE}\"|g" "${APP_NAME}.profile.tmp"
   if [ "$USE_UPSTREAM_SITE" == "yes" ]; then
     #
     echo "Remote upstream host?"
     read -r REMOTE_UPSTREAM_HOST
     # Write REMOTE_UPSTREAM_HOST
-    sed -i "s|REMOTE_UPSTREAM_HOST=.*$|REMOTE_UPSTREAM_HOST=\"${REMOTE_UPSTREAM_HOST}\"|g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s|REMOTE_UPSTREAM_HOST=.*$|REMOTE_UPSTREAM_HOST=\"${REMOTE_UPSTREAM_HOST}\"|g" "${APP_NAME}.profile.tmp"
     #
     echo "Remote upstream port to SSH to (if not 22)? []"
     read -r REMOTE_UPSTREAM_PORT
     # Write REMOTE_UPSTREAM_PORT
-    sed -i "s|REMOTE_UPSTREAM_PORT=.*$|REMOTE_UPSTREAM_PORT=\"${REMOTE_UPSTREAM_PORT}\"|g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s|REMOTE_UPSTREAM_PORT=.*$|REMOTE_UPSTREAM_PORT=\"${REMOTE_UPSTREAM_PORT}\"|g" "${APP_NAME}.profile.tmp"
     #
     echo "Username to SSH into that remote host? []"
     read -r REMOTE_UPSTREAM_USER
     # Write REMOTE_UPSTREAM_USER
-    sed -i "s|REMOTE_UPSTREAM_USER=.*$|REMOTE_UPSTREAM_USER=\"${REMOTE_UPSTREAM_USER}\"|g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s|REMOTE_UPSTREAM_USER=.*$|REMOTE_UPSTREAM_USER=\"${REMOTE_UPSTREAM_USER}\"|g" "${APP_NAME}.profile.tmp"
     #
     echo "Full site path in the remote host (docroot)?"
     read -r REMOTE_UPSTREAM_DOCROOT
     # Write REMOTE_UPSTREAM_DOCROOT
-    sed -i "s|REMOTE_UPSTREAM_DOCROOT=.*$|REMOTE_UPSTREAM_DOCROOT=\"${REMOTE_UPSTREAM_DOCROOT}\"|g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s|REMOTE_UPSTREAM_DOCROOT=.*$|REMOTE_UPSTREAM_DOCROOT=\"${REMOTE_UPSTREAM_DOCROOT}\"|g" "${APP_NAME}.profile.tmp"
     #
     echo "If using a bastion host (as in ProxyCommand ssh), enter its credentials: []"
     read -r REMOTE_UPSTREAM_PROXY_CREDENTIALS
     # Write REMOTE_UPSTREAM_PROXY_CREDENTIALS
-    sed -i "s|REMOTE_UPSTREAM_PROXY_CREDENTIALS=.*$|REMOTE_UPSTREAM_PROXY_CREDENTIALS=\"${REMOTE_UPSTREAM_PROXY_CREDENTIALS}\"|g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s|REMOTE_UPSTREAM_PROXY_CREDENTIALS=.*$|REMOTE_UPSTREAM_PROXY_CREDENTIALS=\"${REMOTE_UPSTREAM_PROXY_CREDENTIALS}\"|g" "${APP_NAME}.profile.tmp"
     #
     echo "Bastion host port to SSH to (if not 22)? []"
     read -r REMOTE_UPSTREAM_PROXY_PORT
     # Write REMOTE_UPSTREAM_PROXY_PORT
-    sed -i "s|REMOTE_UPSTREAM_PROXY_PORT=.*$|REMOTE_UPSTREAM_PROXY_PORT=\"${REMOTE_UPSTREAM_PROXY_PORT}\"|g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s|REMOTE_UPSTREAM_PROXY_PORT=.*$|REMOTE_UPSTREAM_PROXY_PORT=\"${REMOTE_UPSTREAM_PROXY_PORT}\"|g" "${APP_NAME}.profile.tmp"
     #
     echo "Enter any other SSH options needed: []"
     read -r REMOTE_UPSTREAM_SSH_OPTIONS
     # Write REMOTE_UPSTREAM_SSH_OPTIONS
-    sed -i "s|REMOTE_UPSTREAM_SSH_OPTIONS=.*$|REMOTE_UPSTREAM_SSH_OPTIONS=\"${REMOTE_UPSTREAM_SSH_OPTIONS}\"|g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s|REMOTE_UPSTREAM_SSH_OPTIONS=.*$|REMOTE_UPSTREAM_SSH_OPTIONS=\"${REMOTE_UPSTREAM_SSH_OPTIONS}\"|g" "${APP_NAME}.profile.tmp"
     #
     echo "Are you rsync'ing files from this Drupal site? (y|n)"
     if askyesno; then
@@ -312,7 +312,7 @@ if [ "$USE_SITE_INSTALL" != "yes" ]; then
       SYNC_FILES='no'
     fi
     # Write SYNC_FILES
-    sed -i "s|SYNC_FILES=.*$|SYNC_FILES=\"${SYNC_FILES}\"|g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s|SYNC_FILES=.*$|SYNC_FILES=\"${SYNC_FILES}\"|g" "${APP_NAME}.profile.tmp"
     if [ "$SYNC_FILES" == "yes" ]; then
       echo "Files path relative to the docroot? [sites/default/files]"
       read -r REMOTE_UPSTREAM_FILES_PATH
@@ -321,7 +321,7 @@ if [ "$USE_SITE_INSTALL" != "yes" ]; then
         echo "Path set to ${REMOTE_UPSTREAM_FILES_PATH}"
       fi
       # Write REMOTE_UPSTREAM_FILES_PATH
-      sed -i "s|REMOTE_UPSTREAM_FILES_PATH=.*$|REMOTE_UPSTREAM_FILES_PATH=\"${REMOTE_UPSTREAM_FILES_PATH}\"|g" "${APP_NAME}.profile.tmp"
+      sed -i.bak "s|REMOTE_UPSTREAM_FILES_PATH=.*$|REMOTE_UPSTREAM_FILES_PATH=\"${REMOTE_UPSTREAM_FILES_PATH}\"|g" "${APP_NAME}.profile.tmp"
     fi
     #
     echo "Are you sql-sync'ing the DB from this other Drupal site? (y|n)"
@@ -331,7 +331,7 @@ if [ "$USE_SITE_INSTALL" != "yes" ]; then
       SYNC_DB='no'
     fi
     # Write SYNC_DB
-    sed -i "s|SYNC_DB=.*$|SYNC_DB=\"${SYNC_DB}\"|g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s|SYNC_DB=.*$|SYNC_DB=\"${SYNC_DB}\"|g" "${APP_NAME}.profile.tmp"
   fi
   if [ "$SYNC_DB" != "yes" ]; then
     echo "The DB dump is a SQL file, in plain text (.sql) or gzipped (.sql.gz), and must be present in ansible/playbooks/dbdumps."
@@ -339,7 +339,7 @@ if [ "$USE_SITE_INSTALL" != "yes" ]; then
     echo "DB dump filename?"
     read -r DBDUMP
     # Write DBDUMP
-    sed -i "s|DBDUMP=.*$|DBDUMP=\"${DBDUMP}\"|g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s|DBDUMP=.*$|DBDUMP=\"${DBDUMP}\"|g" "${APP_NAME}.profile.tmp"
   fi
   if [ "$SYNC_FILES" != "yes" ]; then
     echo "The files archive can be a tar (.tar), a gzip (.tar.gz), a bzip2 or a xz archive, and must be present in ansible/playbooks/files-tarballs."
@@ -347,7 +347,7 @@ if [ "$USE_SITE_INSTALL" != "yes" ]; then
     echo "Files tarball filename?"
     read -r FILES_TARBALL
     # Write FILES_TARBALL
-    sed -i "s|FILES_TARBALL=.*$|FILES_TARBALL=\"${FILES_TARBALL}\"|g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s|FILES_TARBALL=.*$|FILES_TARBALL=\"${FILES_TARBALL}\"|g" "${APP_NAME}.profile.tmp"
   fi
 fi
 echo
@@ -364,28 +364,28 @@ if [ "$USE_INSTALL_PROFILE" != "yes" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] &
     echo "Codebase tarball filename?"
     read -r CODEBASE_TARBALL
     # Write CODEBASE_TARBALL
-    sed -i "s|CODEBASE_TARBALL=.*$|CODEBASE_TARBALL=\"${CODEBASE_TARBALL}\"|g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s|CODEBASE_TARBALL=.*$|CODEBASE_TARBALL=\"${CODEBASE_TARBALL}\"|g" "${APP_NAME}.profile.tmp"
   else
     # GIT config values
     echo "Protocol to access your Git clone URL? (ssh|https|git|http)"
     read -r GIT_PROTOCOL
     # Write GIT_PROTOCOL
-    sed -i "s/GIT_PROTOCOL=.*$/GIT_PROTOCOL=\"${GIT_PROTOCOL}\"/g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s/GIT_PROTOCOL=.*$/GIT_PROTOCOL=\"${GIT_PROTOCOL}\"/g" "${APP_NAME}.profile.tmp"
     echo "Git server name?"
     echo "For example, bitbucket.org"
     read -r GIT_SERVER
     # Write GIT_SERVER
-    sed -i "s/GIT_SERVER=.*$/GIT_SERVER=\"${GIT_SERVER}\"/g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s/GIT_SERVER=.*$/GIT_SERVER=\"${GIT_SERVER}\"/g" "${APP_NAME}.profile.tmp"
     echo "Git username who will be cloning the Drupal repository?"
     echo "For example, git"
     read -r GIT_USER
     # Write GIT_USER
-    sed -i "s/GIT_USER=.*$/GIT_USER=\"${GIT_USER}\"/g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s/GIT_USER=.*$/GIT_USER=\"${GIT_USER}\"/g" "${APP_NAME}.profile.tmp"
     echo "Git path of your Drupal repository?"
     echo "For example, mbarcia/drupsible-project.git"
     read -r GIT_PATH
     # Write GIT_PATH
-    sed -i "s|GIT_PATH=.*$|GIT_PATH=\"${GIT_PATH}\"|g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s|GIT_PATH=.*$|GIT_PATH=\"${GIT_PATH}\"|g" "${APP_NAME}.profile.tmp"
     echo "Git password?"
     echo "(leave this empty if you use SSH deployment keys)"
     enter_password "GIT_PASS"
@@ -402,7 +402,7 @@ if [ "$USE_INSTALL_PROFILE" != "yes" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] &
       echo "Branch/version set to master"
     fi
     # Write GIT_BRANCH
-    sed -i "s|GIT_BRANCH=.*$|GIT_BRANCH=\"${GIT_BRANCH}\"|g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s|GIT_BRANCH=.*$|GIT_BRANCH=\"${GIT_BRANCH}\"|g" "${APP_NAME}.profile.tmp"
   fi
 fi
 echo
@@ -467,7 +467,7 @@ do
     esac
 done
 # Write IP_ADDR
-sed -i "s|IP_ADDR=.*$|IP_ADDR=\"${IP_ADDR}\"|g" "${APP_NAME}.profile.tmp"
+sed -i.bak "s|IP_ADDR=.*$|IP_ADDR=\"${IP_ADDR}\"|g" "${APP_NAME}.profile.tmp"
 
 echo
 # Gather input about https enabled
@@ -483,7 +483,7 @@ else
   APP_HTTPS_ENABLED='no'
 fi
 # Write APP_HTTPS_ENABLED
-sed -i "s|APP_HTTPS_ENABLED=.*$|APP_HTTPS_ENABLED=\"${APP_HTTPS_ENABLED}\"|g" "${APP_NAME}.profile.tmp"
+sed -i.bak "s|APP_HTTPS_ENABLED=.*$|APP_HTTPS_ENABLED=\"${APP_HTTPS_ENABLED}\"|g" "${APP_NAME}.profile.tmp"
 echo
 # Gather input about SMTP enabled
 echo "Want to make use of a SMTP service? (y|n)"
@@ -503,7 +503,7 @@ if askyesno; then
       echo
     fi
     # Write SMTP_SERVER
-    sed -i "s/SMTP_SERVER=.*$/SMTP_SERVER=\"${SMTP_SERVER}\"/g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s/SMTP_SERVER=.*$/SMTP_SERVER=\"${SMTP_SERVER}\"/g" "${APP_NAME}.profile.tmp"
     echo "SMTP port? [587]"
     read -r SMTP_PORT
     if [ "$SMTP_PORT" == "" ]; then
@@ -511,12 +511,12 @@ if askyesno; then
       echo "SMTP port set to 587"
     fi
     # Write SMTP_PORT
-    sed -i "s/SMTP_PORT=.*$/SMTP_PORT=\"${SMTP_PORT}\"/g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s/SMTP_PORT=.*$/SMTP_PORT=\"${SMTP_PORT}\"/g" "${APP_NAME}.profile.tmp"
     echo "SMTP username?"
     echo "For example, ${APP_NAME}@gmail.com"
     read -r SMTP_USER
     # Write SMTP_USER
-    sed -i "s/SMTP_USER=.*$/SMTP_USER=\"${SMTP_USER}\"/g" "${APP_NAME}.profile.tmp"
+    sed -i.bak "s/SMTP_USER=.*$/SMTP_USER=\"${SMTP_USER}\"/g" "${APP_NAME}.profile.tmp"
     echo "SMTP password?"
     enter_password "SMTP_PASS"
     # Write SMTP_PASS to the secret dir
@@ -539,7 +539,7 @@ if [ "$APP_HTTPS_ENABLED" != "yes" ]; then
     APP_VARNISH_ENABLED='no'
   fi
   # Write APP_VARNISH_ENABLED
-  sed -i "s|APP_VARNISH_ENABLED=.*$|APP_VARNISH_ENABLED=\"${APP_VARNISH_ENABLED}\"|g" "${APP_NAME}.profile.tmp"
+  sed -i.bak "s|APP_VARNISH_ENABLED=.*$|APP_VARNISH_ENABLED=\"${APP_VARNISH_ENABLED}\"|g" "${APP_NAME}.profile.tmp"
 fi
 echo
 #
@@ -554,7 +554,7 @@ if ([ "$GIT_PASS" == "" ] && [ "$USE_INSTALL_PROFILE" != "yes" ] && [ "$USE_CODE
     echo "Using key ${KEY_FILENAME}"
   fi
   # Write KEY_FILENAME
-  sed -i "s|KEY_FILENAME=.*$|KEY_FILENAME=\"${KEY_FILENAME}\"|g" "${APP_NAME}.profile.tmp"
+  sed -i.bak "s|KEY_FILENAME=.*$|KEY_FILENAME=\"${KEY_FILENAME}\"|g" "${APP_NAME}.profile.tmp"
   if [ ! "$OSTYPE" = "darwin"* ]; then
     # Invoke ssh-agent script, applying bash expansion to the tilde
     ./bin/ssh-agent.sh "${KEY_FILENAME/#\~/$HOME}"
@@ -585,19 +585,20 @@ if [ "${DRUPSIBLE_TZ}" == "" ] && [ ! "${CURRENT_TZ}" == "" ]; then
 fi
 echo
 # Write TIME_ZONE
-sed -i "s|APP_TIMEZONE=.*$|APP_TIMEZONE=\"${DRUPSIBLE_TZ}\"|g" "${APP_NAME}.profile.tmp"
+sed -i.bak "s|APP_TIMEZONE=.*$|APP_TIMEZONE=\"${DRUPSIBLE_TZ}\"|g" "${APP_NAME}.profile.tmp"
 #
 # Append last-mod
 #
 DATE_LEGEND=$(date +"%c %Z")
 PHRASE="Last reconfigured on"
-sed -i "s/${PHRASE}:.*$/${PHRASE}: ${DATE_LEGEND}/g" "${APP_NAME}.profile.tmp"
+sed -i.bak "s/${PHRASE}:.*$/${PHRASE}: ${DATE_LEGEND}/g" "${APP_NAME}.profile.tmp"
 #
 # Save the result of .profile.tmp in .profile
 #
 cp "${APP_NAME}.profile.tmp" "${APP_NAME}.profile"
 # Remove temporary profile
 rm "${APP_NAME}.profile.tmp"
+rm "${APP_NAME}.profile.tmp.bak"
 #
 # Generate Drupsible configuration
 #
