@@ -17,6 +17,8 @@
   - role: debops.tcpwrappers
     tags: [ tcpwrappers ]
     tcpwrappers_dependent_allow: '{{ sshd__tcpwrappers__dependent_allow }}'
+  - role: debops.console
+    tags: [ 'console' ]
   - role: debops.sshkeys
     tags: [ sshkeys, sshd, sshd-sshkeys, sshkeys-sshd ]
   - role: debops.sshd

@@ -1,4 +1,7 @@
 ---
+- src: https://github.com/debops/ansible-console
+  version: v0.1.3
+  name: debops.console
 - src: https://github.com/debops/ansible-secret
   version: v0.2.3
   name: debops.secret
