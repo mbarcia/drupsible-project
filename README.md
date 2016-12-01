@@ -34,7 +34,7 @@ Drupsible project is the starting point of Drupsible, and it is the only thing y
 * If you want to try a Drupal distribution, type its name during bin/configure.sh when asked.
 
 ## Remote servers
-All remote target servers must be Debian (wheezy/jessie) or Ubuntu (trusty/xenial) stock boxes.
+All remote target servers must be Debian (jessie) or Ubuntu (trusty/xenial) stock boxes.
 In the future, Drupsible may run on other *nix platforms.
 
 # Basic usage
@@ -43,16 +43,19 @@ In the future, Drupsible may run on other *nix platforms.
 1. If you are on Windows, run Git Bash
 1. Also, in Windows, load any Github/Bitbucket deployment key into Pageant.
 1. Git-clone mbarcia/drupsible-project and put it in a folder named after your project, like _~/drupsible/my-project_
+
     ```
     cd ~/drupsible
     git clone https://github.com/mbarcia/drupsible-project.git myproject
     cd myproject
     ```
 1. Although the master branch is considered stable, you can optionally switch to the latest tag
+
     ```
     git checkout tags/1.0
     ```
 1. Run the configuration wizard
+
     ```
     . ./bin/configure.sh
     ```
@@ -68,6 +71,7 @@ In the future, Drupsible may run on other *nix platforms.
 1. For one time only, it will download the drupsible box (~400M).
 1. If your user is not admin, Vagrant should ask for your OS admin password
 1. When you see it's done, you will see a message like this:
+
     ```
     ==> local: local.doma.in        : ok=493  changed=190  unreachable=0    failed=0
     ==> local: Drupsible box has been provisioned and configured, YAY!
@@ -78,11 +82,13 @@ In the future, Drupsible may run on other *nix platforms.
 
 ## No multisite but multiple apps
 Drupal is able to accomodate multiple applications in the same VM, that you may deploy to a single server in PROD as well. Just run
+
 ```
 . ./bin/configure.sh myotherproject
 ```
 answering to the questionnaire.
 As a final step, simply run
+
 ```
 vagrant provision
 ```
@@ -94,9 +100,9 @@ vagrant provision
 * You will then be able to connect your IDE of choice to this folder, or use any editor to develop and test. After you are done, just commit to your GIT repository.
 * If anything changes, ie. your Git credentials, run bin/configure.sh again but this time
     * You will be asked if you want to start over
-    * Say no, and you will be automatically presented with the edition of ```myproject.profile```
-    * Edit your new value, save, and run ```bin/generate.sh```
-    * Run ```vagrant provision``` (instead of ```vagrant up```)
+    * Say no, and you will be automatically presented with the edition of `myproject.profile`
+    * Edit your new value, save, and run `bin/generate.sh`
+    * Run `vagrant provision` (instead of `vagrant up`)
 * If you have chosen Dynamic IP for your VM, potentially all of the workstations in your LAN will be able to access your website docroot. Although this is considered a feature (and not a security hole!), please use with caution.
 * If you use Static IP for your VMs, Drupsible will manage /etc/hosts for you (also on Windows), so you can access http(s)://local.doma.in immediately from your browser.
 * If you want to customize more, please read section "Advanced usage" below.
@@ -105,12 +111,13 @@ vagrant provision
     * myproject-deploy
     * myproject-config-deploy
     You can even use these with tags or more extra-vars as if you were using ```ansible-playbook```.
-    Type ```alias``` at the command prompt for more info.
+    Type `alias` at the command prompt for more info.
 
 ## Other target environments
 Once your Drupal website is working on your local, you can proceed to deploy to the upper environments.
 
 1. Write your Ansible inventory for the target environment. This inventory _must_ have 5 groups:
+
     ```
     myproject
     └── myproject-prod
@@ -129,18 +136,21 @@ Once your Drupal website is working on your local, you can proceed to deploy to 
 
 ### Example
 Say you are deploying your app to the live/prod environment, using the VM as the Ansible controller. Simply run the bootstrap-deploy playbook.
+
 ```
 $ vagrant ssh
 ...
 vagrant@local:~$ ansible-playbook -i ansible/inventory/<app_name>-prod ansible/playbooks/bootstrap-deploy.yml --extra-vars "app_name=<app_name> app_target=prod"
 ```
 Once you've run that, subsequent deployments will be simpler, taking this form:
+
 ```
 $ vagrant ssh
 ...
 vagrant@local:~$ ansible-playbook -i ansible/inventory/<app_name>-prod ansible/playbooks/deploy.yml --extra-vars "app_name=<app_name> app_target=prod"
 ```
 If you just want to re-configure, say a parameter in Varnish, you would just run the config playbook:
+
 ```
 vagrant@local:~$ ansible-playbook -i ansible/inventory/<app_name>-prod ansible/playbooks/config.yml --extra-vars "app_name=<app_name> app_target=prod" --tags varnish
 ```
@@ -148,6 +158,7 @@ This will reconfigure Varnish, without triggering a new deployment of you Drupal
 
 ### Restarting the local VM ###
 Whenever your local VM may go down (ie. after your workstation has been restarted), you need to
+
 ```
 $ vagrant up
 ```
@@ -157,16 +168,19 @@ in your myproject directory.
 
 ## Advanced customization
 In line with Ansible's best practices, you can customize and override any value of your Drupsible stock/default by creating/editing any of the following:
+
 * ```ansible/playbooks/group_vars/<app_name>-<app_target>/all.yml```
 * ```ansible/playbooks/group_vars/<app_name>-<app_target>/deploy.yml```
 * ```ansible/playbooks/group_vars/<app_name>-<app_target>/varnish.yml```
 * ```ansible/playbooks/group_vars/<app_name>-<app_target>/mysql.yml```
 
 You can also configure parameters which maybe global to the application under
+
  ```
  ansible/playbooks/group_vars/<app_name>/all.yml
  ```
 or to the webservers group, no matter in which environment they are in
+
  ```
  ansible/playbooks/group_vars/<app_name>/deploy.yml
  ```
@@ -178,11 +192,13 @@ If you are NOT using a codebase tarball/archive, and have your Drupal codebase i
 1. your Git repository will authorize Drupsible through this deployment key. For a real world example, see the [docs at Bitbucket](https://confluence.atlassian.com/bitbucket/how-to-install-a-public-key-on-your-bitbucket-account-276628835.html).
 
 The following is managed automatically by the bin/configure.sh script, so you will not need to worry. However, just in case you are not using configure.sh, you can check that you have an SSH agent running, and that it has your private keys loaded with this command:
+
 ```
 ssh-add -l
 ```
 
 If nothings pops up, then your SSH agent needs to load your Git repository SSH key, like this
+
 ```
 . ./bin/ssh-agent.sh <your-private-key-filename>
 ```
