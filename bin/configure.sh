@@ -551,14 +551,18 @@ if ([ "$GIT_PASS" == "" ] && [ "$USE_INSTALL_PROFILE" != "yes" ] && [ "$USE_CODE
   if [ "$KEY_FILENAME" == "" ]; then
     # Set key to default: ~/.ssh/id_rsa
     KEY_FILENAME="$HOME/.ssh/id_rsa"
-    echo "Using key ${KEY_FILENAME}"
+    # Detect whether the key is encrypted with a passphrase
+    if grep "ENCRYPTED" ${KEY_FILENAME}; then
+      # Invoke ssh-agent script, applying bash expansion to the tilde
+      echo "Using key ${KEY_FILENAME} and, as it's encrypted, launching ssh-agent helper..."
+      ./bin/ssh-agent.sh "${KEY_FILENAME/#\~/$HOME}"
+      echo "Done."
+    else
+      echo "Using key ${KEY_FILENAME}."
+    fi
   fi
   # Write KEY_FILENAME
   sed -i.bak "s|KEY_FILENAME=.*$|KEY_FILENAME=\"${KEY_FILENAME}\"|g" "${APP_NAME}.profile.tmp"
-  if [ ! "$OSTYPE" = "darwin"* ]; then
-    # Invoke ssh-agent script, applying bash expansion to the tilde
-    ./bin/ssh-agent.sh "${KEY_FILENAME/#\~/$HOME}"
-  fi
 fi
 #
 # Timezone configuration

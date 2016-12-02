@@ -12,10 +12,47 @@ VAGRANTFILE_API_VERSION = "2"
 # Minimum Vagrant version required
 Vagrant.require_version ">= 1.8.1"
 
-settings = YAML.load_file 'vagrant.yml'
+def fail_with_message(msg)
+  fail Vagrant::Errors::VagrantError.new, msg
+end
+
+def key_has_passphrase(private_key_filename)
+  return File.open(private_key_filename).grep(/ENCRYPTED/)
+end
+
+# Load settings from YAML files
+if File.exists?"vagrant.yml"
+  settings = YAML.load_file 'vagrant.yml'
+else
+  fail_with_message "vagrant.yml is not found. Please copy vagrant.\
+.yml.default to vagrant.yml, and customize it for your needs."
+end
 HOSTS = settings['hosts']
 APPS = settings['apps']
 
+# Proactive fix of http://stackoverflow.com/a/40521433
+if Vagrant::VERSION == "1.8.7"
+  if File.exists? "/opt/vagrant/embedded/bin/curl"
+    if system "vagrant box list | grep -v " + HOSTS['box'] + " > /dev/null 2>&1"
+      puts "There is a knwon bug that may affect your Vagrant setup \
+(http://stackoverflow.com/a/40521433)."
+      puts "If the  " + HOSTS['box'] + " box cannot be downloaded, you may want to \
+remove the curl version shipped with Vagrant:"
+      puts "You can do this by typing sudo rm /opt/vagrant/embedded/bin/curl"
+    end
+  end
+end
+
+key_home_dir = "/home/vagrant"
+# Default SSH private key file (on the host)
+private_key_file = Dir.home + "/.ssh/id_rsa"
+
+if ARGV[0].eql?'up' or ARGV[0].eql?'provision'
+  if defined? HOSTS['private-key-file']
+    private_key_file = File.expand_path(HOSTS['private-key-file'])
+  end
+end
+  
 HOSTS.each do |host|
   huplugin = {}
 
@@ -110,6 +147,39 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Allow identities to be passed from host to guest.
       # ssh-agent must be running on the host, the private keys loaded with ssh-add
       config.ssh.forward_agent = true
+
+      # This allows SSH agent forwarding to work with sudo, if needed.
+      # (allows root user to know vagrant user SSH agent socket).
+      machine.vm.provision "sudoers",
+        :type => "shell",
+        :inline => <<-SH_SD.gsub(/^\s+/, '')
+          echo "# Added by Drupsible Vagrantfile, to forward the SSH agent to the root user" >> /etc/sudoers
+          echo "Defaults        env_keep+=SSH_AUTH_SOCK" >> /etc/sudoers
+        SH_SD
+
+      # Windows hosts do not have a proper ssh-agent.
+      # To spare users the installation of Git Bash, we just copy
+      # the unencrypted private key file to the guest.
+      # Note that the dest path names need to have those names (only the
+      # source private key file may be configurable).
+      unless File.exists?(private_key_file) or
+      key_has_passphrase(private_key_file)
+        machine.vm.provision "provision-private-key",
+          :type => "file",
+          :source => "#{private_key_file}",
+          :destination => "/#{key_home_dir}/.ssh/id_rsa"
+    
+        machine.vm.provision "provision-public-key",
+          :type => "file",
+          :source => "#{private_key_file}.pub",
+          :destination => "/#{key_home_dir}/.ssh/id_rsa.pub"
+    
+        # Fixing permissions.
+        machine.vm.provision "chmod-key",
+          :type => "shell",
+          :privileged => false,
+          :inline => "chmod 600 /#{key_home_dir}/.ssh/id_rsa"
+      end
 
       # Run Ansible playbooks only from the controller machine
       if host['is_controller']
