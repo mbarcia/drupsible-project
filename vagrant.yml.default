@@ -17,7 +17,7 @@ hosts:
   box: 'mbarcia/drupsible'
   box_url: 'https://atlas.hashicorp.com/mbarcia/boxes/drupsible'
   # set by configure.sh
-  private-key-file: '~/.ssh/id_rsa'
+  sshkey: '~/.ssh/id_rsa'
   #
   # Other boxes you can use
   #

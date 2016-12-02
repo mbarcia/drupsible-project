@@ -48,8 +48,8 @@ key_home_dir = "/home/vagrant"
 private_key_file = Dir.home + "/.ssh/id_rsa"
 
 if ARGV[0].eql?'up' or ARGV[0].eql?'provision'
-  if defined? HOSTS['private-key-file']
-    private_key_file = File.expand_path(HOSTS['private-key-file'])
+  if defined? HOSTS['sshkey']
+    private_key_file = File.expand_path(HOSTS['sshkey'])
   end
 end
   
