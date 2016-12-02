@@ -53,7 +53,7 @@ if [ "${FILES_LIST}" != "" ]; then
 fi
 sed -i.bak "s/ip_addr:.*/ip_addr: '${IP_ADDR}'/g" vagrant.yml
 sed -i.bak "s/domain:.*/domain: '${DOMAIN}'/g" vagrant.yml
-sed -i.bak "s/sshkey:.*/sshkey: '${KEY_FILENAME}'/g" vagrant.yml
+sed -i.bak "s|sshkey:.*|sshkey: '${KEY_FILENAME}'|g" vagrant.yml
 # Remove any possible app duplicates
 sed -i.bak "s|^- name\: '${APP_NAME}'$||g" vagrant.yml
 # Add app name to the list
