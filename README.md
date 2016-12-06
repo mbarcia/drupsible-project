@@ -18,7 +18,6 @@ Drupsible project is the starting point of Drupsible, and it is the only thing y
 * [Vagrant](http://www.vagrantup.com/downloads) 1.8.1+
   * requires commercial plug-in for VMWare
 * [Git Bash](https://git-scm.com/download/win) (only if you are on Windows)
-* [PuTTY](https://the.earth.li/~sgtatham/putty/latest/x86/putty-0.67-installer.msi) (only if you are on Windows)
 * Make sure VT-x (or AMD-V) virtualization is enabled on the host machine
     * [I'm on a Linux host](http://www.cyberciti.biz/faq/linux-xen-vmware-kvm-intel-vt-amd-v-support/)
     * [I'm on a Windows host](http://amiduos.com/support/knowledge-base/article/how-can-i-get-to-know-my-processor-supports-virtualization-technology)
@@ -41,7 +40,6 @@ In the future, Drupsible may run on other *nix platforms.
 
 ## Local
 1. If you are on Windows, run Git Bash
-1. Also, in Windows, load any Github/Bitbucket deployment key into Pageant.
 1. Git-clone mbarcia/drupsible-project and put it in a folder named after your project, like _~/drupsible/my-project_
 
     ```
@@ -188,10 +186,11 @@ or to the webservers group, no matter in which environment they are in
 ## Git keys and SSH-agent forwarding
 If you are NOT using a codebase tarball/archive, and have your Drupal codebase in a Git repository, you are aware that, in order to deploy a new version of your codebase,
 
-1. your session needs to be running an ssh-agent with a deployment key loaded.
-1. your Git repository will authorize Drupsible through this deployment key. For a real world example, see the [docs at Bitbucket](https://confluence.atlassian.com/bitbucket/how-to-install-a-public-key-on-your-bitbucket-account-276628835.html).
+1. If you are using an encrypted private SSH key (which requires a passphrase), your terminal needs to be running an ssh agent with the key loaded.
+1. If you are using an non-encrypted private SSH key (does not require a passphrase), it will be copied to the guest VM and be picked up by ssh automatically.
+1. your Git repository will authorize Drupsible through the designated SSH deployment key. For a real world example, see the [docs at Bitbucket](https://confluence.atlassian.com/bitbucket/how-to-install-a-public-key-on-your-bitbucket-account-276628835.html).
 
-The following is managed automatically by the bin/configure.sh script, so you will not need to worry. However, just in case you are not using configure.sh, you can check that you have an SSH agent running, and that it has your private keys loaded with this command:
+The following is managed automatically by the bin/configure.sh script, so you will not need to worry. However, for the case of encrypted SSH keys, you can check that you have an SSH agent running, and that it has your private encrypted keys loaded with this command:
 
 ```
 ssh-add -l
@@ -203,11 +202,3 @@ If nothings pops up, then your SSH agent needs to load your Git repository SSH k
 . ./bin/ssh-agent.sh <your-private-key-filename>
 ```
 Drupsible will then present proper credentials to the Git server when the codebase needs to be cloned or checked out.
-
-### Note to OSX host users
-Make sure your private key is in the keychain before trying to clone from a secured git repo.
-
-### Note to Windows host users
-Due to a [limitation in Vagrant](https://github.com/mitchellh/vagrant/issues/1735#issuecomment-119875409), if you are running a Windows OS host, and need to clone from a Git repo using a deployment key, and want to have ```vagrant up``` and ```vagrant provision``` work properly, you
-#### need to have Pageant running with the _same_ deployment key loaded ####
-Inside the VM there are no issues, it is only vagrant provision not forwarding the SSH agent.
