@@ -564,8 +564,9 @@ fi
 # Timezone configuration
 #
 # Try to detect current timezone in Mac, Cygwin and Linux
+echo "Detecting the Time Zone..."
 if hash systemsetup 2>/dev/null; then
-  CURRENT_TZ=$(systemsetup -gettimezone | sed "s|.*Time Zone: \(.*/.*\)$|\1|g")
+  CURRENT_TZ=$(sudo systemsetup -gettimezone | sed "s|.*Time Zone: \(.*/.*\)$|\1|g")
 elif hash tzset 2>/dev/null; then
   CURRENT_TZ=$(tzset)
 elif hash timedatectl 2>/dev/null; then
@@ -574,6 +575,8 @@ else
   CURRENT_TZ=""
 fi
 if [ ! "${CURRENT_TZ}" == "" ]; then
+  echo "Time Zone detected as ${CURRENT_TZ}."
+  echo
   echo "Time Zone? [${CURRENT_TZ}]"
 else
   echo "Time Zone?"
@@ -581,7 +584,7 @@ fi
 read -r DRUPSIBLE_TZ
 if [ "${DRUPSIBLE_TZ}" == "" ] && [ ! "${CURRENT_TZ}" == "" ]; then
   DRUPSIBLE_TZ=${CURRENT_TZ}
-  echo "Time zone set to ${DRUPSIBLE_TZ}"
+  echo "Time zone set to ${DRUPSIBLE_TZ}."
 fi
 echo
 # Write TIME_ZONE
