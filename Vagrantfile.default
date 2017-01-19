@@ -47,12 +47,7 @@ key_home_dir = "/home/vagrant"
 # Default SSH private key file (on the host)
 private_key_file = Dir.home + "/.ssh/id_rsa"
 
-if ARGV[0].eql?'up' or ARGV[0].eql?'provision'
-  if defined? HOSTS['sshkey']
-    private_key_file = File.expand_path(HOSTS['sshkey'])
-  end
-end
-  
+
 HOSTS.each do |host|
   huplugin = {}
 
@@ -156,6 +151,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Copy the unencrypted private key file to the guest.
       # Note that the dest path names need to have those names (only the
       # source private key file may be configurable).
+      if ARGV[0].eql?'up' or ARGV[0].eql?'provision'
+        if defined? host['sshkey']
+          private_key_file = File.expand_path(host['sshkey'])
+        end
+      end
       unless File.exists?(private_key_file) or
       key_has_passphrase(private_key_file)
         machine.vm.provision "provision-private-key",
