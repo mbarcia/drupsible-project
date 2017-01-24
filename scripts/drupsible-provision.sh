@@ -11,7 +11,8 @@ else
 	apt-get install -y curl unzip
 	apt-get install -y git python python-dev python-setuptools python-pip python-netaddr
 	# Make sure setuptools are installed correctly.
-	pip install setuptools setupext-pip cryptography --upgrade
+	pip install setuptools setupext-pip --upgrade
+	pip install cryptography --upgrade
 	pip install paramiko PyYAML Jinja2 httplib2 six markupsafe
 	pip install ansible==2.0.2.0
 fi
