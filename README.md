@@ -124,7 +124,7 @@ vagrant provision
 ## Other target environments
 Once your Drupal website is working on your local, you can proceed to deploy to the upper environments.
 
-1. Write your Ansible inventory for the target environment. This inventory _must_ have 5 groups:
+1. Write your Ansible inventory for the target environment. This inventory _must_ have 3 groups:
 
     ```
     myproject
@@ -171,6 +171,25 @@ Whenever your local VM may go down (ie. after your workstation has been restarte
 $ vagrant up
 ```
 in your myproject directory.
+
+# Developing on local
+
+## Shared folders
+You will see a new folder named "local", with a folder "ansible" and a folder named after your project/app. These are shared folders and sync 2-way between your local machine (the host) and the virtual machine (the guest).
+
+    ```
+    myproject
+    └── ansible/
+    └── bin/
+    └── scripts/
+    └── local/
+        ├── ansible
+        ├── <my-project>
+        │   ├── index.php
+        │   ├── ...
+    ```
+
+Whatever you change or edit in local/<my-project>/ will be synchronized with /home/vagrant/<my-project>, and in turn, synchronized with /var/www/<my-project>/public_html, which is the web server root for the project/app.
 
 # Advanced usage
 
