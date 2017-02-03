@@ -27,6 +27,7 @@ else
   fail_with_message "vagrant.yml is not found. Please copy vagrant.\
 .yml.default to vagrant.yml, and customize it for your needs."
 end
+
 HOSTS = settings['hosts']
 APPS = settings['apps']
 
@@ -46,7 +47,6 @@ end
 key_home_dir = "/home/vagrant"
 # Default SSH private key file (on the host)
 private_key_file = Dir.home + "/.ssh/id_rsa"
-
 
 HOSTS.each do |host|
   huplugin = {}
@@ -69,7 +69,6 @@ HOSTS.each do |host|
       system "echo The hostsupdater plugin enables Drupsible to update /etc/hosts with ie.,"
       system "echo \"#{huplugin[:legend]}\""
       system "echo This makes your website in the guest VM accessible from your host's browser."
-      end
       system "echo Drupsible will now proceed to its installation (one-time only)."
       system "vagrant plugin install --plugin-version '#{huplugin[:version]}' #{huplugin[:name]}"
     end
@@ -122,7 +121,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         o.vm.guest = host['guest_distro']
         p.memory = host['ram']
         p.update_guest_tools = true
-
+      end
+      
       if host['ip_addr'].to_s.empty?
         machine.vm.network 'public_network', type: 'dhcp'
       else
