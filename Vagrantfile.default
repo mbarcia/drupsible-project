@@ -69,6 +69,7 @@ HOSTS.each do |host|
       system "echo The hostsupdater plugin enables Drupsible to update /etc/hosts with ie.,"
       system "echo \"#{huplugin[:legend]}\""
       system "echo This makes your website in the guest VM accessible from your host's browser."
+      end
       system "echo Drupsible will now proceed to its installation (one-time only)."
       system "vagrant plugin install --plugin-version '#{huplugin[:version]}' #{huplugin[:name]}"
     end
@@ -80,9 +81,6 @@ end
 #
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.synced_folder "var/www", "/var/www",
-    create: true,
-    group: "www-data"
   config.vm.synced_folder "etc/ansible", "/etc/ansible",
     create: true,
     owner: "root"
@@ -124,7 +122,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         o.vm.guest = host['guest_distro']
         p.memory = host['ram']
         p.update_guest_tools = true
-      end
 
       if host['ip_addr'].to_s.empty?
         machine.vm.network 'public_network', type: 'dhcp'
@@ -194,6 +191,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         # Config-deploy each of the apps
         APPS.each do |app|
+          config.vm.synced_folder "local/" + app['name'], "/home/vagrant/" + app['name'],
+            create: true,
+            group: "www-data"
+
           machine.vm.provision "alias", type: "shell",
             inline: 'sed "s|pitiribi|' + app['name'] + '|g" /vagrant/scripts/app-aliases.sh >> /home/vagrant/.profile'
 
