@@ -11,8 +11,8 @@ SKIP_TAGS="$5"
 APP_FQDN="$6"
 HOST_IP_ADDR="$7"
 
-ANSIBLE_PLAYBOOK="$HOME/ansible/playbooks/config-deploy.yml"
-ANSIBLE_INVENTORY="$HOME/ansible/inventory/${APP_NAME}-${APP_TARGET}"
+ANSIBLE_PLAYBOOK="/vagrant/ansible/playbooks/config-deploy.yml"
+ANSIBLE_INVENTORY="/vagrant/ansible/inventory/${APP_NAME}-${APP_TARGET}"
 EXTRA_VARS="${DEPLOY_ARGS} app_name=${APP_NAME} app_target=${APP_TARGET}"
 
 if [ ! -f $ANSIBLE_PLAYBOOK ]; then

@@ -47,11 +47,6 @@ In the future, Drupsible may run on other *nix platforms.
     git clone https://github.com/mbarcia/drupsible-project.git myproject
     cd myproject
     ```
-1. Although the master branch is considered stable, you can optionally switch to the latest tag
-
-    ```
-    git checkout tags/1.0
-    ```
 1. Run the configuration wizard
 
     ```
@@ -78,6 +73,21 @@ In the future, Drupsible may run on other *nix platforms.
 1. Your Drupal app has been deployed! Point your browser to your website: http://local.doma.in. Voilà.
 2. If your browser is not able to resolve local.doma.in, follow the instructions after the YAY! message and edit /etc/hosts if needed.
 
+## Windows host support
+
+There are a number of additional requirements depending on the version of Windows you're running
+
+- [Git Bash](https://git-scm.com/download/win)
+- Command prompt must be "Run as administrator" for Vagrant to automatically maintain the hosts file.
+- If you're on a Professional/Enterprise version of Windows 8.1 or 10, make sure Hyper-V is disabled.
+- .NET Framework 4 or higher (for Windows 7) and Windows Management Framework 3.0 (PowerShell 3) for versions of Windows under 8.1. PowerShell 3 is installed after installing Windows Management Framework 3.0 and rebooting.
+- Make sure [long file names are supported](http://stackoverflow.com/questions/22575662/filename-too-long-in-git-for-windows) (by doing `git config --system core.longpaths true`) and [tune MAX_PATH on Windows 10](https://msdn.microsoft.com/en-us/library/aa365247.aspx#maxpath)
+- If you are using a custom [VAGRANT_HOME](http://docs.vagrantup.com/v2/other/environmental-variables.html), ensure that the directory does not have a space in it. To properly set this env variable permanently, run the following command within an administration command prompt.
+
+  ```
+  setx VAGRANT_HOME "c:\vagrant\home\path" /M
+  ```
+  
 ## No multisite but multiple apps
 Drupal is able to accomodate multiple applications in the same VM, that you may deploy to a single server in PROD as well. Just run
 
@@ -114,7 +124,7 @@ vagrant provision
 ## Other target environments
 Once your Drupal website is working on your local, you can proceed to deploy to the upper environments.
 
-1. Write your Ansible inventory for the target environment. This inventory _must_ have 5 groups:
+1. Write your Ansible inventory for the target environment. This inventory _must_ have 3 groups:
 
     ```
     myproject
@@ -161,6 +171,25 @@ Whenever your local VM may go down (ie. after your workstation has been restarte
 $ vagrant up
 ```
 in your myproject directory.
+
+# Developing on local
+
+## Shared folders
+You will see a new folder named "local", with a folder "ansible" and a folder named after your project/app. These are shared folders and sync 2-way between your local machine (the host) and the virtual machine (the guest).
+
+    ```
+    myproject
+    └── ansible/
+    └── bin/
+    └── scripts/
+    └── local/
+        ├── ansible
+        ├── <my-project>
+        │   ├── index.php
+        │   ├── ...
+    ```
+
+Whatever you change or edit in local/<my-project>/ will be synchronized with /home/vagrant/<my-project>, and in turn, synchronized with /var/www/<my-project>/public_html, which is the web server root for the project/app.
 
 # Advanced usage
 
