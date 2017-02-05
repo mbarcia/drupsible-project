@@ -181,7 +181,8 @@
     when: provision_new_relic|default(False)|bool
   - role: drupsible.drush
     tags: [ drush ]
-    drush_min_version: "{{ app_drush_min_version|default('8.0.5') }}"
+    drush_drupal_version: "{{ app_drupal_version|default('8') }}"
+    drush_app_user: "{{ app_user }}"  
   - role: drupsible.twigc
     tags: [ twigc ]
     when: app_drupal_version|version_compare('8', '==') and ansible_distribution_release != 'xenial'
