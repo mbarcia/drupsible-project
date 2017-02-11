@@ -55,6 +55,7 @@
   - role: drupsible.mysql
     tags: [ mysql ]
     mysql_mysqld_allow_group: "{{ app_name + '-' + app_target + '_deploy' }}"
+    mysql_in_cloud: "{{ app_in_cloud }}"
     mysql_databases:
     - name: "{{ app_name }}"
       state: 'present'
@@ -84,9 +85,11 @@
   - role: debops.ferm
     tags: [ ferm, mysql, mysql-ferm, ferm-mysql ]
     ferm__dependent_rules: '{{ mysql_ferm_dependent_rules_exported|default([]) }}'
+    when: not app_in_cloud|bool
   - role: debops.tcpwrappers
     tags: [ tcpwrappers, mysql, mysql-tcpwrappers, tcpwrappers-mysql ]
     tcpwrappers_dependent_allow: '{{ mysql_tcpwrappers_dependent_allow_exported|default([]) }}'
+    when: not app_in_cloud|bool
 
 - name: Ferm/Postfix/PHP/Composer/New Relic/Apache/uploadprogress
   hosts: [ '{{ app_name }}-{{ app_target }}_deploy' ]
@@ -148,6 +151,7 @@
     apache2_https_enabled: "{{ app_https_enabled|default(False)|bool }}"
     apache2_varnish_enabled: "{{ app_varnish_enabled }}"
     apache2_ping_group: "{{ app_name + '-' + app_target + '_varnish' }}"
+    apache2_in_cloud: "{{ app_in_cloud }}"
   - role: drupsible.php
     tags: [ php ]
     when: ansible_local.apache2.mpm != 'prefork'
@@ -191,6 +195,7 @@
     tags: [ ferm, ferm-deploy, postfix, apache2, samba ]
     apache2_port: "{{ app_varnish_enabled|default(False)|bool|ternary(app_apache2_alt_port|default('8080'), '80') }}"
     ferm__dependent_rules: '{{ postfix_ferm_dependent_rules|default([]) + apache2_ferm_dependent_rules + samba_ferm_dependent_rules|default([]) }}'
+    when: not app_in_cloud|bool
 
 - name: Varnish
   hosts: [ '{{ app_name }}-{{ app_target }}_varnish' ]
@@ -210,7 +215,9 @@
     varnish_webhost: "{{ app_webhost }}"
     varnish_app_name: "{{ app_name }}"
     varnish_deploy_group: "{{ app_name + '-' + app_target + '_deploy' }}"
+    varnish_in_cloud: "{{ app_in_cloud }}"
     when: app_varnish_enabled|bool
   - role: debops.ferm
     tags: [ ferm, varnish, varnish-ferm, ferm-varnish ]
     ferm__dependent_rules: "{{ varnish_ferm_dependent_rules_exported|default([]) }}"
+    when: not app_in_cloud|bool
