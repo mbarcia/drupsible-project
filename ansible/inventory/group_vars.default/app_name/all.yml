@@ -52,6 +52,10 @@ app_languages: []
 # Default timezone
 app_timezone: 'Europe/Madrid'
 
+# Switch to yes if in a cloud environment where the IPs of the servers
+# are dynamic (not static/fixed at provision/config time)
+app_in_cloud: no
+
 #
 # Postfix defaults
 #
