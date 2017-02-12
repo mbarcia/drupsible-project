@@ -570,6 +570,7 @@ fi
 # Try to detect current timezone in Mac, Cygwin and Linux
 echo "Detecting the Time Zone..."
 if hash systemsetup 2>/dev/null; then
+  echo "Please enter your local password for sudo..."
   CURRENT_TZ=$(sudo systemsetup -gettimezone | sed "s|.*Time Zone: \(.*/.*\)$|\1|g")
 elif hash tzset 2>/dev/null; then
   CURRENT_TZ=$(tzset)
