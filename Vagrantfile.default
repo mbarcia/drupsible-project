@@ -222,6 +222,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           inline: 'cat /vagrant/scripts/shortcuts.sh >> /home/vagrant/.profile'
 
         # Config-deploy each of the apps
+        APPS.each do |app|
           machine.vm.provision "alias", type: "shell",
             inline: 'sed "s|pitiribi|' + app['name'] + '|g" /vagrant/scripts/app-aliases.sh >> /home/vagrant/.profile'
 
