@@ -63,12 +63,15 @@ if [ $? -eq 0 ]; then
     echo "Verify that /etc/hosts (C:\Windows\System32\Drivers\etc\hosts)"
     echo "contains this line:"
     echo "${HOST_IP_ADDR}  ${APP_FQDN}  # VAGRANT ..."
-    echo "The comment is there for vagrant-hostsupdater to manage the"
-    echo "resolution of the VM's IP."
-    echo "Please add that line manually if not present."
   fi
   echo
-  echo "Type http://${APP_FQDN} in your browser, and happy development!"
+  echo "On Finder, Go->Connect to Server and type smb://Guest:@${APP_FQDN} (at least mount the 'app' volume)."
+  echo "On Explorer, find a \\\\LOCAL server under Network."
+  echo
+  echo "On your browser, go to http://${APP_FQDN} for your Drupal website."
+  echo
+  echo "Happy development!"
+  echo
 else
   echo "WARNING: Drupsible box has NOT been provisioned or configured"
   echo "============================================================="
