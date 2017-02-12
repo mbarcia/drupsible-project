@@ -104,8 +104,6 @@ vagrant provision
 
 ### Comments and observations ###
 * Your default credentials at http://local.doma.in/user/login are admin/drups1ble. You can override it later, per environment.
-* In your file manager (Windows Explorer look for \\LOCAL, or Samba shares), there will be a shared folder: local.doma.in app. Check out [the Samba role documentation](https://github.com/mbarcia/drupsible-samba#work-your-drupal-code), and work your Drupal code!
-* You will then be able to connect your IDE of choice to this folder, or use any editor to develop and test. After you are done, just commit to your GIT repository.
 * If anything changes, ie. your Git credentials, run bin/configure.sh again but this time
     * You will be asked if you want to start over
     * Say no, and you will be automatically presented with the edition of `myproject.profile`
@@ -118,7 +116,7 @@ vagrant provision
     * myproject-config
     * myproject-deploy
     * myproject-config-deploy
-    You can even use these with tags or more extra-vars as if you were using ```ansible-playbook```.
+    You can even use these with tags or more extra-vars as if you were using `ansible-playbook`.
     Type `alias` at the command prompt for more info.
 
 ## Other target environments
@@ -165,41 +163,53 @@ vagrant@local:~$ ansible-playbook -i ansible/inventory/<app_name>-prod ansible/p
 This will reconfigure Varnish, without triggering a new deployment of you Drupal webapp.
 
 ### Restarting the local VM ###
-Whenever your local VM may go down (ie. after your workstation has been restarted), you need to
-
-```
-$ vagrant up
-```
-in your myproject directory.
+Whenever your local VM may go down (ie. after your workstation has been restarted), you need to `$ vagrant up` in your myproject directory.
 
 # Developing on local
 
-## Shared folders
-You will see a new folder named "local", with a folder "ansible" and a folder named after your project/app. These are shared folders and sync 2-way between your local machine (the host) and the virtual machine (the guest).
+## Work your Drupal code
+* On Windows Explorer, you will notice a new "LOCAL" server in your network when the Vagrant VM is up.
+* On OSX Finder, Go->Connect to Server... and type `smb://Guest:@local.doma.in` in Server Address.
+  A list with shared folders will display: mount (at least) the app share.
 
-    ```
-    myproject
-    └── ansible/
-    └── bin/
-    └── scripts/
-    └── local/
-        ├── ansible
-        ├── <my-project>
-        │   ├── index.php
-        │   ├── ...
-    ```
+The app share is the important one, but you still have access to the home folder in case you want to make changes there.
 
-Whatever you change or edit in local/<my-project>/ will be synchronized with /home/vagrant/<my-project>, and in turn, synchronized with /var/www/<my-project>/public_html, which is the web server root for the project/app.
+Open `app` and you will see a list of folders, something like this:
 
-# Advanced usage
+```
+logs
+public_html
+public\_html.20160114_1138
+public_html.bak
+public\_html.20160113_1452
+```
 
-## Advanced customization
+`public\_html` and `public\_html.bak` are symbolic links to the matching `public\_html.<date>_<time>` folders. 
+
+`public\_html` contains your Drupal codebase, to be edited with your favorite editor or sync'ed with your IDE workspace.
+
+On OSX, you can mount the app share onto a local path, so it is easier to access by 3rd. party software, for example:
+`mkdir -p /Users/me/drupsible/shares/mydrupal`
+`sudo mount -t smbfs "smb://Guest:@local.doma.in/app" /Users/me/drupsible/shares/mydrupal`
+
+## Work your Drupsible code
+Under the roles share, you have access to edit all the Ansible roles that Drupsible uses. This is only intended for advanced users who want to modify the internals of Drupsible.
+
+## Logs available!
+The logs folder contains:
+- access.log (Apache access log)
+- drupal.log (Drupal syslog events)
+- error.log (Apache error log
+
+You can always disable syslog events in the ``ansible/playbooks/group_vars/<app_name>-local/deploy.yml`` deploy_syslog_enabled parameter (yes/no).
+
+# Advanced customization
 In line with Ansible's best practices, you can customize and override any value of your Drupsible stock/default by creating/editing any of the following:
 
-* ```ansible/playbooks/group_vars/<app_name>-<app_target>/all.yml```
-* ```ansible/playbooks/group_vars/<app_name>-<app_target>/deploy.yml```
-* ```ansible/playbooks/group_vars/<app_name>-<app_target>/varnish.yml```
-* ```ansible/playbooks/group_vars/<app_name>-<app_target>/mysql.yml```
+* `ansible/playbooks/group_vars/<app_name>-<app_target>/all.yml`
+* `ansible/playbooks/group_vars/<app_name>-<app_target>/deploy.yml`
+* `ansible/playbooks/group_vars/<app_name>-<app_target>/varnish.yml`
+* `ansible/playbooks/group_vars/<app_name>-<app_target>/mysql.yml`
 
 You can also configure parameters which maybe global to the application under
 
@@ -212,7 +222,7 @@ or to the webservers group, no matter in which environment they are in
  ansible/playbooks/group_vars/<app_name>/deploy.yml
  ```
 
-## Git keys and SSH-agent forwarding
+# Git keys and SSH-agent forwarding
 If you are NOT using a codebase tarball/archive, and have your Drupal codebase in a Git repository, you are aware that, in order to deploy a new version of your codebase,
 
 1. If you are using an encrypted private SSH key (which requires a passphrase), your terminal needs to be running an ssh agent with the key loaded.
@@ -221,13 +231,10 @@ If you are NOT using a codebase tarball/archive, and have your Drupal codebase i
 
 The following is managed automatically by the bin/configure.sh script, so you will not need to worry. However, for the case of encrypted SSH keys, you can check that you have an SSH agent running, and that it has your private encrypted keys loaded with this command:
 
-```
-ssh-add -l
-```
+`ssh-add -l`
 
 If nothings pops up, then your SSH agent needs to load your Git repository SSH key, like this
 
-```
-. ./bin/ssh-agent.sh <your-private-key-filename>
-```
+`. ./bin/ssh-agent.sh <your-private-key-filename>`
+
 Drupsible will then present proper credentials to the Git server when the codebase needs to be cloned or checked out.

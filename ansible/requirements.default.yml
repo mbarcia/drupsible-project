@@ -56,6 +56,9 @@
 - src: https://github.com/mbarcia/drupsible-drush
   version: master
   name: drupsible.drush
+- src: https://github.com/mbarcia/drupsible-samba
+  version: master
+  name: drupsible.samba
 - src: https://github.com/mbarcia/drupsible-mysql
   version: master
   name: drupsible.mysql

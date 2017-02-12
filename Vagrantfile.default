@@ -75,15 +75,47 @@ HOSTS.each do |host|
   end
 end
 
+# Windows-only SMB mount credentials
+if Vagrant::Util::Platform.windows?
+  if ARGV[0].eql?'up'
+    username=ENV['USERNAME']
+    if not defined? ENV['SMB_PASSWORD']
+      puts "In order to sync folders on Windows, Vagrant requires your real \
+  Windows credentials upon vagrant up."
+      print "Enter username (Hit enter for " + username + "): "
+      STDOUT.flush
+      username_entered = STDIN.gets.chomp
+      if username_entered != ""
+        username=username_entered
+      end
+      # 8m is the control code to hide characters
+      print "Enter password (hidden): \e[0;8m"
+      STDOUT.flush
+      password = STDIN.gets.chomp
+      # 0m is the control code to reset formatting attributes
+      puts "\e[0m"
+      STDOUT.flush
+    else
+      password=ENV['SMB_PASSWORD']
+    end
+  end
+end
+
 #
 # Vagrant configuration main
 #
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.synced_folder "etc/ansible", "/etc/ansible",
-    create: true,
-    owner: "root"
-  
+  if Vagrant::Util::Platform.windows?
+    config.vm.synced_folder '', '/vagrant',
+      type: 'smb',
+      owner: 'vagrant',
+      group: 'vagrant',
+      mount_options: ["mfsymlinks,dir_mode=0775,file_mode=0664"],
+      smb_username: username,
+      smb_password: password
+  end
+
   HOSTS.each do |host|
 
     config.vm.define host['name'] do |machine|
@@ -191,10 +223,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         # Config-deploy each of the apps
         APPS.each do |app|
-          config.vm.synced_folder "local/" + app['name'], "/home/vagrant/" + app['name'],
-            create: true,
-            group: "www-data"
-
           machine.vm.provision "alias", type: "shell",
             inline: 'sed "s|pitiribi|' + app['name'] + '|g" /vagrant/scripts/app-aliases.sh >> /home/vagrant/.profile'
 

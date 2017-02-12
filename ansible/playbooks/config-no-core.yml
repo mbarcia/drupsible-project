@@ -187,6 +187,11 @@
     tags: [ drush ]
     drush_drupal_version: "{{ app_drupal_version|default('8') }}"
     drush_app_user: "{{ app_user }}"  
+  - role: drupsible.samba
+    tags: [ samba ]
+    samba_webdomain: "{{ app_webdomain }}"
+    samba_webhost: "{{ app_webhost }}"
+    when: app_target == 'local'
   - role: drupsible.twigc
     tags: [ twigc ]
     when: app_drupal_version|version_compare('8', '==') and ansible_distribution_release != 'xenial'
