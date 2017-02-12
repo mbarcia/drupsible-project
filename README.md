@@ -104,8 +104,6 @@ vagrant provision
 
 ### Comments and observations ###
 * Your default credentials at http://local.doma.in/user/login are admin/drups1ble. You can override it later, per environment.
-* In your file manager (Windows Explorer look for \\LOCAL, or Samba shares), there will be a shared folder: local.doma.in app. Check out [the Samba role documentation](https://github.com/mbarcia/drupsible-samba#work-your-drupal-code), and work your Drupal code!
-* You will then be able to connect your IDE of choice to this folder, or use any editor to develop and test. After you are done, just commit to your GIT repository.
 * If anything changes, ie. your Git credentials, run bin/configure.sh again but this time
     * You will be asked if you want to start over
     * Say no, and you will be automatically presented with the edition of `myproject.profile`
@@ -174,22 +172,21 @@ in your myproject directory.
 
 # Developing on local
 
-## Shared folders
-You will see a new folder named "local", with a folder "ansible" and a folder named after your project/app. These are shared folders and sync 2-way between your local machine (the host) and the virtual machine (the guest).
+## Samba shares
+In your file manager (Windows Explorer look for \\LOCAL, or Samba shares), there will be 3 shares:
+* local.doma.in app
+* local.doma.in vagrant home
+* local.doma.in Ansible roles
 
-    ```
-    myproject
-    └── ansible/
-    └── bin/
-    └── scripts/
-    └── local/
-        ├── ansible
-        ├── <my-project>
-        │   ├── index.php
-        │   ├── ...
-    ```
+These Samba shares are provided to overcome the limitations of vboxsf and NFS. 
 
-Whatever you change or edit in local/<my-project>/ will be synchronized with /home/vagrant/<my-project>, and in turn, synchronized with /var/www/<my-project>/public_html, which is the web server root for the project/app.
+### local.doma.in app and vagrant home
+You will be able to connect your IDE to this app share to develop, test and debug (Xdebug should be already configured).
+
+Go to [the Samba role documentation](https://github.com/mbarcia/drupsible-samba#work-your-drupal-code) for full details on how to connect and develop.
+
+### local.doma.in Ansible roles
+This share is provided for those wishing to contribute Drupsible.
 
 # Advanced usage
 
