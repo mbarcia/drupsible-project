@@ -12,7 +12,7 @@
 
 # Basic configuration of the SSH daemon for all servers
   - role: debops.ferm
-    tags: [ ferm, sshd, sshd-ferm, ferm-sshd ]
+    tags: [ ferm, sshd, ferm-all ]
     ferm__dependent_rules: '{{ sshd__ferm__dependent_rules }}'
   - role: debops.tcpwrappers
     tags: [ tcpwrappers ]
@@ -20,7 +20,7 @@
   - role: debops.console
     tags: [ 'console' ]
   - role: debops.sshkeys
-    tags: [ sshkeys, sshd, sshd-sshkeys, sshkeys-sshd ]
+    tags: [ sshkeys, sshd, sshkeys-all ]
   - role: debops.sshd
     tags: [ sshd ]
 
@@ -51,7 +51,7 @@
 
   roles:
   - role: debops.secret
-    tags: [ secret, mysql, secret-mysql, mysql-secret ]
+    tags: [ secret, mysql, secret-mysql ]
   - role: drupsible.mysql
     tags: [ mysql ]
     mysql_mysqld_allow_group: "{{ app_name + '-' + app_target + '_deploy' }}"
@@ -83,11 +83,11 @@
       password: '{{ app_db_password | default(lookup("password", secret + "/credentials/" + app_name + "/mysql/" + app_db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
       priv: '{{ app_db_name }}%.*:ALL'
   - role: debops.ferm
-    tags: [ ferm, mysql, mysql-ferm, ferm-mysql ]
+    tags: [ ferm, mysql, ferm-mysql ]
     ferm__dependent_rules: '{{ mysql_ferm_dependent_rules_exported|default([]) }}'
     when: not app_in_cloud|bool
   - role: debops.tcpwrappers
-    tags: [ tcpwrappers, mysql, mysql-tcpwrappers, tcpwrappers-mysql ]
+    tags: [ tcpwrappers, mysql, tcpwrappers-mysql ]
     tcpwrappers_dependent_allow: '{{ mysql_tcpwrappers_dependent_allow_exported|default([]) }}'
     when: not app_in_cloud|bool
 
@@ -97,38 +97,38 @@
 
   roles:
   - role: debops.pki/env
-    tags: [ pki, secret ]
+    tags: [ pki, secret, pki-deploy ]
     when: app_https_enabled|default(False)|bool or
       (smtp_server is defined and
       smtp_port is defined and
       smtp_user is defined)
   - role: debops.secret
-    tags: [ secret, pki, pki-secret, secret-pki ]
+    tags: [ secret, pki, secret-pki-deploy ]
     secret_directories: "{{ pki_env_secret_directories|default('') }}"
     when: app_https_enabled|default(False)|bool or
       (smtp_server is defined and
       smtp_port is defined and
       smtp_user is defined)
   - role: debops.dhparam
-    tags: [ dhparam, pki, pki-dhparam, dhparam-pki ]
+    tags: [ dhparam, pki, dhparam-deploy ]
     when: app_https_enabled|default(False)|bool or
       (smtp_server is defined and
       smtp_port is defined and
       smtp_user is defined)
   - role: debops.pki
-    tags: [ pki ]
+    tags: [ pki, pki-deploy ]
     when: app_https_enabled|default(False)|bool or
       (smtp_server is defined and
       smtp_port is defined and
       smtp_user is defined)
   - role: debops.postfix
-    tags: [ postfix ]
+    tags: [ postfix, postfix-deploy ]
     postfix: [ 'client' ]
     postfix_relayhost: "[{{ smtp_server }}]:{{ smtp_port }}"
     postfix_smtp_sasl_password_map: "{ '[{{ smtp_server }}]:{{ smtp_port }}': '{{ smtp_user }}' }"
     when: smtp_server is defined and smtp_port is defined and smtp_user is defined
   - role: debops.users
-    tags: [ users ]
+    tags: [ users, users-deploy ]
     users_enabled: True
     users_list:
     - name: "{{ app_user }}"
@@ -137,7 +137,7 @@
       state: 'present'
     users_admins: [ "{{ app_user }}" ]
   - role: drupsible.apache2
-    tags: [ apache2 ]
+    tags: [ apache2, php, apache2-deploy ]
     apache2_site_name: "{{ app_name }}"
     apache2_webdomain: "{{ app_webdomain }}"
     apache2_pki_crt: "{{ deploy_pki_crt|default('/etc/pki/realms/domain/default.crt') }}"
@@ -153,7 +153,7 @@
     apache2_ping_group: "{{ app_name + '-' + app_target + '_varnish' }}"
     apache2_in_cloud: "{{ app_in_cloud }}"
   - role: drupsible.php
-    tags: [ php ]
+    tags: [ php, php-deploy, newrelic, uploadprogress, xdebug, composer, memcached, twigc, blackfire ]
     when: ansible_local.apache2.mpm != 'prefork'
     deploy_php_app_pool:
       enabled: True
@@ -163,37 +163,37 @@
       group: "{{ app_group }}"
     php__pools: [ '{{ deploy_php_app_pool }}' ]
   - role: drupsible.newrelic
-    tags: [ newrelic ]
+    tags: [ newrelic, newrelic-deploy ]
     when: provision_new_relic|default(False)|bool and 'newrelic-php5' in apache2_php5_packages_ontop|default([]) and ansible_local.apache2.mpm == 'prefork'
   - role: drupsible.uploadprogress
-    tags: [ uploadprogress ]
+    tags: [ uploadprogress, uploadprogress-deploy ]
     when: ansible_distribution_release != 'xenial'
   - role: drupsible.xdebug
-    tags: [ xdebug ]
+    tags: [ xdebug, xdebug-deploy ]
     xdebug_cli_enabled: "{{ deploy_xdebug_cli_enabled|default(False)|bool }}"
     when: deploy_xdebug_enabled|default(False)|bool
   - role: drupsible.composer
-    tags: [ composer ]
+    tags: [ composer, composer-deploy, drupal-console, drush ]
   - role: drupsible.memcached
-    tags: [ memcached ]
+    tags: [ memcached, memcached-deploy ]
     when: app_memcached_enabled|default(True)|bool
   - role: drupsible.drupal-console
-    tags: [ drupal-console ]
+    tags: [ drupal-console, drupal-console-deploy ]
     when: deploy_drupal_console_enabled|default(True)|bool
   - role: drupsible.newrelic
-    tags: [ newrelic ]
+    tags: [ newrelic, newrelic-deploy ]
     when: provision_new_relic|default(False)|bool
   - role: drupsible.drush
-    tags: [ drush ]
+    tags: [ drush, drush-deploy ]
     drush_drupal_version: "{{ app_drupal_version|default('8') }}"
     drush_app_user: "{{ app_user }}"  
   - role: drupsible.samba
-    tags: [ samba ]
+    tags: [ samba, samba-deploy ]
     samba_webdomain: "{{ app_webdomain }}"
     samba_webhost: "{{ app_webhost }}"
     when: app_target == 'local'
   - role: drupsible.twigc
-    tags: [ twigc ]
+    tags: [ twigc, twigc-deploy ]
     when: app_drupal_version|version_compare('8', '==') and ansible_distribution_release != 'xenial'
     twigc_composer_working_dir: "/home/{{ app_user }}/{{ app_name }}"
   - role: debops.ferm
@@ -202,7 +202,7 @@
     ferm__dependent_rules: '{{ postfix_ferm_dependent_rules|default([]) + apache2_ferm_dependent_rules + samba_ferm_dependent_rules|default([]) }}'
     when: not app_in_cloud|bool
   - role: drupsible.blackfire
-    tags: [ blackfire ] 
+    tags: [ blackfire, blackfire-deploy ] 
     when: deploy_blackfire_enabled|bool|default(False)
 
 - name: Varnish inventory group
@@ -211,9 +211,9 @@
 
   roles:
   - role: debops.secret
-    tags: [ secret, varnish, secret-varnish, varnish-secret ]
+    tags: [ secret, varnish, secret-varnish ]
   - role: drupsible.varnish
-    tags: [ varnish ]
+    tags: [ varnish, varnish-varnish ]
     varnish_webdomain: "{{ app_webdomain }}"
     varnish_trusted_hosts: "{{ app_server_aliases }}"
     varnish_pipe_timeout: 600
@@ -226,6 +226,6 @@
     varnish_in_cloud: "{{ app_in_cloud }}"
     when: app_varnish_enabled|bool
   - role: debops.ferm
-    tags: [ ferm, varnish, varnish-ferm, ferm-varnish ]
+    tags: [ ferm, varnish, ferm-varnish ]
     ferm__dependent_rules: "{{ varnish_ferm_dependent_rules_exported|default([]) }}"
     when: not app_in_cloud|bool

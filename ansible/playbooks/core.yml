@@ -4,5 +4,5 @@
   become: False
   roles:
     - role: debops.core
-      tags: [ 'role::core' ]
+      tags: [ 'core' ]
       become: True
