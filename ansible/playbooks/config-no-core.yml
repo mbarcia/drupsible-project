@@ -83,11 +83,11 @@
       password: '{{ app_db_password | default(lookup("password", secret + "/credentials/" + app_name + "/mysql/" + app_db_user + "/password chars=ascii_letters,digits,hexdigits length=" + mysql_password_length)) }}'
       priv: '{{ app_db_name }}%.*:ALL'
   - role: debops.ferm
-    tags: [ ferm, mysql, ferm-mysql ]
+    tags: [ ferm, mysql, ferm-mysql, deployment ]
     ferm__dependent_rules: '{{ mysql_ferm_dependent_rules_exported|default([]) }}'
     when: not app_in_cloud|bool
   - role: debops.tcpwrappers
-    tags: [ tcpwrappers, mysql, tcpwrappers-mysql ]
+    tags: [ tcpwrappers, mysql, tcpwrappers-mysql, deployment ]
     tcpwrappers_dependent_allow: '{{ mysql_tcpwrappers_dependent_allow_exported|default([]) }}'
     when: not app_in_cloud|bool
 
@@ -110,7 +110,7 @@
       smtp_port is defined and
       smtp_user is defined)
   - role: debops.dhparam
-    tags: [ dhparam, pki, dhparam-deploy ]
+    tags: [ dhparam, pki, dhparam-deploy, provision ]
     when: app_https_enabled|default(False)|bool or
       (smtp_server is defined and
       smtp_port is defined and
@@ -128,7 +128,7 @@
     postfix_smtp_sasl_password_map: "{ '[{{ smtp_server }}]:{{ smtp_port }}': '{{ smtp_user }}' }"
     when: smtp_server is defined and smtp_port is defined and smtp_user is defined
   - role: debops.users
-    tags: [ users, users-deploy ]
+    tags: [ users, users-deploy, deployment ]
     users_enabled: True
     users_list:
     - name: "{{ app_user }}"
@@ -173,18 +173,18 @@
     xdebug_cli_enabled: "{{ deploy_xdebug_cli_enabled|default(False)|bool }}"
     when: deploy_xdebug_enabled|default(False)|bool
   - role: drupsible.composer
-    tags: [ composer, composer-deploy, drupal-console, drush ]
+    tags: [ composer, composer-deploy, drupal-console, drush, provision ]
   - role: drupsible.memcached
     tags: [ memcached, memcached-deploy ]
     when: app_memcached_enabled|default(True)|bool
   - role: drupsible.drupal-console
-    tags: [ drupal-console, drupal-console-deploy ]
+    tags: [ drupal-console, drupal-console-deploy, provision ]
     when: deploy_drupal_console_enabled|default(True)|bool
   - role: drupsible.newrelic
     tags: [ newrelic, newrelic-deploy ]
     when: provision_new_relic|default(False)|bool
   - role: drupsible.drush
-    tags: [ drush, drush-deploy ]
+    tags: [ drush, drush-deploy, provision ]
     drush_drupal_version: "{{ app_drupal_version|default('8') }}"
     drush_app_user: "{{ app_user }}"  
   - role: drupsible.samba
@@ -197,7 +197,7 @@
     when: app_drupal_version|version_compare('8', '==') and ansible_distribution_release != 'xenial'
     twigc_composer_working_dir: "/home/{{ app_user }}/{{ app_name }}"
   - role: debops.ferm
-    tags: [ ferm, ferm-deploy, postfix, apache2, samba ]
+    tags: [ ferm, ferm-deploy, postfix, apache2, samba, deployment ]
     apache2_port: "{{ app_varnish_enabled|default(False)|bool|ternary(app_apache2_alt_port|default('8080'), '80') }}"
     ferm__dependent_rules: '{{ postfix_ferm_dependent_rules|default([]) + apache2_ferm_dependent_rules + samba_ferm_dependent_rules|default([]) }}'
     when: not app_in_cloud|bool
@@ -226,6 +226,6 @@
     varnish_in_cloud: "{{ app_in_cloud }}"
     when: app_varnish_enabled|bool
   - role: debops.ferm
-    tags: [ ferm, varnish, ferm-varnish ]
+    tags: [ ferm, varnish, ferm-varnish, deployment ]
     ferm__dependent_rules: "{{ varnish_ferm_dependent_rules_exported|default([]) }}"
     when: not app_in_cloud|bool
