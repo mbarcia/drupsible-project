@@ -191,7 +191,7 @@ public\_html.20160113_1452
 On OSX, you can mount the app share onto a local path, so it is easier to access by 3rd. party software, for example:
 
 ```
-  mkdir -p /Users/me/drupsible/shares/mydrupal`
+  mkdir -p /Users/me/drupsible/shares/mydrupal
   sudo mount -t smbfs "smb://Guest:@local.doma.in/app" /Users/me/drupsible/shares/mydrupal
 ```
 
