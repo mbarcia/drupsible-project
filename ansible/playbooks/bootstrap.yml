@@ -13,3 +13,4 @@
     bootstrap_admin_name: "{{ app_user }}"
     bootstrap_admin_comment: "{{ app_name }}/Drupsible administrator"
     bootstrap_admin_system: False
+    tags: [ bootstrap ]
