@@ -203,6 +203,14 @@ The logs folder contains:
 
 You can always disable syslog events in the ``ansible/playbooks/group_vars/<app_name>-local/deploy.yml`` deploy_syslog_enabled parameter (yes/no).
 
+## Find Drupal performance bottlenecks with Blackfire.io
+[Blackfire.io](https://blackfire.io) service can be used for free to assess performance of your Drupal website.
+
+By default, Blackfire is not enabled. To enable it, set these values in `ansible/playbooks/group_vars/<app_name>/deploy.yml`: 
+`deploy_blackfire_enabled: yes`, `blackfire_server_id`, `blackfire_server_token`, `blackfire_client_id`, and `blackfire_client_token`.
+
+Register for free at [https://blackfire.io](https://blackfire.io), and look for those values (server/client IDs and tokens) in your account page.
+
 # Advanced customization
 In line with Ansible's best practices, you can customize and override any value of your Drupsible stock/default by creating/editing any of the following:
 
