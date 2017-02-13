@@ -22,6 +22,7 @@
   - role: debops.sshkeys
     tags: [ sshkeys, sshd, sshkeys-all ]
   - role: debops.sshd
+    when: not packer|default(False)|bool
     tags: [ sshd ]
 
 # Timezone configuration for all servers
@@ -128,7 +129,7 @@
     postfix_smtp_sasl_password_map: "{ '[{{ smtp_server }}]:{{ smtp_port }}': '{{ smtp_user }}' }"
     when: smtp_server is defined and smtp_port is defined and smtp_user is defined
   - role: debops.users
-    tags: [ users, users-deploy, deployment ]
+    when: not packer|default(False)|bool
     users_enabled: True
     users_list:
     - name: "{{ app_user }}"
@@ -136,6 +137,7 @@
       shell: '/bin/bash'
       state: 'present'
     users_admins: [ "{{ app_user }}" ]
+    tags: [ users, users-deploy, deployment ]
   - role: drupsible.apache2
     tags: [ apache2, php, apache2-deploy ]
     apache2_site_name: "{{ app_name }}"
