@@ -189,8 +189,11 @@ public\_html.20160113_1452
 `public\_html` contains your Drupal codebase, to be edited with your favorite editor or sync'ed with your IDE workspace.
 
 On OSX, you can mount the app share onto a local path, so it is easier to access by 3rd. party software, for example:
-`mkdir -p /Users/me/drupsible/shares/mydrupal`
-`sudo mount -t smbfs "smb://Guest:@local.doma.in/app" /Users/me/drupsible/shares/mydrupal`
+
+```
+  mkdir -p /Users/me/drupsible/shares/mydrupal`
+  sudo mount -t smbfs "smb://Guest:@local.doma.in/app" /Users/me/drupsible/shares/mydrupal
+```
 
 ## Work your Drupsible code
 Under the roles share, you have access to edit all the Ansible roles that Drupsible uses. This is only intended for advanced users who want to modify the internals of Drupsible.
