@@ -82,4 +82,4 @@
   name: drupsible.drupal-console
 - src: https://github.com/mbarcia/ansible-role-blackfire.git
   version: master
-  name: blackfire
+  name: drupsible.blackfire

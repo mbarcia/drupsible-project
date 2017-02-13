@@ -201,7 +201,8 @@
     apache2_port: "{{ app_varnish_enabled|default(False)|bool|ternary(app_apache2_alt_port|default('8080'), '80') }}"
     ferm__dependent_rules: '{{ postfix_ferm_dependent_rules|default([]) + apache2_ferm_dependent_rules + samba_ferm_dependent_rules|default([]) }}'
     when: not app_in_cloud|bool
-  - role: AbdoulNdiaye.Blackfire
+  - role: drupsible.blackfire
+    tags: [ blackfire ] 
     when: deploy_blackfire_enabled|bool|default(False)
 
 - name: Varnish inventory group
