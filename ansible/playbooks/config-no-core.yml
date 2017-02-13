@@ -45,7 +45,7 @@
     when: current_ntp_status.stdout|bool != True
     tags: [ tz ]
 
-- name: MySQL
+- name: MySQL inventory group
   hosts: [ '{{ app_name }}-{{ app_target }}_mysql' ]
   become: True
 
@@ -91,7 +91,7 @@
     tcpwrappers_dependent_allow: '{{ mysql_tcpwrappers_dependent_allow_exported|default([]) }}'
     when: not app_in_cloud|bool
 
-- name: Ferm/Postfix/PHP/Composer/New Relic/Apache/uploadprogress
+- name: Deploy inventory group
   hosts: [ '{{ app_name }}-{{ app_target }}_deploy' ]
   become: True
 
@@ -201,8 +201,11 @@
     apache2_port: "{{ app_varnish_enabled|default(False)|bool|ternary(app_apache2_alt_port|default('8080'), '80') }}"
     ferm__dependent_rules: '{{ postfix_ferm_dependent_rules|default([]) + apache2_ferm_dependent_rules + samba_ferm_dependent_rules|default([]) }}'
     when: not app_in_cloud|bool
+  - role: drupsible.blackfire
+    tags: [ blackfire ] 
+    when: deploy_blackfire_enabled|bool|default(False)
 
-- name: Varnish
+- name: Varnish inventory group
   hosts: [ '{{ app_name }}-{{ app_target }}_varnish' ]
   become: True
 
