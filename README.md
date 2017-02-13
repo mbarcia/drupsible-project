@@ -211,6 +211,8 @@ By default, Blackfire is not enabled. To enable it, set these values in `ansible
 
 Register for free at [https://blackfire.io](https://blackfire.io), and look for those values (server/client IDs and tokens) in your account page.
 
+Note: You may want to disable xdebug, adding `deploy_xdebug_enabled: no`
+
 # Advanced customization
 In line with Ansible's best practices, you can customize and override any value of your Drupsible stock/default by creating/editing any of the following:
 
