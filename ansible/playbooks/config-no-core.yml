@@ -12,10 +12,10 @@
 
 # Basic configuration of the SSH daemon for all servers
   - role: debops.ferm
-    tags: [ ferm, sshd, ferm-all ]
+    tags: [ ferm, sshd, ferm-all, deployment ]
     ferm__dependent_rules: '{{ sshd__ferm__dependent_rules }}'
   - role: debops.tcpwrappers
-    tags: [ tcpwrappers ]
+    tags: [ tcpwrappers, deployment ]
     tcpwrappers_dependent_allow: '{{ sshd__tcpwrappers__dependent_allow }}'
   - role: debops.console
     tags: [ 'console' ]
