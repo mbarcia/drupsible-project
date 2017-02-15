@@ -156,7 +156,6 @@
     apache2_in_cloud: "{{ app_in_cloud }}"
   - role: drupsible.php
     tags: [ php, php-deploy, newrelic, uploadprogress, xdebug, composer, memcached, twigc, blackfire ]
-    when: ansible_local.apache2.mpm != 'prefork'
     deploy_php_app_pool:
       enabled: True
       name: "{{ app_name }}"
