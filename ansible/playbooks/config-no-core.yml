@@ -195,7 +195,7 @@
     when: app_target == 'local'
   - role: drupsible.twigc
     tags: [ twigc, twigc-deploy ]
-    when: app_drupal_version|version_compare('8', '==') and ansible_distribution_release != 'xenial'
+    when: app_drupal_version|default('8')|version_compare('8', '==') and ansible_distribution_release != 'xenial'
     twigc_composer_working_dir: "/home/{{ app_user }}/{{ app_name }}"
   - role: debops.ferm
     tags: [ ferm, ferm-deploy, postfix, apache2, samba, deployment ]
