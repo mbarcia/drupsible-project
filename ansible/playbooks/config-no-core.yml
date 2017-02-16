@@ -204,7 +204,7 @@
     when: not app_in_cloud|bool
   - role: drupsible.blackfire
     tags: [ blackfire, blackfire-deploy ] 
-    when: deploy_blackfire_enabled|bool|default(False)
+    when: deploy_blackfire_enabled|default(False)|bool
 
 - name: Varnish inventory group
   hosts: [ '{{ app_name }}-{{ app_target }}_varnish' ]
