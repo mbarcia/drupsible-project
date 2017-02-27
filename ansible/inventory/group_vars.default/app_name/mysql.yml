@@ -7,7 +7,11 @@ mysql_mysqld_bind_address: '0.0.0.0'
 # ---- MySQL server configuration ----
 # Use this hash variable to set additional mysqld options
 mysql_mysqld_options: {
+  # https://www.drupal.org/project/apdqc. REPEATABLE-READ req for ACID, SERIALIZABLE req XA
+  transaction-isolation: READ-COMMITTED,
   # INNODB
+  # https://www.drupal.org/project/apdqc. Default is 50 seconds
+  innodb_lock_wait_timeout: 20,
   'key_buffer_size': '16M',
   'innodb_buffer_pool_size': '64M',
   # In order to change this, you have to first shutdown,
