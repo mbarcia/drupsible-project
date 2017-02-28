@@ -9,3 +9,8 @@ app_user: 'vagrant'
 sshd__allow_groups: [ 'vagrant' , 'root', 'admins', 'sshusers', 'sftponly' ]
 # Allow Vagrant subnet to connect
 sshd__whitelist: [ '10.0.2.0/24' ]
+
+# Disabled ferm (firewall) in local, to speed up provisioning
+app_ferm_enabled: no
+# Disabled tcpwrappers (/etc/hosts.deny|allow) in local, to speed up provisioning
+app_tcpwrappers_enabled: no

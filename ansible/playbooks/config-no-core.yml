@@ -14,9 +14,11 @@
   - role: debops.ferm
     tags: [ ferm, sshd, ferm-all, deployment ]
     ferm__dependent_rules: '{{ sshd__ferm__dependent_rules }}'
+    when: app_ferm_enabled|default(True)|bool
   - role: debops.tcpwrappers
     tags: [ tcpwrappers, deployment ]
     tcpwrappers_dependent_allow: '{{ sshd__tcpwrappers__dependent_allow }}'
+    when: app_tcpwrappers_enabled|default(True)|bool
   - role: debops.console
     tags: [ 'console' ]
   - role: debops.sshkeys
@@ -86,11 +88,11 @@
   - role: debops.ferm
     tags: [ ferm, mysql, ferm-mysql, deployment ]
     ferm__dependent_rules: '{{ mysql_ferm_dependent_rules_exported|default([]) }}'
-    when: not app_in_cloud|bool
+    when: app_ferm_enabled|default(True)|bool
   - role: debops.tcpwrappers
     tags: [ tcpwrappers, mysql, tcpwrappers-mysql, deployment ]
     tcpwrappers_dependent_allow: '{{ mysql_tcpwrappers_dependent_allow_exported|default([]) }}'
-    when: not app_in_cloud|bool
+    when: app_tcpwrappers_enabled|default(True)|bool
 
 - name: Deploy inventory group
   hosts: [ '{{ app_name }}-{{ app_target }}_deploy' ]
@@ -201,7 +203,7 @@
     tags: [ ferm, ferm-deploy, postfix, apache2, samba, deployment ]
     apache2_port: "{{ app_varnish_enabled|default(False)|bool|ternary(app_apache2_alt_port|default('8080'), '80') }}"
     ferm__dependent_rules: '{{ postfix_ferm_dependent_rules|default([]) + apache2_ferm_dependent_rules + samba_ferm_dependent_rules|default([]) }}'
-    when: not app_in_cloud|bool
+    when: app_ferm_enabled|default(True)|bool
   - role: drupsible.blackfire
     tags: [ blackfire, blackfire-deploy ] 
     when: deploy_blackfire_enabled|default(False)|bool
@@ -229,4 +231,4 @@
   - role: debops.ferm
     tags: [ ferm, varnish, ferm-varnish, deployment ]
     ferm__dependent_rules: "{{ varnish_ferm_dependent_rules_exported|default([]) }}"
-    when: not app_in_cloud|bool
+    when: app_ferm_enabled|default(True)|bool

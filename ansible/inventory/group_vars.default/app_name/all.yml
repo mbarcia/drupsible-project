@@ -56,6 +56,11 @@ app_timezone: 'Europe/Madrid'
 # are dynamic (not static/fixed at provision/config time)
 app_in_cloud: no
 
+# Ferm (firewall) enabled
+app_ferm_enabled: "{{ (app_in_cloud|bool) | ternary(False, True) }}"
+# tcpwrappers (/etc/hosts.deny|allow) enabled
+app_tcpwrappers_enabled: "{{ (app_in_cloud|bool) | ternary(False, True) }}"
+
 #
 # Postfix defaults
 #
