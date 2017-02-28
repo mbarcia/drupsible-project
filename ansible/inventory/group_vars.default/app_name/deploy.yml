@@ -99,7 +99,7 @@ apache2_mod_php5_packages_ontop:
 - php5-gmp
 - php5-mcrypt
 - php5-memcache
-- php5-mysql
+- php5-mysqlnd
 - newrelic-php5
 
 apache2_mod_php_post_max_size: "32M"
@@ -120,7 +120,7 @@ php__packages:
 - php-pear
 - php-soap
 - gmp
-- mysql
+- mysqlnd
 
 php__post_max_size: '32M'
 
