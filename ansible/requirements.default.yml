@@ -20,9 +20,6 @@
 - src: https://github.com/mbarcia/ansible-users
   version: v0.1.6
   name: debops.users
-- src: https://github.com/mbarcia/ansible-pki
-  version: cf098a574d290e0db0145e59295f497e77eb7e52
-  name: debops.pki
 - src: https://github.com/mbarcia/ansible-postfix
   version: b0ad5f6437ec95d263e663d27723488aa6b97bdc
   name: debops.postfix
@@ -38,9 +35,6 @@
 - src: https://github.com/debops/ansible-etc_services
   version: v0.3.0
   name: debops.etc_services
-- src: https://github.com/mbarcia/ansible-dhparam
-  version: b9bc52fd34d4f55020e41b3fc0d0bfb96c41d02f
-  name: debops.dhparam
 - src: https://github.com/mbarcia/drupsible-apache
   version: master
   name: drupsible.apache2

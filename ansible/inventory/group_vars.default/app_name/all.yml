@@ -69,13 +69,6 @@ app_tcpwrappers_enabled: "{{ (app_in_cloud|bool) | ternary(False, True) }}"
 postfix_smtp_sasl_password_map_per_host: False
 
 #
-# PKI defaults
-#
-
-# Self-signed certs
-pki_ca_domain: "{{ app_webdomain }}"
-
-#
 # Debops sshd defaults
 #
 
