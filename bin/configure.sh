@@ -545,7 +545,7 @@ echo
 #
 # Connect to a new or existing ssh-agent
 #
-if ([ "$GIT_PASS" == "" ] && [ "$USE_INSTALL_PROFILE" != "yes" ] && [ "$USE_CODEBASE_TARBALL" != "yes" ]) || [ "$USE_UPSTREAM_SITE" == "yes" ]; then
+if ([ "$GIT_PASS" == "" ] && ([ "$USE_INSTALL_PROFILE" != "yes" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$CUSTOM_INSTALL_PROFILE" != "" ])) && [ "$USE_CODEBASE_TARBALL" != "yes" ]) || [ "$USE_UPSTREAM_SITE" == "yes" ]; then
   echo "SSH key filename (to git clone, and/or sync with the upstream host)? [$HOME/.ssh/id_rsa]"
   read -r KEY_FILENAME
   if [ "$KEY_FILENAME" == "" ]; then
