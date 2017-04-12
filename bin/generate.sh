@@ -206,6 +206,10 @@ do
   sed -i.bak "s/deploy_git_repo_user:.*$/deploy_git_repo_user: \"${GIT_USER}\"/g" deploy.yml
   sed -i.bak "s|deploy_git_repo_path:.*$|deploy_git_repo_path: \"${GIT_PATH}\"|g" deploy.yml
   sed -i.bak "s|deploy_git_repo_version:.*$|deploy_git_repo_version: \"${GIT_BRANCH}\"|g" deploy.yml
+  # SMTP config
+  sed -i.bak "s/smtp_server:.*$/smtp_server: \"${SMTP_SERVER}\"/g" deploy.yml
+  sed -i.bak "s/smtp_port:.*$/smtp_port: \"${SMTP_PORT}\"/g" deploy.yml
+  sed -i.bak "s/smtp_user:.*$/smtp_user: \"${SMTP_USER}\"/g" deploy.yml
   # Change directory out of group vars
   cd - > /dev/null || exit 2
 done
