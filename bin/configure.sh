@@ -425,8 +425,8 @@ IFS=','
 options=( $optionstring )
 # Restore the IFS
 IFS=${OIFS}
-set $(dd if=/dev/urandom bs=2 count=1 2>/dev/null | od -An -tu1 | xargs)
-IP_ADDR_RANDOM="192.168.${1}.${2}"
+IP_ADDR_RANDOM_BIT=$(dd if=/dev/urandom bs=2 count=1 2>/dev/null | od -An -tu1 | sed -e 's/^ *//' -e 's/  */./g' -e 's/^\(.*\)\.$/\1/g')
+IP_ADDR_RANDOM="192.168.${IP_ADDR_RANDOM_BIT}"
 IP_ADDR=""
 select opt in "${options[@]}"
 do
