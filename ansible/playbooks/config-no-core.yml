@@ -49,6 +49,8 @@
     command: /usr/bin/timedatectl set-ntp true
     when: current_ntp_status.stdout|bool != True
     tags: [ tz ]
+    # Ignoring errors until https://github.com/ansible/ansible/pull/19367
+    ignore_errors: yes
 
 - name: MySQL inventory group
   hosts: [ '{{ app_name }}-{{ app_target }}_mysql' ]
