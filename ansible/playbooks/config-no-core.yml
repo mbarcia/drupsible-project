@@ -38,6 +38,8 @@
     command: "/usr/bin/timedatectl set-timezone {{ app_timezone|default('Europe/Madrid') }}"
     tags: [ tz ]
     when: current_timezone.stdout != app_timezone|default('Europe/Madrid')
+    # Ignoring errors until https://github.com/ansible/ansible/pull/19367
+    ignore_errors: yes
   - name: Get current ntp status
     shell: '/usr/bin/timedatectl status | grep -e "NTP enabled" -e "Network time on" | sed "s/.*[NTP enabled|Network time on]: \(.*\)$/\1/g"'
     register: current_ntp_status
