@@ -258,7 +258,7 @@ if [ "$USE_INSTALL_PROFILE" == "yes" ]; then
   sed -i.bak "s|USE_SITE_INSTALL=.*$|USE_SITE_INSTALL=\"${USE_SITE_INSTALL}\"|g" "${APP_NAME}.profile.tmp"
 fi
 echo
-if [ "$USE_SITE_INSTALL" != "yes" ]; then
+if [ "$USE_SITE_INSTALL" == "" || "$USE_SITE_INSTALL" == "no" ]; then
   echo "Are you importing the content from another Drupal site? (y|n)"
   echo "You will need to inform its remote host, user, and base path."
   if askyesno; then
@@ -333,7 +333,7 @@ if [ "$USE_SITE_INSTALL" != "yes" ]; then
     # Write SYNC_DB
     sed -i.bak "s|SYNC_DB=.*$|SYNC_DB=\"${SYNC_DB}\"|g" "${APP_NAME}.profile.tmp"
   fi
-  if [ "$SYNC_DB" != "yes" ]; then
+  if [ "$SYNC_DB" == "" ] || [ "$SYNC_DB" == "no" ]; then
     echo "The DB dump is a SQL file, in plain text (.sql) or gzipped (.sql.gz), and must be present in ansible/playbooks/dbdumps."
     echo "Make sure the SQL statements do NOT start with a CREATE DATABASE."
     echo "DB dump filename?"
@@ -341,7 +341,7 @@ if [ "$USE_SITE_INSTALL" != "yes" ]; then
     # Write DBDUMP
     sed -i.bak "s|DBDUMP=.*$|DBDUMP=\"${DBDUMP}\"|g" "${APP_NAME}.profile.tmp"
   fi
-  if [ "$SYNC_FILES" != "yes" ]; then
+  if [ "$SYNC_FILES" == "" ] || [ "$SYNC_FILES" == "no" ]; then
     echo "The files archive can be a tar (.tar), a gzip (.tar.gz), a bzip2 or a xz archive, and must be present in ansible/playbooks/files-tarballs."
     echo "Make sure the archive you provide produces a 'files' folder when decompressed."
     echo "Files tarball filename?"
@@ -351,7 +351,7 @@ if [ "$USE_SITE_INSTALL" != "yes" ]; then
   fi
 fi
 echo
-if [ "$USE_INSTALL_PROFILE" != "yes" ] || ([ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$CUSTOM_INSTALL_PROFILE" != "" ]); then
+if ([ "$USE_INSTALL_PROFILE" == "" ] || [ "$USE_INSTALL_PROFILE" == "no" ]) || ([ "$USE_INSTALL_PROFILE" == "yes" ] && [ "$CUSTOM_INSTALL_PROFILE" != "" ]); then
   echo "Using a codebase tarball? (y|n)"
   if askyesno; then
     USE_CODEBASE_TARBALL='yes'
