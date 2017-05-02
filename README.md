@@ -50,7 +50,7 @@ In the future, Drupsible may run on other *nix platforms.
 1. Run the configuration wizard
 
     ```
-    . ./bin/configure.sh
+    source ./bin/configure.sh
     ```
 1. Drupsible will start an interactive session, asking for the handful of values that really matter (app name, domain name, etc.).
 1. Drupsible will
