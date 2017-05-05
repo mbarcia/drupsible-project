@@ -1,10 +1,21 @@
 #!/bin/bash
 export PYTHONUNBUFFERED=1
+
+ANSIBLE_VERSION="2.3.0"
+ANSIBLE_UPGRADE="no"
+
 # Install Ansible and its dependencies if it's not installed already.
 if [ -f /usr/bin/ansible ] || [ -f /usr/local/bin/ansible ]; then
-	echo "Ansible is installed ($(ansible --version))"
-	pip install --upgrade pip
-else
+	ANSIBLE_VERSION_PACKED=$(ansible --version | grep "ansible 2" | sed 's/^ansible \(.*$\)/\1/g')
+	if [ "$ANSIBLE_VERSION" == "$ANSIBLE_VERSION_PACKED" ]; then
+		echo "Ansible is installed ($ANSIBLE_VERSION_PACKED)"
+		pip install --upgrade pip
+	else
+		ANSIBLE_UPGRADE="yes"
+	fi
+fi
+
+if [ "$ANSIBLE_UPGRADE" == "yes" ]; then
 	echo "Installing Ansible dependencies..."
 	export DEBIAN_FRONTEND=noninteractive
 	apt-get update
@@ -16,8 +27,10 @@ else
 	pip install setuptools setupext-pip --upgrade
 	pip install cryptography --upgrade
 	pip install paramiko PyYAML Jinja2 httplib2 six markupsafe
-	pip install ansible==2.0.2.0
+	echo "Installing Ansible $ANSIBLE_VERSION..."
+	pip install ansible=="${ANSIBLE_VERSION}"
 fi
+
 echo "Installing Debops support..."
 pip install debops
 # Download Drupsible roles
