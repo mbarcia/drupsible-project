@@ -21,7 +21,7 @@
   version: v0.1.6
   name: debops.users
 - src: https://github.com/mbarcia/ansible-postfix
-  version: b0ad5f6437ec95d263e663d27723488aa6b97bdc
+  version: master
   name: debops.postfix
 - src: https://github.com/debops/ansible-sshkeys
   version: 52e8497a37c764b79efd97ee31a38974620a27f1
