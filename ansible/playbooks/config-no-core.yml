@@ -106,15 +106,15 @@
   - role: debops.secret
     tags: [ secret ]
     when: app_https_enabled|default(False)|bool or
-      (smtp_server is defined and
-      smtp_port is defined and
-      smtp_user is defined)
+      (smtp_server|d("") != "" and
+      smtp_port|d("") != "" and
+      smtp_user|d("") != "")
   - role: debops.postfix
     tags: [ postfix, postfix-deploy ]
     postfix: [ 'client' ]
     postfix_relayhost: "[{{ smtp_server }}]:{{ smtp_port }}"
     postfix_smtp_sasl_password_map: "{ '[{{ smtp_server }}]:{{ smtp_port }}': '{{ smtp_user }}' }"
-    when: smtp_server is defined and smtp_port is defined and smtp_user is defined
+    when: smtp_server|d("") != "" and smtp_port|d("") != "" and smtp_user|d("") != ""
   - role: debops.users
     when: not packer|default(False)|bool
     users_enabled: True

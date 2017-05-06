@@ -185,3 +185,10 @@ blackfire_apache_enable: false
 
 # Restart php fpm after the activation of blackfire php extension
 blackfire_php_fpm_enable: false
+
+#
+# External Gmail SMTP server configuration 
+#
+smtp_server: ''
+smtp_port: ''
+smtp_user: ''
