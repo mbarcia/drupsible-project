@@ -1,7 +1,7 @@
 #!/bin/bash
 export PYTHONUNBUFFERED=1
 
-ANSIBLE_VERSION="2.3.0"
+ANSIBLE_VERSION="2.3.0.0"
 ANSIBLE_UPGRADE="no"
 
 # Install Ansible and its dependencies if it's not installed already.
@@ -26,7 +26,11 @@ if [ "$ANSIBLE_UPGRADE" == "yes" ]; then
 	pip install --upgrade pip
 	pip install setuptools setupext-pip --upgrade
 	pip install cryptography --upgrade
-	pip install paramiko PyYAML Jinja2 httplib2 six markupsafe
+	pip install paramiko PyYAML httplib2 six markupsafe
+	# Jinja2 2.9 to 2.9.6 breaks Ansible 2.2 and 2.3. 
+	# See https://github.com/ansible/ansible/issues/20063 
+    # Ansible 2.3.0.1 will fix this
+    pip install -U 'jinja2<2.9' 
 	echo "Installing Ansible $ANSIBLE_VERSION..."
 	pip install ansible=="${ANSIBLE_VERSION}"
 fi
