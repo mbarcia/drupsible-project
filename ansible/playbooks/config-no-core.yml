@@ -111,7 +111,7 @@
       smtp_user|d("") != "")
   - role: debops.postfix
     tags: [ postfix, postfix-deploy ]
-    postfix: [ 'client' ]
+    postfix: [ 'client', 'auth' ]
     postfix_relayhost: "[{{ smtp_server }}]:{{ smtp_port }}"
     postfix_smtp_sasl_password_map: "{ '[{{ smtp_server }}]:{{ smtp_port }}': '{{ smtp_user }}' }"
     when: smtp_server|d("") != "" and smtp_port|d("") != "" and smtp_user|d("") != ""
