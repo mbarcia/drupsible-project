@@ -22,11 +22,12 @@ if [ "$ANSIBLE_UPGRADE" == "yes" ]; then
 	apt-get install -y zlib1g-dev libssl-dev libreadline-gplv2-dev libffi-dev
 	apt-get install -y curl unzip
 	apt-get install -y git python python-dev python-setuptools python-pip python-netaddr
-	# Make sure setuptools are installed correctly.
-	pip install --upgrade pip
-	pip install setuptools setupext-pip --upgrade
-	pip install cryptography --upgrade
-	pip install paramiko PyYAML Jinja2 httplib2 six markupsafe
+    # Make sure setuptools are installed correctly.
+    pip install --upgrade pip
+    pip install --upgrade setuptools setupext-pip
+    pip install --upgrade cryptography
+    pip install --upgrade paramiko PyYAML Jinja2 httplib2 six markupsafe
+    pip install --upgrade pyOpenSSL
 	# Jinja2 2.9 to 2.9.6 breaks Ansible 2.3.0.0 
 	# See https://github.com/ansible/ansible/issues/20063 
     # Ansible version next to 2.3.0.0 will fix this
