@@ -258,7 +258,7 @@ if [ "$USE_INSTALL_PROFILE" == "yes" ]; then
   sed -i.bak "s|USE_SITE_INSTALL=.*$|USE_SITE_INSTALL=\"${USE_SITE_INSTALL}\"|g" "${APP_NAME}.profile.tmp"
 fi
 echo
-if [ "$USE_SITE_INSTALL" == "" || "$USE_SITE_INSTALL" == "no" ]; then
+if [ "$USE_SITE_INSTALL" == "" ] || [ "$USE_SITE_INSTALL" == "no" ]; then
   echo "Are you importing the content from another Drupal site? (y|n)"
   echo "You will need to inform its remote host, user, and base path."
   if askyesno; then
