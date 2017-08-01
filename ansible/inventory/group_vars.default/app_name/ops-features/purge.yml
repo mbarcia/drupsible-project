@@ -1,0 +1,17 @@
+---
+purge_drupal8_modules_enabled:
+- purge
+- purge_ui
+- purge_drush
+- purge_queuer_coretags
+- purge_processor_cron
+- purge_tokens
+- purge_processor_lateruntime
+  
+purge_config_sets:
+  purge.plugins:
+    purgers.0.order_index: '1'
+    purgers.0.instance_id: db413bd5ce
+    purgers.0.plugin_id: http
+  system.performance:
+    cache.page.max_age: "{{ deploy_page_cache_max_age|d('600') }}"

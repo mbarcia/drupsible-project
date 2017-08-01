@@ -1,0 +1,6 @@
+---
+memcache_storage_drupal8_modules_enabled:
+- memcache_storage
+
+memcache_storage_drupal7_modules_enabled:
+- memcache_storage

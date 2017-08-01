@@ -1,0 +1,17 @@
+---
+# Ops features provided by default in Drupal 8
+deploy_drupal8_projects_base:
+#- purge
+#- purge_purger_http
+- memcache_storage
+
+# To be overridden by the user
+deploy_drupal8_projects: []
+
+# Ops features provided by default in Drupal 7
+deploy_drupal7_projects_base:
+- memcache_storage
+#- securepages
+
+# To be overridden by the user
+deploy_drupal7_projects: []

@@ -1,0 +1,15 @@
+---
+purge_purger_http_drupal8_modules_enabled:
+- purge_purger_http
+  
+purge_purger_http_config_sets:
+  purge_purger_http.settings.db413bd5ce:
+    uuid: a499996a-f2a5-4ca1-bd8e-1e17925947ae
+    status: 'true'
+    id: db413bd5ce
+    name: 'Drupsible-Varnish-HTTP-purger'
+    invalidationtype: tag
+    hostname: "{{ groups[ app_name + '-' + app_target + '_' + 'varnish'][0] }}.{{ app_webdomain }}"
+    port: '80'
+    path: /
+    request_method: PURGE
