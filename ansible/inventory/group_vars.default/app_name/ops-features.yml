@@ -12,6 +12,7 @@ deploy_drupal8_projects: []
 deploy_drupal7_projects_base:
 - memcache_storage
 #- securepages
+#- varnish
 
 # To be overridden by the user
 deploy_drupal7_projects: []

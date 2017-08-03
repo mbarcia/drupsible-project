@@ -138,10 +138,12 @@ do
       sed -i.bak "s|app_varnish_enabled:.*$|app_varnish_enabled: yes|g" all.yml
       sed -i.bak "s|^#- purge$|- purge|g" ops-features.yml
       sed -i.bak "s|^#- purge_purger_http$|- purge_purger_http|g" ops-features.yml
+      sed -i.bak "s|^#- varnish$|- varnish|g" ops-features.yml
     else
       sed -i.bak "s|app_varnish_enabled:.*$|app_varnish_enabled: no|g" all.yml
       sed -i.bak "s|^- purge$|-# purge|g" ops-features.yml
       sed -i.bak "s|^- purge_purger_http$|-# purge_purger_http|g" ops-features.yml
+      sed -i.bak "s|^- varnish$|-# varnish|g" ops-features.yml
     fi
   fi
   sed -i.bak "s|app_timezone:.*$|app_timezone: '${APP_TIMEZONE}'|g" all.yml
