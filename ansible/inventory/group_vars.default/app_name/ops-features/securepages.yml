@@ -6,4 +6,4 @@ securepages_core_drupal7_patches:
 - 'https://www.drupal.org/files/issues/471970_0.patch'
 
 securepages_variables:
-- securepages_enable: '1'
+  securepages_enable: '1'
