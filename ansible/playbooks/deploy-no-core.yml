@@ -22,6 +22,7 @@
     deploy_webhost: "{{ app_webhost }}"
     deploy_trusted_host_patterns: [ "(?i)^.+\\.{{ app_webdomain|regex_replace('[.]', '\\.') }}$" ]
     deploy_varnish_servers: "{{ groups[ app_name + '-' + app_target + '_varnish' ] }}"
+    deploy_varnish_control_key: "{{ lookup('password', secret + '/credentials/' + inventory_hostname + '/varnish/secret chars=ascii_letters,digits,hexdigits') }}"
     deploy_mysql_host: "{{ groups[ app_name + '-' + app_target + '_mysql' ][0] }}"
     deploy_db_name: "{{ app_db_name }}"
     deploy_db_user: "{{ app_db_user }}"
