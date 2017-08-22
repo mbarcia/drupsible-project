@@ -2,8 +2,8 @@ securepages_drupal7_modules_enabled:
 - securepages
 
 securepages_core_drupal7_patches:
-- 'https://www.drupal.org/files/drupal-https-only-961508-23-32.patch'
-- 'https://www.drupal.org/files/issues/471970_0.patch'
+- 'ops-features/corepatches/drupal-https-only-961508-23-32.patch'
+- 'ops-features/corepatches/471970_0.patch'
 
 securepages_variables:
   securepages_enable: '1'
