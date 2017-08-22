@@ -11,7 +11,7 @@ hosts:
   ip_addr: ''
   netmask: '255.255.255.0'
   # Amount of memory assigned to the VM in Megs
-  ram: 1024
+  ram: 2048
   gui: false
   # mbarcia/drupsible is a Debian Jessie box with 6GB of disk space and Ansible 2 pre-installed
   box: 'mbarcia/drupsible'
