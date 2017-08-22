@@ -21,7 +21,7 @@
   version: v0.1.6
   name: debops.users
 - src: https://github.com/mbarcia/ansible-postfix
-  version: master
+   version: 1.0
   name: debops.postfix
 - src: https://github.com/debops/ansible-sshkeys
   version: 52e8497a37c764b79efd97ee31a38974620a27f1
@@ -30,50 +30,50 @@
   version: v0.2.3
   name: debops.sshd
 - src: https://github.com/mbarcia/ansible-php
-  version: master
+   version: 1.0
   name: drupsible.php
 - src: https://github.com/debops/ansible-etc_services
   version: v0.3.0
   name: debops.etc_services
 - src: https://github.com/mbarcia/drupsible-apache
-  version: master
+   version: 1.0
   name: drupsible.apache2
 - src: https://github.com/mbarcia/drupsible-memcached
-  version: master
+   version: 1.0
   name: drupsible.memcached
 - src: https://github.com/mbarcia/drupsible-newrelic
-  version: master
+   version: 1.0
   name: drupsible.newrelic
 - src: https://github.com/mbarcia/drupsible-composer
-  version: master
+   version: 1.0
   name: drupsible.composer
 - src: https://github.com/mbarcia/drupsible-drush
-  version: master
+   version: 1.0
   name: drupsible.drush
 - src: https://github.com/mbarcia/drupsible-samba
-  version: master
+   version: 1.0
   name: drupsible.samba
 - src: https://github.com/mbarcia/drupsible-mysql
-  version: master
+   version: 1.0
   name: drupsible.mysql
 - src: https://github.com/mbarcia/drupsible-deploy
-  version: master
+   version: 1.0
   name: drupsible.deploy
 - src: https://github.com/mbarcia/drupsible-varnish
-  version: master
+   version: 1.0
   name: drupsible.varnish
 - src: https://github.com/mbarcia/drupsible-uploadprogress
-  version: master
+   version: 1.0
   name: drupsible.uploadprogress
 - src: https://github.com/mbarcia/drupsible-xdebug
-  version: master
+   version: 1.0
   name: drupsible.xdebug
 - src: https://github.com/mbarcia/drupsible-twigc
-  version: master
+   version: 1.0
   name: drupsible.twigc
 - src: https://github.com/mbarcia/drupsible-drupal-console
-  version: master
+   version: 1.0
   name: drupsible.drupal-console
 - src: https://github.com/mbarcia/ansible-role-blackfire
-  version: master
+   version: 1.0
   name: drupsible.blackfire
