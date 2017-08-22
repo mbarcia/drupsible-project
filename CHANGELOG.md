@@ -1,3 +1,121 @@
+Release Notes - Drupsible - Version 1.0
+
+## Task
+
+*   [[DRUPSIBLE-138](https://drupsible.atlassian.net/browse/DRUPSIBLE-138)] - Move Twig's C extension to its own role
+*   [[DRUPSIBLE-164](https://drupsible.atlassian.net/browse/DRUPSIBLE-164)] - Prefix some more vars
+*   [[DRUPSIBLE-174](https://drupsible.atlassian.net/browse/DRUPSIBLE-174)] - Enable memcache_storage also for D8
+*   [[DRUPSIBLE-175](https://drupsible.atlassian.net/browse/DRUPSIBLE-175)] - Add no_log to tasks/templates with secrets
+*   [[DRUPSIBLE-178](https://drupsible.atlassian.net/browse/DRUPSIBLE-178)] - Fix warning
+*   [[DRUPSIBLE-184](https://drupsible.atlassian.net/browse/DRUPSIBLE-184)] - Rename webdomain to app_webdomain
+*   [[DRUPSIBLE-193](https://drupsible.atlassian.net/browse/DRUPSIBLE-193)] - update settings.php to D8.1
+*   [[DRUPSIBLE-203](https://drupsible.atlassian.net/browse/DRUPSIBLE-203)] - Upgrade drupsible-vm (normal and large) to Debian Jessie 8.4 and Ansible 2.0.2.0
+*   [[DRUPSIBLE-204](https://drupsible.atlassian.net/browse/DRUPSIBLE-204)] - Upgrade to latest version of debops.php5
+*   [[DRUPSIBLE-207](https://drupsible.atlassian.net/browse/DRUPSIBLE-207)] - Remove previous workaround
+*   [[DRUPSIBLE-218](https://drupsible.atlassian.net/browse/DRUPSIBLE-218)] - Replace admin for user 1, as admin is not always the user 1 name
+*   [[DRUPSIBLE-221](https://drupsible.atlassian.net/browse/DRUPSIBLE-221)] - Improve messages and don't ask for SSH key if doing tarballs
+*   [[DRUPSIBLE-222](https://drupsible.atlassian.net/browse/DRUPSIBLE-222)] - Update README for 1.0 release
+*   [[DRUPSIBLE-225](https://drupsible.atlassian.net/browse/DRUPSIBLE-225)] - Remove MySQL dependencies (secret/ferm/tcpwrappers)
+*   [[DRUPSIBLE-254](https://drupsible.atlassian.net/browse/DRUPSIBLE-254)] - Decouple Drush role variables
+*   [[DRUPSIBLE-256](https://drupsible.atlassian.net/browse/DRUPSIBLE-256)] - Upgrade drupsible vm (-large) to Debian Jessie to 8.7.1 and latest vbox guest additions
+*   [[DRUPSIBLE-259](https://drupsible.atlassian.net/browse/DRUPSIBLE-259)] - Get the Samba share back (reloaded)
+*   [[DRUPSIBLE-260](https://drupsible.atlassian.net/browse/DRUPSIBLE-260)] - Better structure dependencies with tags
+*   [[DRUPSIBLE-261](https://drupsible.atlassian.net/browse/DRUPSIBLE-261)] - Provision Drupsible VM
+*   [[DRUPSIBLE-266](https://drupsible.atlassian.net/browse/DRUPSIBLE-266)] - Optimize mysql
+*   [[DRUPSIBLE-267](https://drupsible.atlassian.net/browse/DRUPSIBLE-267)] - Make skipping tcpwrappers and ferm roles the default playbook behavior in local
+*   [[DRUPSIBLE-269](https://drupsible.atlassian.net/browse/DRUPSIBLE-269)] - Support BigPipe
+*   [[DRUPSIBLE-273](https://drupsible.atlassian.net/browse/DRUPSIBLE-273)] - Upgrade to Ansible Container 0.3.0
+*   [[DRUPSIBLE-274](https://drupsible.atlassian.net/browse/DRUPSIBLE-274)] - I want smtp settings to be generated automatically from configure.sh
+*   [[DRUPSIBLE-275](https://drupsible.atlassian.net/browse/DRUPSIBLE-275)] - Upgrade Drupsible to Ansible 2.3
+
+## Bug
+
+*   [[DRUPSIBLE-167](https://drupsible.atlassian.net/browse/DRUPSIBLE-167)] - Varnish control key must be stored per host, not per app
+*   [[DRUPSIBLE-170](https://drupsible.atlassian.net/browse/DRUPSIBLE-170)] - DOMAIN is not regex-replaced correctly after the first time
+*   [[DRUPSIBLE-183](https://drupsible.atlassian.net/browse/DRUPSIBLE-183)] - Fix firewall issues with the Samba access
+*   [[DRUPSIBLE-189](https://drupsible.atlassian.net/browse/DRUPSIBLE-189)] - Fix memcache config for D8
+*   [[DRUPSIBLE-220](https://drupsible.atlassian.net/browse/DRUPSIBLE-220)] - vagrant up fails when box_url not given (which is not the default)
+*   [[DRUPSIBLE-226](https://drupsible.atlassian.net/browse/DRUPSIBLE-226)] - Fix and improve ssh-agent.ssh
+*   [[DRUPSIBLE-230](https://drupsible.atlassian.net/browse/DRUPSIBLE-230)] - Fix reverse proxy headers
+*   [[DRUPSIBLE-231](https://drupsible.atlassian.net/browse/DRUPSIBLE-231)] - tcpwrappers locked me out of the VM
+*   [[DRUPSIBLE-239](https://drupsible.atlassian.net/browse/DRUPSIBLE-239)] - Fix sed in OSX
+*   [[DRUPSIBLE-241](https://drupsible.atlassian.net/browse/DRUPSIBLE-241)] - Fatal error due to undefined vars deploy_modules_present_app and deploy_modules_absent_app
+*   [[DRUPSIBLE-245](https://drupsible.atlassian.net/browse/DRUPSIBLE-245)] - Random IP generation broken
+*   [[DRUPSIBLE-246](https://drupsible.atlassian.net/browse/DRUPSIBLE-246)] - Fix timezone detection in OSX
+*   [[DRUPSIBLE-249](https://drupsible.atlassian.net/browse/DRUPSIBLE-249)] - composer install runs out of memory
+*   [[DRUPSIBLE-250](https://drupsible.atlassian.net/browse/DRUPSIBLE-250)] - Keep up with varnishlog being removed from Debian pkg in 4.1
+*   [[DRUPSIBLE-251](https://drupsible.atlassian.net/browse/DRUPSIBLE-251)] - varnish_app_name cannot contain hyphens
+*   [[DRUPSIBLE-264](https://drupsible.atlassian.net/browse/DRUPSIBLE-264)] - Config sync directory
+*   [[DRUPSIBLE-265](https://drupsible.atlassian.net/browse/DRUPSIBLE-265)] - Error on pki role while provisioning
+*   [[DRUPSIBLE-283](https://drupsible.atlassian.net/browse/DRUPSIBLE-283)] - Deploy disrupted by securepages
+*   [[DRUPSIBLE-284](https://drupsible.atlassian.net/browse/DRUPSIBLE-284)] - Postfix fails when /etc/postifx/sasl does not exist
+*   [[DRUPSIBLE-285](https://drupsible.atlassian.net/browse/DRUPSIBLE-285)] - pyopenssl needs upgrade
+*   [[DRUPSIBLE-286](https://drupsible.atlassian.net/browse/DRUPSIBLE-286)] - missing square brackets
+
+## Story
+
+*   [[DRUPSIBLE-37](https://drupsible.atlassian.net/browse/DRUPSIBLE-37)] - I want Varnish to cache and serve disencrypted HTTPS requests
+*   [[DRUPSIBLE-53](https://drupsible.atlassian.net/browse/DRUPSIBLE-53)] - Support D8 caching
+*   [[DRUPSIBLE-139](https://drupsible.atlassian.net/browse/DRUPSIBLE-139)] - Add source/upstream configuration to be entered from the beginning with configure.sh
+*   [[DRUPSIBLE-141](https://drupsible.atlassian.net/browse/DRUPSIBLE-141)] - Make homepage redirection not be the default in case of i18n sites
+*   [[DRUPSIBLE-157](https://drupsible.atlassian.net/browse/DRUPSIBLE-157)] - I want to decide whether or not to change the admin password once deployed
+*   [[DRUPSIBLE-158](https://drupsible.atlassian.net/browse/DRUPSIBLE-158)] - I want to tell deploy_xdebug_enabled (per target environment) instead of having an app_xdebug_targets list
+*   [[DRUPSIBLE-159](https://drupsible.atlassian.net/browse/DRUPSIBLE-159)] - I want more in-line help when configuring the app for the first time.
+*   [[DRUPSIBLE-160](https://drupsible.atlassian.net/browse/DRUPSIBLE-160)] - I want to decide whether translations are updated, per environment
+*   [[DRUPSIBLE-161](https://drupsible.atlassian.net/browse/DRUPSIBLE-161)] - I want to make my D8 website accessible through HTTPS, like I do with my D7 sites
+*   [[DRUPSIBLE-163](https://drupsible.atlassian.net/browse/DRUPSIBLE-163)] - I want to build my D8 project using composer
+*   [[DRUPSIBLE-166](https://drupsible.atlassian.net/browse/DRUPSIBLE-166)] - I want an alias for the playbooks so my life is easier
+*   [[DRUPSIBLE-168](https://drupsible.atlassian.net/browse/DRUPSIBLE-168)] - I need to update Composer's checksum
+*   [[DRUPSIBLE-169](https://drupsible.atlassian.net/browse/DRUPSIBLE-169)] - Remove vagrant-cachier plugin from Vagrantfile
+*   [[DRUPSIBLE-171](https://drupsible.atlassian.net/browse/DRUPSIBLE-171)] - I want improvements to the wizard bin/configure.sh
+*   [[DRUPSIBLE-172](https://drupsible.atlassian.net/browse/DRUPSIBLE-172)] - I want to specify the local hostname
+*   [[DRUPSIBLE-173](https://drupsible.atlassian.net/browse/DRUPSIBLE-173)] - I want to improve the injection of config into settings.php
+*   [[DRUPSIBLE-176](https://drupsible.atlassian.net/browse/DRUPSIBLE-176)] - I want to use varnishlog and varnishncsa too
+*   [[DRUPSIBLE-177](https://drupsible.atlassian.net/browse/DRUPSIBLE-177)] - I want to use Varnish latest version 4.1 (has xhkey for D8 caching and 8.1's big pipe)
+*   [[DRUPSIBLE-179](https://drupsible.atlassian.net/browse/DRUPSIBLE-179)] - As a new user, I want to easily enable SMTP from the beginning, so that my Drupal app can send out emails
+*   [[DRUPSIBLE-180](https://drupsible.atlassian.net/browse/DRUPSIBLE-180)] - I want to install the new Drupal 8.1
+*   [[DRUPSIBLE-181](https://drupsible.atlassian.net/browse/DRUPSIBLE-181)] - I want my git password stored outside main app.profile and YAML config files
+*   [[DRUPSIBLE-182](https://drupsible.atlassian.net/browse/DRUPSIBLE-182)] - Fine-tune Varnish probe parameters
+*   [[DRUPSIBLE-185](https://drupsible.atlassian.net/browse/DRUPSIBLE-185)] - I don't want composer version to change, unless I want it to be a specific one
+*   [[DRUPSIBLE-186](https://drupsible.atlassian.net/browse/DRUPSIBLE-186)] - I want to be asked about the VM's IP (static or dynamic)
+*   [[DRUPSIBLE-187](https://drupsible.atlassian.net/browse/DRUPSIBLE-187)] - I want to specify guest param in vagrant.yml for all providers (and some guidance) (was: I want to be asked about the VM box (normal or large or custom)
+*   [[DRUPSIBLE-197](https://drupsible.atlassian.net/browse/DRUPSIBLE-197)] - Inform real client IP in access log
+*   [[DRUPSIBLE-198](https://drupsible.atlassian.net/browse/DRUPSIBLE-198)] - I want feedback of the defaults when running configure.sh
+*   [[DRUPSIBLE-199](https://drupsible.atlassian.net/browse/DRUPSIBLE-199)] - Add shallow-clone option to drush make
+*   [[DRUPSIBLE-208](https://drupsible.atlassian.net/browse/DRUPSIBLE-208)] - Support PHP7 and PHP5 in debops.php
+*   [[DRUPSIBLE-209](https://drupsible.atlassian.net/browse/DRUPSIBLE-209)] - Support PHP7 and PHP5 in drupsible.apache2 in Xenial
+*   [[DRUPSIBLE-210](https://drupsible.atlassian.net/browse/DRUPSIBLE-210)] - Support PHP7 and PHP5 in drupsible.deploy in Xenial
+*   [[DRUPSIBLE-211](https://drupsible.atlassian.net/browse/DRUPSIBLE-211)] - Support PHP7 and PHP5 in drupsible.memcached in Xenial
+*   [[DRUPSIBLE-212](https://drupsible.atlassian.net/browse/DRUPSIBLE-212)] - Support drupsible.mysql in Xenial
+*   [[DRUPSIBLE-213](https://drupsible.atlassian.net/browse/DRUPSIBLE-213)] - Support PHP7 and PHP5 in drupsible.newrelic in Xenial
+*   [[DRUPSIBLE-214](https://drupsible.atlassian.net/browse/DRUPSIBLE-214)] - Support PHP7 and PHP5 in drupsible.project in Xenial
+*   [[DRUPSIBLE-215](https://drupsible.atlassian.net/browse/DRUPSIBLE-215)] - Support PHP7 and PHP5 in drupsible.twigc in Xenial
+*   [[DRUPSIBLE-216](https://drupsible.atlassian.net/browse/DRUPSIBLE-216)] - Support PHP7 and PHP5 in drupsible.uploadprogress in Xenial
+*   [[DRUPSIBLE-217](https://drupsible.atlassian.net/browse/DRUPSIBLE-217)] - Support PHP7 and PHP5 in drupsible.xdebug in Xenial
+*   [[DRUPSIBLE-219](https://drupsible.atlassian.net/browse/DRUPSIBLE-219)] - I want to have drupal console available in Drupal 8 (as it happens with drush)
+*   [[DRUPSIBLE-223](https://drupsible.atlassian.net/browse/DRUPSIBLE-223)] - As a first-time user, I want to have /etc/host automatically edited for me
+*   [[DRUPSIBLE-228](https://drupsible.atlassian.net/browse/DRUPSIBLE-228)] - Upon vagrant up, I want a 3-tier architecture, with one host per tier
+*   [[DRUPSIBLE-229](https://drupsible.atlassian.net/browse/DRUPSIBLE-229)] - Configure "Logging and errors" to use syslog
+*   [[DRUPSIBLE-233](https://drupsible.atlassian.net/browse/DRUPSIBLE-233)] - Enable Varnish to be run inside a docker container
+*   [[DRUPSIBLE-234](https://drupsible.atlassian.net/browse/DRUPSIBLE-234)] - Prevent httpoxy
+*   [[DRUPSIBLE-235](https://drupsible.atlassian.net/browse/DRUPSIBLE-235)] - Enable Apache2 and the other deploy roles to be run inside a docker container
+*   [[DRUPSIBLE-236](https://drupsible.atlassian.net/browse/DRUPSIBLE-236)] - Enable MySQL to be run inside a docker container
+*   [[DRUPSIBLE-238](https://drupsible.atlassian.net/browse/DRUPSIBLE-238)] - Enable memcache_storage default
+*   [[DRUPSIBLE-240](https://drupsible.atlassian.net/browse/DRUPSIBLE-240)] - Provide a variable for root folder inside the codebase repo
+*   [[DRUPSIBLE-242](https://drupsible.atlassian.net/browse/DRUPSIBLE-242)] - Add variable to customize drush contrib dir
+*   [[DRUPSIBLE-244](https://drupsible.atlassian.net/browse/DRUPSIBLE-244)] - Improved management of SSH
+*   [[DRUPSIBLE-247](https://drupsible.atlassian.net/browse/DRUPSIBLE-247)] - Remove Pageant req
+*   [[DRUPSIBLE-248](https://drupsible.atlassian.net/browse/DRUPSIBLE-248)] - Replace external samba share by Vagrant's sync'ed folder
+*   [[DRUPSIBLE-252](https://drupsible.atlassian.net/browse/DRUPSIBLE-252)] - Configurable drupal log rotation
+*   [[DRUPSIBLE-253](https://drupsible.atlassian.net/browse/DRUPSIBLE-253)] - Allow to opt-out of features requiring fixed IPs in Varnish and Apache
+*   [[DRUPSIBLE-255](https://drupsible.atlassian.net/browse/DRUPSIBLE-255)] - I want to be able to opt-out of creating a hotfix branch
+*   [[DRUPSIBLE-268](https://drupsible.atlassian.net/browse/DRUPSIBLE-268)] - Enable deployment to work inside a docker container
+*   [[DRUPSIBLE-270](https://drupsible.atlassian.net/browse/DRUPSIBLE-270)] - I want to export and import D8 configuration as part of the deployments to different environments.
+*   [[DRUPSIBLE-271](https://drupsible.atlassian.net/browse/DRUPSIBLE-271)] - As a sysadmin, I want to ensure CHANGELOG.txt isn't readable by the public
+*   [[DRUPSIBLE-272](https://drupsible.atlassian.net/browse/DRUPSIBLE-272)] - I want latest version of drupal-console installed by default
+*   [[DRUPSIBLE-276](https://drupsible.atlassian.net/browse/DRUPSIBLE-276)] - As a sysadmin I want to easily configure and deploy any drupal module and its requirements
+*   [[DRUPSIBLE-282](https://drupsible.atlassian.net/browse/DRUPSIBLE-282)] - As a developer, I want to specify a prefix for my database tables
+
 Release Notes - Drupsible - Version 0.9.9
 
 ## Tasks
