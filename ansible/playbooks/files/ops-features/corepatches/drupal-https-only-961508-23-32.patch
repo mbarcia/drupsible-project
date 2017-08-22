@@ -1,0 +1,196 @@
+diff --git a/includes/common.inc b/includes/common.inc
+index efb7926..b419a93 100644
+--- a/includes/common.inc
++++ b/includes/common.inc
+@@ -4971,7 +4971,14 @@ function drupal_get_private_key() {
+  *   An additional value to base the token on.
+  */
+ function drupal_get_token($value = '') {
+-  return drupal_hmac_base64($value, session_id() . drupal_get_private_key() . drupal_get_hash_salt());
++  // For mixed HTTP(S) sessions, use a constant identifier so that tokens can be shared between protocols.
++  if (variable_get('https', FALSE) && $GLOBALS['is_https'] && isset($_COOKIE[substr(session_name(), 1)])) {
++    $session_id = $_COOKIE[substr(session_name(), 1)];
++  }
++  else {
++    $session_id = session_id();
++  }
++  return drupal_hmac_base64($value, $session_id . drupal_get_private_key() . drupal_get_hash_salt());
+ }
+ 
+ /**
+diff --git a/includes/form.inc b/includes/form.inc
+index cc7a2c0..1c1ec12 100644
+--- a/includes/form.inc
++++ b/includes/form.inc
+@@ -1130,6 +1130,11 @@ function drupal_validate_form($form_id, &$form, &$form_state) {
+     }
+   }
+ 
++  // Ensure the correct protocol when #https is set.
++  if (!empty($form['#https']) && !$GLOBALS['is_https']) {
++    form_set_error('', t('This form requires HTTPS.  Contact the site administrator if the problem persists.'));
++  }
++
+   _form_validate($form, $form_state, $form_id);
+   $validated_forms[$form_id] = TRUE;
+ 
+diff --git a/modules/simpletest/drupal_web_test_case.php b/modules/simpletest/drupal_web_test_case.php
+index b7a5f1a..6201229 100644
+--- a/modules/simpletest/drupal_web_test_case.php
++++ b/modules/simpletest/drupal_web_test_case.php
+@@ -3592,6 +3592,34 @@ class DrupalWebTestCase extends DrupalTestCase {
+       $this->verbose(t('Email:') . '<pre>' . print_r($mail, TRUE) . '</pre>');
+     }
+   }
++
++  /**
++   * Builds a URL for submitting a mock HTTPS request to HTTP test environments.
++   *
++   * @param $url
++   *   A Drupal path such as 'user'.
++   *
++   * @return
++   *   An absolute URL.
++   */
++  protected function httpsUrl($url) {
++    global $base_url;
++    return $base_url . '/modules/simpletest/tests/https.php?q=' . $url;
++  }
++
++  /**
++   * Builds a URL for submitting a mock HTTP request to HTTPS test environments.
++   *
++   * @param $url
++   *   A Drupal path such as 'user'.
++   *
++   * @return
++   *   An absolute URL.
++   */
++  protected function httpUrl($url) {
++    global $base_url;
++    return $base_url . '/modules/simpletest/tests/http.php?q=' . $url;
++  }
+ }
+ 
+ /**
+diff --git a/modules/simpletest/tests/form.test b/modules/simpletest/tests/form.test
+index 985abe3..6e5bf369 100644
+--- a/modules/simpletest/tests/form.test
++++ b/modules/simpletest/tests/form.test
+@@ -1675,3 +1675,39 @@ class FormCheckboxTestCase extends DrupalWebTestCase {
+     }
+   }
+ }
++
++/**
++ * Tests #https property.
++ */
++class FormHttpsOnlyTestCase extends DrupalWebTestCase {
++
++  public static function getInfo() {
++    return array(
++      'name' => 'Form HTTPS only',
++      'description' => 'Tests form API handling of #https.',
++      'group' => 'Form API',
++    );
++  }
++
++  function setUp() {
++    parent::setUp('form_test');
++  }
++
++  function testHttpsOnly() {
++    $path = 'form-test/https-only';
++    $edit = array('textfield' => '123');
++    $submit = t('Submit');
++
++    $this->drupalGet($path);
++    $form = $this->xpath('//form[@id="form-test-https-only"]');
++    $form[0]['action'] = $this->httpsUrl($path);
++    $this->drupalPost(NULL, $edit, $submit);
++    $this->assertText(t('The form has been successfully submitted.', t('Form submission succeeded over HTTPS.')));
++
++    $this->drupalGet($path);
++    $form = $this->xpath('//form[@id="form-test-https-only"]');
++    $form[0]['action'] = $this->httpUrl($path);
++    $this->drupalPost(NULL, $edit, $submit);
++    $this->assertText(t('This form requires HTTPS.  Contact the site administrator if the problem persists.'), t('Form submission failed over HTTP.'));
++  }
++}
+diff --git a/modules/simpletest/tests/form_test.module b/modules/simpletest/tests/form_test.module
+index e4ac77b..ecfcfb7 100644
+--- a/modules/simpletest/tests/form_test.module
++++ b/modules/simpletest/tests/form_test.module
+@@ -210,6 +210,13 @@ function form_test_menu() {
+     'access callback' => TRUE,
+     'type' => MENU_CALLBACK,
+   );
++  $items['form-test/https-only'] = array(
++    'title' => 'FAPI test for mixed-mode sessions',
++    'page callback' => 'drupal_get_form',
++    'page arguments' => array('form_test_https_only'),
++    'access callback' => TRUE,
++    'type' => MENU_CALLBACK,
++  );
+ 
+   return $items;
+ }
+@@ -1742,3 +1749,21 @@ function form_test_checkboxes_zero($form, &$form_state, $json = TRUE) {
+ function _form_test_checkboxes_zero_no_redirect($form, &$form_state) {
+   $form_state['redirect'] = FALSE;
+ }
++
++function form_test_https_only($form, &$form_state) {
++  $form['textfield'] = array(
++    '#type' => 'textfield',
++    '#title' => t('Textfield'),
++  );
++  $form['submit'] = array(
++    '#type' => 'submit',
++    '#value' => t('Submit'),
++  );
++  $form['#https'] = TRUE;
++  return $form;
++}
++
++function form_test_https_only_submit($form, &$form_state) {
++  drupal_set_message('The form has been successfully submitted.');
++  $form_state['redirect'] = FALSE;
++}
+diff --git a/modules/simpletest/tests/session.test b/modules/simpletest/tests/session.test
+index e5ceb75..f9da29e 100644
+--- a/modules/simpletest/tests/session.test
++++ b/modules/simpletest/tests/session.test
+@@ -500,32 +500,5 @@ class SessionHttpsTestCase extends DrupalWebTestCase {
+     return $this->assertTrue(db_query('SELECT timestamp FROM {sessions} WHERE sid = :sid AND ssid = :ssid', $args)->fetchField(), $assertion_text);
+   }
+ 
+-  /**
+-   * Builds a URL for submitting a mock HTTPS request to HTTP test environments.
+-   *
+-   * @param $url
+-   *   A Drupal path such as 'user'.
+-   *
+-   * @return
+-   *   An absolute URL.
+-   */
+-  protected function httpsUrl($url) {
+-    global $base_url;
+-    return $base_url . '/modules/simpletest/tests/https.php?q=' . $url;
+-  }
+-
+-  /**
+-   * Builds a URL for submitting a mock HTTP request to HTTPS test environments.
+-   *
+-   * @param $url
+-   *   A Drupal path such as 'user'.
+-   *
+-   * @return
+-   *   An absolute URL.
+-   */
+-  protected function httpUrl($url) {
+-    global $base_url;
+-    return $base_url . '/modules/simpletest/tests/http.php?q=' . $url;
+-  }
+ }
+ 

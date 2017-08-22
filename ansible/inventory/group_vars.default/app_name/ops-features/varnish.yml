@@ -1,0 +1,11 @@
+---
+varnish_drupal7_modules_enabled:
+- varnish
+
+varnish_variables:
+  varnish_enable: '1'
+  page_cache_maximum_age: "{{ deploy_page_cache_max_age|d('600') }}"
+  cache_lifetime: "{{ deploy_page_cache_max_age|d('600') }}"
+  varnish_version: '4'
+  varnish_control_terminal: "localhost:{{ deploy_varnish_mgmt_port|default('6082') }}"
+  varnish_control_key: "{{ deploy_varnish_control_key__|default('') }}"

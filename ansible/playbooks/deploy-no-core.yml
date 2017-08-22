@@ -10,6 +10,11 @@
     delegate_facts: True
     with_items: "{{ groups[app_name + '-' + app_target + '_varnish'] }}"
 
+  - name: Lookup control key secret and set the fact to avoid lookups lazy evaluation
+    set_fact:
+      deploy_varnish_control_key__: "{{ lookup('password', secret + '/credentials/' + inventory_hostname + '/varnish/secret chars=ascii_letters,digits,hexdigits') }}"
+    no_log: True
+
   roles:
   - role: debops.secret
     tags: [ secret, deploy, secret-deploy ]
