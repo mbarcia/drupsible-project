@@ -111,6 +111,7 @@
       smtp_user|d("") != "")
   - role: debops.postfix
     tags: [ postfix, postfix-deploy ]
+    postfix_dependencies: "{{ app_ferm_enabled|default(True)|bool }}"
     postfix: [ 'client', 'auth' ]
     postfix_relayhost: "[{{ smtp_server }}]:{{ smtp_port }}"
     postfix_smtp_sasl_password_map: "{ '[{{ smtp_server }}]:{{ smtp_port }}': '{{ smtp_user }}' }"
