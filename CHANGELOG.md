@@ -1,3 +1,16 @@
+Release notes - Drupsible - Version 1.0.1
+
+## Bugs
+
+* [[DRUPSIBLE-289](https://drupsible.atlassian.net/browse/DRUPSIBLE-289)] -         'drush_contrib_modules_destination' is undefined
+* [[DRUPSIBLE-290](https://drupsible.atlassian.net/browse/DRUPSIBLE-290)] -         Remove warnings on english translations
+* [[DRUPSIBLE-292](https://drupsible.atlassian.net/browse/DRUPSIBLE-292)] -         Disable ferm on local when gmail smtp (and postfix) is enabled
+* [[DRUPSIBLE-293](https://drupsible.atlassian.net/browse/DRUPSIBLE-293)] -         app_memcached_enabled needs to take into account pluggable ops features
+
+## Stories
+
+*   [[DRUPSIBLE-288](https://drupsible.atlassian.net/browse/DRUPSIBLE-288)] -         Override memory limit in drush
+
 Release Notes - Drupsible - Version 1.0
 
 ## Task
