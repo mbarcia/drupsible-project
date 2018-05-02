@@ -480,7 +480,6 @@ echo
 # Gather input about https enabled
 # HTTPS is currently available only on D7, so don't bother asking in D8
 echo "Want your website deployed as HTTPS://, instead of just http://? (y|n)"
-echo "HTTPS will require a few more minutes to process a self-signed certificate."
 if [ "${DRUPAL_VERSION}" == '7' ]; then
   echo "Drupsible will install and configure securepages and patch D7's core, as instructed by securepages."
 fi
