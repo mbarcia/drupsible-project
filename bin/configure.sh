@@ -376,8 +376,7 @@ if ([ "$USE_INSTALL_PROFILE" == "" ] || [ "$USE_INSTALL_PROFILE" == "no" ]) || (
     read -r GIT_SERVER
     # Write GIT_SERVER
     sed -i.bak "s/GIT_SERVER=.*$/GIT_SERVER=\"${GIT_SERVER}\"/g" "${APP_NAME}.profile.tmp"
-    echo "Git username who will be cloning the Drupal repository?"
-    echo "This is usually git"
+    echo "Git username who will be cloning the Drupal repository? (github and bitbucket user is 'git')"
     read -r GIT_USER
     # Write GIT_USER
     sed -i.bak "s/GIT_USER=.*$/GIT_USER=\"${GIT_USER}\"/g" "${APP_NAME}.profile.tmp"
