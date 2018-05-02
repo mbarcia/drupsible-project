@@ -377,15 +377,19 @@ if ([ "$USE_INSTALL_PROFILE" == "" ] || [ "$USE_INSTALL_PROFILE" == "no" ]) || (
     # Write GIT_SERVER
     sed -i.bak "s/GIT_SERVER=.*$/GIT_SERVER=\"${GIT_SERVER}\"/g" "${APP_NAME}.profile.tmp"
     echo "Git username who will be cloning the Drupal repository?"
-    echo "For example, git"
+    echo "This is usually git"
     read -r GIT_USER
     # Write GIT_USER
     sed -i.bak "s/GIT_USER=.*$/GIT_USER=\"${GIT_USER}\"/g" "${APP_NAME}.profile.tmp"
     echo "Git path of your Drupal repository?"
-    echo "For example, mbarcia/drupsible-project.git"
+    echo "For example, /mbarcia/drupsible-project.git. In the case of a bitbucket repository, prepend the path with a colon instead of a forward slash."
     read -r GIT_PATH
     # Write GIT_PATH
     sed -i.bak "s|GIT_PATH=.*$|GIT_PATH=\"${GIT_PATH}\"|g" "${APP_NAME}.profile.tmp"
+    if [ ! ${GIT_PATH:0:1} == "/" ] && [ ! ${GIT_PATH:0:1} == ":" ]; then
+      GIT_PATH="$GIT_PATH/"; :
+    echo "(mind that the Git path provided has been prepended a slash: ${GIT_PATH})"
+  fi
     echo "Git password?"
     echo "(leave this empty if you use SSH deployment keys)"
     enter_password "GIT_PASS"
@@ -394,6 +398,9 @@ if ([ "$USE_INSTALL_PROFILE" == "" ] || [ "$USE_INSTALL_PROFILE" == "no" ]) || (
       mkdir -p "./ansible/secret/credentials/${APP_NAME}/git"
       touch "./ansible/secret/credentials/${APP_NAME}/git/${GIT_USER}"
       echo "${GIT_PASS}" > "./ansible/secret/credentials/${APP_NAME}/git/${GIT_USER}"
+    else
+      echo "Your clone URL must be (according to the parts you informed, and excluding any password):"
+      echo "${GIT_PROTOCOL}://${GIT_USER}@${GIT_SERVER}${GIT_PATH}"
     fi
     echo "Branch/version of your codebase? [master]"
     read -r GIT_BRANCH
