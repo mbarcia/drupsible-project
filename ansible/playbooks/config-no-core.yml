@@ -130,7 +130,7 @@
     tags: [ apache2, php, apache2-deploy ]
     apache2_site_name: "{{ app_name }}"
     apache2_webdomain: "{{ app_webdomain }}"
-    apache2_public_html_folder: "{{ app_public_html_folder }}"
+    apache2_public_html_folder: "{{ app_public_html_folder | d('public_html') }}"
     apache2_pki_cert: "{{ deploy_pki_cert|default('/etc/ssl/certs/' + app_name + '.cert') }}"
     apache2_pki_key: "{{ deploy_pki_key|default('/etc/ssl/certs/' + app_name + '.key') }}"
     apache2_port: "{{ app_varnish_enabled|default(False)|bool|ternary(app_apache2_alt_port|default('8080'), '80') }}"
