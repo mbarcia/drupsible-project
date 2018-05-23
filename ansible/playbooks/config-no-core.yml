@@ -187,7 +187,7 @@
     drupal_console_user: "{{ app_user }}"
     drupal_console_group: "{{ app_group }}"
     tags: [ drupal-console, drupal-console-deploy, provision ]
-    when: deploy_drupal_console_enabled|d(True)|bool and app_drupal_version|d('8')|version_compare('8', '==')
+    when: deploy_drupal_console_enabled|d(False)|bool and app_drupal_version|d('8')|version_compare('8', '==')
   - role: drupsible.newrelic
     tags: [ newrelic, newrelic-deploy ]
     when: provision_new_relic|default(False)|bool
