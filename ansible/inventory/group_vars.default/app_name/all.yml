@@ -43,6 +43,8 @@ app_https_enabled: no
 app_varnish_enabled: yes
 # Alternative http port, used by Apache2 when Varnish is enabled
 app_apache2_alt_port: 8080
+# Default path name under /var/www/app for index.php (by default placed in /var/www/app_name/public_html)
+app_public_html_folder: public_html
 
 # Is your app multilingual?
 # Set by configure.sh

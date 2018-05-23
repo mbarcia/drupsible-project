@@ -21,6 +21,7 @@
   - role: drupsible.deploy
     tags: [ deploy, deploy-deploy ]
     deploy_build_id: "{{ app_build_id }}"
+    deploy_public_html_folder: "{{ app_public_html_folder | d('public_html') }}"
     deploy_varnish_enabled: "{{ app_varnish_enabled }}"
     deploy_varnish_mgmt_port: "{{ app_varnish_mgmt_port|default('6082') }}"
     deploy_target: "{{ app_target }}"
