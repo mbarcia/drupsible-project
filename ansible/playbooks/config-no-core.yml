@@ -232,6 +232,7 @@
     varnish_app_name: "{{ app_name }}"
     varnish_deploy_group: "{{ app_name + '-' + app_target + '_deploy' }}"
     varnish_in_cloud: "{{ app_in_cloud }}"
+    varnish_cache_tag_header_request: "{{ app_cache_tag_header_request|default('Cache-Tags') }}"
     when: app_varnish_enabled|bool
   - role: debops.ferm
     tags: [ ferm, varnish, ferm-varnish, deployment ]
