@@ -102,3 +102,6 @@ console_preferred_editors:
 - '/usr/bin/emacs24'
 - '/usr/bin/vim.tiny'
 - '/bin/ed'
+
+# Drupal 8 cache tags header
+app_cache_tag_header_request: Cache-Tags
