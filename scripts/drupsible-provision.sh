@@ -12,6 +12,8 @@ swapon /addswap
 echo "/addswap addswap swap defaults 0 0" >> /etc/fstab
 echo "2G of virtual memory have been added."
 
+apt-get update
+
 # Install Ansible and its dependencies if it's not installed already.
 if [ -f /usr/bin/ansible ] || [ -f /usr/local/bin/ansible ]; then
 	ANSIBLE_VERSION_PACKED=$(ansible --version | grep "ansible 2" | sed 's/^ansible \(.*$\)/\1/g')
@@ -27,7 +29,6 @@ fi
 if [ "$ANSIBLE_UPGRADE" != "no" ]; then
 	echo "Installing Ansible dependencies..."
 	export DEBIAN_FRONTEND=noninteractive
-	apt-get update
 	apt-get install -y zlib1g-dev libssl-dev libreadline-gplv2-dev libffi-dev
 	apt-get install -y curl unzip
 	apt-get install -y git python python-dev python-setuptools python-pip python-netaddr
@@ -50,6 +51,7 @@ if [ "$ANSIBLE_UPGRADE" != "no" ]; then
 fi
 
 echo "Installing Debops support..."
+apt-get install -y libsasl2-dev libldap2-dev
 python -m pip install debops
 # Download Drupsible roles
 echo "Installing Drupsible roles and its dependencies..."
