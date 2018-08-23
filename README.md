@@ -1,7 +1,5 @@
 # drupsible-project
 
-[![Join the chat at https://gitter.im/mbarcia/drupsible-project](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mbarcia/drupsible-project?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 Drupsible is a DevOps tool for Drupal continuous delivery, based on Ansible. By using Drupsible, your team will be able to provision, import, integrate, deploy and maintain Drupal websites across complex infrastructures using a simple set of YAML configuration files.
 
 Drupsible project is the starting point of Drupsible, and it is the only thing you need to download/clone, as every other component will be handled by Drupsible automatically.
