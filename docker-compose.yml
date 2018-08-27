@@ -1,0 +1,79 @@
+version: '3.4'
+services:
+  varnish:
+    hostname: varnish
+    domainname: varnish.mydocker.com
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        limitgroup: mydocker-local_varnish
+        playbook: config.yml
+        ansibleversion: '2.3.3.0'
+        fromimage: drupsible_varnish
+        skiptags: provision
+      network: default
+    image: mydocker_varnish
+    ports:
+    - 80:80
+    expose:
+    - 6082
+    restart: always
+    depends_on:
+    - web
+    - mysql
+    links:
+    - web
+  web:
+    hostname: web
+    domainname: web.mydocker.com
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        limitgroup: mydocker-local_deploy
+        playbook: config-deploy.yml
+        ansibleversion: '2.3.3.0'
+        fromimage: drupsible_web
+        skiptags: provision
+      network: default
+    image: mydocker_web
+    expose:
+    - 8080
+    restart: always
+    depends_on:
+    - mysql
+    links:
+    - mysql
+  mysql:
+    hostname: mysql
+    domainname: mysql.mydocker.com
+    image: percona:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: mydocker
+      MYSQL_USER: mydocker
+      MYSQL_PASSWORD: password
+    networks: 
+    - default
+    expose:
+    - 3306
+    volumes:
+    - ./datavol:/var/lib/mysql
+    - ./ansible/playbooks/dbdumps:/docker-entrypoint-initdb.d
+
+#  phpmyadmin:
+#    image: phpmyadmin/phpmyadmin
+#    ports:
+#    - 8081:80
+#    links:
+#    - mysql:db
+#    environment:
+#      MYSQL_ROOT_PASSWORD: password
+
+networks: 
+  default:
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.28.0.0/16
