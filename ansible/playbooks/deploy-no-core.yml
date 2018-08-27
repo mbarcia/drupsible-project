@@ -1,7 +1,7 @@
 ---
 - name: Deploy
   hosts: [ '{{ app_name }}-{{ app_target }}_deploy' ]
-  gather_facts: True
+  gather_facts: "{{ not app_in_container|d(False)|bool }}"
 
   pre_tasks:
   - name: Gather facts of Varnish servers
@@ -9,6 +9,7 @@
     delegate_to: "{{ item }}"
     delegate_facts: True
     with_items: "{{ groups[app_name + '-' + app_target + '_varnish'] }}"
+    when: not app_in_container|d(False)|bool
 
   - name: Lookup control key secret and set the fact to avoid lookups lazy evaluation
     set_fact:

@@ -1,8 +1,9 @@
 ---
 - name: Prepare DebOps core environment
   hosts: [ '{{ app_name }}' ]
-  become: False
+  become: no
   roles:
-    - role: debops.core
-      tags: [ 'core' ]
-      become: True
+  - role: debops.core
+    tags: [ 'core' ]
+    become: yes
+    when: not app_in_container|d(False)|bool

@@ -1,7 +1,7 @@
 ---
 - name: Common configuration (DebOps) for all hosts
   hosts: [ '{{ app_name }}' ]
-  become: True
+  become: yes
 
   roles:
 # Common tasks for all servers
@@ -9,22 +9,25 @@
     tags: [ secret, secret-all, sshd, mysql, varnish ]
   - role: debops.etc_services
     tags: [ etc_services ]
+    when: not app_in_container|d(False)|bool
 
 # Basic configuration of the SSH daemon for all servers
   - role: debops.ferm
     tags: [ ferm, sshd, ferm-all, deployment ]
     ferm__dependent_rules: '{{ sshd__ferm__dependent_rules }}'
-    when: app_ferm_enabled|default(True)|bool
+    when: app_ferm_enabled|d(True)|bool and not app_in_container|d(False)|bool
   - role: debops.tcpwrappers
     tags: [ tcpwrappers, deployment ]
     tcpwrappers_dependent_allow: '{{ sshd__tcpwrappers__dependent_allow }}'
-    when: app_tcpwrappers_enabled|default(True)|bool
+    when: app_tcpwrappers_enabled|d(True)|bool and not app_in_container|d(False)|bool
   - role: debops.console
     tags: [ 'console' ]
+    when: not app_in_container|d(False)|bool
   - role: debops.sshkeys
     tags: [ sshkeys, sshd, sshkeys-all ]
+    when: not app_in_container|d(False)|bool
   - role: debops.sshd
-    when: not packer|default(False)|bool
+    when: not packer|default(False)|bool and not app_in_container|d(False)|bool
     tags: [ sshd ]
 
 # Timezone configuration for all servers
@@ -34,10 +37,11 @@
     register: current_timezone
     changed_when: False
     tags: [ tz ]
+    when: not app_in_container|d(False)|bool
   - name: Set time zone in /etc/localtime
     command: "/usr/bin/timedatectl set-timezone {{ app_timezone|default('Europe/Madrid') }}"
     tags: [ tz ]
-    when: current_timezone.stdout != app_timezone|default('Europe/Madrid')
+    when: current_timezone.stdout != app_timezone|default('Europe/Madrid') and not app_in_container|d(False)|bool
     # Ignoring errors until https://github.com/ansible/ansible/pull/19367
     ignore_errors: yes
   - name: Get current ntp status
@@ -45,24 +49,27 @@
     register: current_ntp_status
     changed_when: False
     tags: [ tz ]
+    when: not app_in_container|d(False)|bool
   - name: Set NTP enabled
     command: /usr/bin/timedatectl set-ntp true
-    when: current_ntp_status.stdout|bool != True
+    when: current_ntp_status.stdout|bool != True and not app_in_container|d(False)|bool
     tags: [ tz ]
     # Ignoring errors until https://github.com/ansible/ansible/pull/19367
     ignore_errors: yes
 
 - name: MySQL inventory group
   hosts: [ '{{ app_name }}-{{ app_target }}_mysql' ]
-  become: True
+  become: yes
 
   roles:
   - role: debops.secret
     tags: [ secret, mysql, secret-mysql ]
   - role: drupsible.mysql
     tags: [ mysql ]
+    mysql_root_password: "{{ app_mysql_root_password|d('password') }}"
     mysql_mysqld_allow_group: "{{ app_name + '-' + app_target + '_deploy' }}"
     mysql_in_cloud: "{{ app_in_cloud }}"
+    mysql_in_container: "{{ app_in_container }}"
     mysql_databases:
     - name: "{{ app_name }}"
       state: 'present'
@@ -92,11 +99,11 @@
   - role: debops.ferm
     tags: [ ferm, mysql, ferm-mysql, deployment ]
     ferm__dependent_rules: '{{ mysql_ferm_dependent_rules_exported|default([]) }}'
-    when: app_ferm_enabled|default(True)|bool
+    when: app_ferm_enabled|default(True)|bool and not app_in_container|d(False)|bool
   - role: debops.tcpwrappers
     tags: [ tcpwrappers, mysql, tcpwrappers-mysql, deployment ]
     tcpwrappers_dependent_allow: '{{ mysql_tcpwrappers_dependent_allow_exported|default([]) }}'
-    when: app_tcpwrappers_enabled|default(True)|bool
+    when: app_tcpwrappers_enabled|default(True)|bool and not app_in_container|d(False)|bool
 
 - name: Deploy inventory group
   hosts: [ '{{ app_name }}-{{ app_target }}_deploy' ]
@@ -115,7 +122,7 @@
     postfix: [ 'client', 'auth' ]
     postfix_relayhost: "[{{ smtp_server }}]:{{ smtp_port }}"
     postfix_smtp_sasl_password_map: "{ '[{{ smtp_server }}]:{{ smtp_port }}': '{{ smtp_user }}' }"
-    when: smtp_server|d("") != "" and smtp_port|d("") != "" and smtp_user|d("") != ""
+    when: smtp_server|d("") != "" and smtp_port|d("") != "" and smtp_user|d("") != "" and not app_in_container|d(False)|bool
   - role: debops.users
     when: not packer|default(False)|bool
     users_enabled: True
@@ -143,14 +150,18 @@
     apache2_varnish_enabled: "{{ app_varnish_enabled }}"
     apache2_ping_group: "{{ app_name + '-' + app_target + '_varnish' }}"
     apache2_in_cloud: "{{ app_in_cloud }}"
+    apache2_in_container: "{{ app_in_container }}"
   - role: drupsible.php
     tags: [ php, php-deploy, newrelic, uploadprogress, xdebug, composer, drupal-console, memcached, twigc, blackfire ]
+    php__in_container: "{{ app_in_container|d(False)|bool }}"
     deploy_php_app_pool:
       enabled: True
       name: "{{ app_name }}"
       listen: "{{ ansible_local.apache2.uds_available|default(True)|bool|ternary(app_fpm_listen_uds, app_fpm_listen) }}"
       user: "{{ app_user }}"
       group: "{{ app_group }}"
+      php__global_values:
+        daemonize: "{{ not app_in_container|d(False)|bool }}"
       php__values:
         newrelic.appname: "{{ app_name|quote }}"
         newrelic.license: "{{ newrelic_license_key|d(False)|ternary(newrelic_license_key, 'NO_NEWRELIC_LICENSE_KEY')|quote }}"
@@ -182,17 +193,14 @@
     tags: [ composer, composer-deploy, drupal-console, drush, provision ]
   - role: drupsible.memcached
     tags: [ memcached, memcached-deploy ]
-    when: app_memcached_enabled|default(True)|bool
+    when: app_memcached_enabled|default(True)|bool and not app_in_container|d(False)|bool
   - role: drupsible.drupal-console
     drupal_console_user: "{{ app_user }}"
     drupal_console_group: "{{ app_group }}"
     tags: [ drupal-console, drupal-console-deploy, provision ]
-    when: deploy_drupal_console_enabled|d(False)|bool and app_drupal_version|d('8')|version_compare('8', '==')
-  - role: drupsible.newrelic
-    tags: [ newrelic, newrelic-deploy ]
-    when: provision_new_relic|default(False)|bool
+    when: deploy_drupal_console_enabled|d(False)|bool and app_drupal_version|d('8')|version_compare('8', '==') and not app_in_container|d(False)|bool
   - role: drupsible.drush
-    tags: [ drush, drush-deploy, provision ]
+    tags: [ drush, drush-deploy ]
     drush_drupal_version: "{{ app_drupal_version|default('8') }}"
     drush_app_user: "{{ app_user }}"  
   - role: drupsible.samba
@@ -208,10 +216,10 @@
     tags: [ ferm, ferm-deploy, postfix, apache2, samba, deployment ]
     apache2_port: "{{ app_varnish_enabled|default(False)|bool|ternary(app_apache2_alt_port|default('8080'), '80') }}"
     ferm__dependent_rules: '{{ postfix_ferm_dependent_rules|default([]) + apache2_ferm_dependent_rules + samba_ferm_dependent_rules|default([]) }}'
-    when: app_ferm_enabled|default(True)|bool
+    when: app_ferm_enabled|default(True)|bool and not app_in_container|d(False)|bool
   - role: drupsible.blackfire
     tags: [ blackfire, blackfire-deploy ] 
-    when: deploy_blackfire_enabled|default(False)|bool
+    when: deploy_blackfire_enabled|default(False)|bool and not app_in_container|d(False)|bool
 
 - name: Varnish inventory group
   hosts: [ '{{ app_name }}-{{ app_target }}_varnish' ]
@@ -223,7 +231,10 @@
   - role: drupsible.varnish
     tags: [ varnish, varnish-varnish ]
     varnish_webdomain: "{{ app_webdomain }}"
+    varnish_trusted_hosts_enable: "{{ not app_in_cloud|d(False)|bool and not app_in_container|d(False)|bool }}"
     varnish_trusted_hosts: "{{ app_server_aliases }}"
+    varnish_allowed_hosts: 
+    - 172.28.0.0/16
     varnish_pipe_timeout: 600
     varnish_apache2_port: "{{ app_apache2_alt_port|default('8080') }}"
     varnish_management_console_listen_on: "{{ app_varnish_mgmt_port|default('6082') }}"
@@ -232,9 +243,10 @@
     varnish_app_name: "{{ app_name }}"
     varnish_deploy_group: "{{ app_name + '-' + app_target + '_deploy' }}"
     varnish_in_cloud: "{{ app_in_cloud }}"
+    varnish_in_container: "{{ app_in_container }}"
     varnish_cache_tag_header_request: "{{ app_cache_tag_header_request|default('Cache-Tags') }}"
     when: app_varnish_enabled|bool
   - role: debops.ferm
     tags: [ ferm, varnish, ferm-varnish, deployment ]
     ferm__dependent_rules: "{{ varnish_ferm_dependent_rules_exported|default([]) }}"
-    when: app_ferm_enabled|default(True)|bool
+    when: app_ferm_enabled|default(True)|bool and not app_in_container|d(False)|bool
