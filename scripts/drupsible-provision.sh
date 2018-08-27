@@ -30,15 +30,15 @@ if [ "$ANSIBLE_UPGRADE" != "no" ]; then
 	echo "Installing Ansible dependencies..."
 	export DEBIAN_FRONTEND=noninteractive
 	apt-get install -y zlib1g-dev libssl-dev libreadline-gplv2-dev libffi-dev
-	apt-get install -y curl unzip
+	apt-get install -y curl unzip sudo
 	apt-get install -y git python python-dev python-setuptools python-pip python-netaddr
+    # Make sure setuptools are installed correctly.
+    python -m pip install --upgrade setuptools setupext-pip
     # Upgrade criptography before pyOpenSSL
     python -m pip install --upgrade 'cryptography>2.1.4'
     # Install pyOpenSSL before pip
     python -m easy_install --upgrade pyOpenSSL
     python -m pip install --upgrade pip
-    # Make sure setuptools are installed correctly.
-    python -m pip install --upgrade setuptools setupext-pip
     python -m pip install --upgrade --no-cache-dir paramiko PyYAML Jinja2 httplib2 six markupsafe
 	# Jinja2 2.9 to 2.9.6 breaks Ansible 2.3.0.0 
 	# See https://github.com/ansible/ansible/issues/20063 
@@ -57,6 +57,8 @@ python -m pip install debops
 echo "Installing Drupsible roles and its dependencies..."
 if [ -f /vagrant/ansible/requirements.yml ]; then
 	ansible-galaxy install -r /vagrant/ansible/requirements.yml
+elif [ -f ./ansible/requirements.yml ]; then
+	ansible-galaxy install -r ./ansible/requirements.yml
 elif [ -f /etc/ansible/requirements.yml ]; then
 	ansible-galaxy install -r /etc/ansible/requirements.yml
 else
