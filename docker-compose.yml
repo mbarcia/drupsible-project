@@ -1,79 +1,122 @@
-version: '3.4'
+#
+# Notes for the maintainers:
+#
+# To build the controller image and the varnish and web silver images, do this:
+#
+# a) controller golden image
+#   docker-compose -p drupsible build controller
+#
+# b) web and varnish silver images (add -p <APP_NAME> if top folder is not named like the app)
+#   APP_NAME=drupsible \
+#   PLAYBOOK="config.yml" \
+#   SKIP_TAGS="" \
+#   TAGS=provision \
+#   IMAGE_VARNISH=drupsible_varnish \
+#   IMAGE_VARNISH_FROM=phusion/baseimage \
+#   IMAGE_WEB=drupsible_web \
+#   IMAGE_WEB_FROM=phusion/baseimage \
+#   docker-compose up
+#   
+#   docker commit --author "Mariano Barcia <mariano.barcia@gmail.com>" drupsible_web_1 drupsible_web:<tag>
+#   docker commit --author "Mariano Barcia <mariano.barcia@gmail.com>" drupsible_varnish_1 drupsible_varnish:<tag>
+#
+# c) push to docker hub 
+#   docker push...
+#
+# Normal usage is: >
+#   APP_NAME=<yourappname> \
+#   IMAGE_VARNISH=<yourappname>_varnish \
+#   IMAGE_VARNISH_FROM=drupsible_varnish \
+#   MYSQL_PASSWORD=password \
+#   MYSQL_ROOT_PASSWORD=password \
+#   IMAGE_WEB=<yourappname>_web \
+#   IMAGE_WEB_FROM=drupsible_web \
+#   docker-compose up
+#
+version: '3'
 services:
+  controller:
+    hostname: controller
+    image: drupsible_controller
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-controller
+      args:
+        ansible_version: '2.3.3.0'
+        from_image: phusion/baseimage
+    environment:
+      INVENTORY: "${INVENTORY:-/drupsible/docker/drupsible-local}"
+      PLAYBOOK: "${PLAYBOOK:-config-deploy.yml}"
+      VERBOSE: "${VERBOSE:--v}"
+      SKIP_TAGS: "${SKIP_TAGS}"
+      TAGS: "${TAGS:-all}"
+      APP_NAME: "${APP_NAME}"
+    volumes:
+      - .:/drupsible
+    depends_on:
+      - mysql
+      - web
+      - varnish
+    links:
+      - mysql
+      - web
+      - varnish
   varnish:
     hostname: varnish
-    domainname: varnish.mydocker.com
+    image: ${IMAGE_VARNISH}
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/Dockerfile
       args:
-        limitgroup: mydocker-local_varnish
-        playbook: config.yml
-        ansibleversion: '2.3.3.0'
-        fromimage: drupsible_varnish
-        skiptags: provision
-      network: default
-    image: mydocker_varnish
+        from_image: ${FROM_IMAGE_VARNISH}
     ports:
-    - 80:80
+      - "80:80"
     expose:
-    - 6082
-    restart: always
+      - 22
+      - 6082
     depends_on:
-    - web
-    - mysql
+      - web
+      - mysql
     links:
-    - web
+      - web
+    command: /sbin/my_init --enable-insecure-key
   web:
     hostname: web
-    domainname: web.mydocker.com
+    image: ${IMAGE_WEB}
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/Dockerfile
       args:
-        limitgroup: mydocker-local_deploy
-        playbook: config-deploy.yml
-        ansibleversion: '2.3.3.0'
-        fromimage: drupsible_web
-        skiptags: provision
-      network: default
-    image: mydocker_web
+        from_image: ${FROM_IMAGE_WEB}
+    ports:
+      - "8080"
     expose:
-    - 8080
-    restart: always
+      - 22
+      - 8080
     depends_on:
-    - mysql
+      - mysql
     links:
-    - mysql
+      - mysql
+    command: /sbin/my_init --enable-insecure-key
   mysql:
     hostname: mysql
-    domainname: mysql.mydocker.com
     image: percona:5.7
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: mydocker
-      MYSQL_USER: mydocker
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${APP_NAME}
+      MYSQL_USER: ${APP_NAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     networks: 
-    - default
+      - default
     expose:
-    - 3306
+      - 3306
     volumes:
-    - ./datavol:/var/lib/mysql
-    - ./ansible/playbooks/dbdumps:/docker-entrypoint-initdb.d
-
-#  phpmyadmin:
-#    image: phpmyadmin/phpmyadmin
-#    ports:
-#    - 8081:80
-#    links:
-#    - mysql:db
-#    environment:
-#      MYSQL_ROOT_PASSWORD: password
+      - ./datavol:/var/lib/mysql
+      - ./ansible/playbooks/dbdumps:/docker-entrypoint-initdb.d
 
 networks: 
   default:
     ipam:
       driver: default
       config:
-      - subnet: 172.28.0.0/16
+        - subnet: 172.28.0.0/16

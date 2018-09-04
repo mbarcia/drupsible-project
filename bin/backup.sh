@@ -9,7 +9,7 @@ BACKUP_FILENAME="$1-$DATE.tar.gz"
 if [ ! -d "${BACKUP_DIR}" ]; then
 	mkdir "${BACKUP_DIR}"
 fi
-tar czvf "$BACKUP_DIR/$BACKUP_FILENAME" --exclude "*.default" --exclude "*default.profile" --exclude "*/.git" --exclude "*.gz" --exclude "*.zip" --exclude "lookup_plugins" --exclude "README.*" "ansible" >/dev/null
+tar czvf "$BACKUP_DIR/$BACKUP_FILENAME" --exclude "stencils" --exclude "*/.git" --exclude "*.gz" --exclude "*.zip" --exclude "lookup_plugins" --exclude "README.*" "ansible" >/dev/null
 if [ "$?" == 0 ]; then
 	echo "Backup of your current config files stored in $BACKUP_DIR/$BACKUP_FILENAME"
 else

@@ -26,7 +26,7 @@ enter_password ()
 start_over ()
 {
   # Create APP_NAME.profile.tmp from the empty project template
-  cp default.profile "${APP_NAME}.profile.tmp"
+  cp stencils/default.profile "${APP_NAME}.profile.tmp"
   # Write APP_NAME
   sed -i.bak "s/APP_NAME=.*/APP_NAME=\"${APP_NAME}\"/g" "${APP_NAME}.profile.tmp"
 }
@@ -77,7 +77,7 @@ echo "--------------------------------------------------------------------------
 #
 # Chdir to top-level folder if needed.
 #
-if [ -f "../default.profile" ]; then
+if [ -f "../stencils/default.profile" ]; then
   echo
   echo "Changed current dir to the project's top level folder, for your convenience."
   cd .. || return 2

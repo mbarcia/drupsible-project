@@ -36,10 +36,10 @@ if [ "$DBDUMP" != "" ] && [ ! -f "ansible/playbooks/dbdumps/$DBDUMP" ]; then
   echo "Make sure the SQL statements do NOT start with a CREATE DATABASE."
 fi
 FILES_LIST=""
-for file in ".gitignore" "ansible.cfg" "Vagrantfile" "vagrant.yml"
+for file in "ansible.cfg" "Vagrantfile" "vagrant.yml"
 do
-if [ ! -f "${file}" ]; then
-    cp "${file}".default "${file}"
+if [ ! -f "stencils/${file}" ]; then
+    cp "stencils/${file}".default "${file}"
     if [ "${FILES_LIST}" != "" ]; then
       FILES_LIST="${FILES_LIST}, ${file}"
     else
@@ -66,7 +66,7 @@ sed -i.bak '/^$/d' vagrant.yml
 # ansible/requirements.yml
 #
 if [ ! -f ansible/requirements.yml ]; then
-  cp ansible/requirements.default.yml ansible/requirements.yml
+  cp stencils/ansible/requirements.default.yml ansible/requirements.yml
   echo
   echo "ansible/requirements.yml has been created locally for your convenience.."
 fi
@@ -79,7 +79,7 @@ do
   # Inventory file
   #
   if [ ! -f "ansible/inventory/${APP_NAME}${ENV}" ]; then
-    cp "ansible/inventory/app_name${ENV}" "ansible/inventory/${APP_NAME}${ENV}"
+    cp "stencils/ansible/inventory/app_name${ENV}" "ansible/inventory/${APP_NAME}${ENV}"
     # Assign web domain
     sed -i.bak "s/app_webdomain=.*/app_webdomain=${DOMAIN}/g" "ansible/inventory/${APP_NAME}${ENV}"
     # Replace app_name by the actual app name
@@ -109,7 +109,7 @@ do
   #
   # Copy/create the group vars directory with the final config files in it
   mkdir -p "ansible/inventory/group_vars/${APP_NAME}${ENV}/"
-  cp -pr "ansible/inventory/group_vars.default/app_name${ENV}/." "ansible/inventory/group_vars/${APP_NAME}${ENV}/"
+  cp -pr "stencils/ansible/inventory/group_vars.default/app_name${ENV}/." "ansible/inventory/group_vars/${APP_NAME}${ENV}/"
   cd "ansible/inventory/group_vars/${APP_NAME}${ENV}" || exit 2
   # Perform the regexp replacements in the final config files
   sed -i.bak "s/app_name:.*/app_name: '${APP_NAME}'/g" all.yml

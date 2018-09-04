@@ -111,13 +111,13 @@
 
   roles:
   - role: debops.secret
-    tags: [ secret ]
+    tags: [ secret, deployment ]
     when: app_https_enabled|default(False)|bool or
       (smtp_server|d("") != "" and
       smtp_port|d("") != "" and
       smtp_user|d("") != "")
   - role: debops.postfix
-    tags: [ postfix, postfix-deploy ]
+    tags: [ postfix, postfix-deploy, deployment ]
     postfix_dependencies: "{{ app_ferm_enabled|default(True)|bool }}"
     postfix: [ 'client', 'auth' ]
     postfix_relayhost: "[{{ smtp_server }}]:{{ smtp_port }}"
@@ -125,16 +125,16 @@
     when: smtp_server|d("") != "" and smtp_port|d("") != "" and smtp_user|d("") != "" and not app_in_container|d(False)|bool
   - role: debops.users
     when: not packer|default(False)|bool
-    users_enabled: True
-    users_list:
+    users__enabled: True
+    users__accounts:
     - name: "{{ app_user }}"
       forward: "{{ app_admin_email }}"
       shell: '/bin/bash'
       state: 'present'
-    users_admins: [ "{{ app_user }}" ]
+    users__admin_accounts: [ "{{ app_user }}" ]
     tags: [ users, users-deploy, deployment ]
   - role: drupsible.apache2
-    tags: [ apache2, php, apache2-deploy ]
+    tags: [ apache2, php, apache2-deploy, deployment ]
     apache2_site_name: "{{ app_name }}"
     apache2_webdomain: "{{ app_webdomain }}"
     apache2_public_html_folder: "{{ app_public_html_folder | d('public_html') }}"
@@ -152,7 +152,7 @@
     apache2_in_cloud: "{{ app_in_cloud }}"
     apache2_in_container: "{{ app_in_container }}"
   - role: drupsible.php
-    tags: [ php, php-deploy, newrelic, uploadprogress, xdebug, composer, drupal-console, memcached, twigc, blackfire ]
+    tags: [ php, php-deploy, newrelic, uploadprogress, xdebug, composer, drupal-console, memcached, twigc, blackfire, deployment ]
     php__in_container: "{{ app_in_container|d(False)|bool }}"
     deploy_php_app_pool:
       enabled: True
@@ -180,36 +180,36 @@
         opcache.fast_shutdown: '1'
     php__pools: [ '{{ deploy_php_app_pool }}' ]
   - role: drupsible.newrelic
-    tags: [ newrelic, newrelic-deploy ]
+    tags: [ newrelic, newrelic-deploy, deployment ]
     when: provision_new_relic|default(False)|bool and 'newrelic-php5' in apache2_php5_packages_ontop|default([]) and ansible_local.apache2.mpm == 'prefork'
   - role: drupsible.uploadprogress
-    tags: [ uploadprogress, uploadprogress-deploy ]
+    tags: [ uploadprogress, uploadprogress-deploy, deployment ]
     when: ansible_distribution_release != 'xenial'
   - role: drupsible.xdebug
-    tags: [ xdebug, xdebug-deploy ]
+    tags: [ xdebug, xdebug-deploy, deployment ]
     xdebug_cli_enabled: "{{ deploy_xdebug_cli_enabled|default(False)|bool }}"
     when: deploy_xdebug_enabled|default(False)|bool
   - role: drupsible.composer
-    tags: [ composer, composer-deploy, drupal-console, drush, provision ]
+    tags: [ composer, composer-deploy, drupal-console, drush, provision, deployment ]
   - role: drupsible.memcached
-    tags: [ memcached, memcached-deploy ]
+    tags: [ memcached, memcached-deploy, deployment ]
     when: app_memcached_enabled|default(True)|bool and not app_in_container|d(False)|bool
   - role: drupsible.drupal-console
     drupal_console_user: "{{ app_user }}"
     drupal_console_group: "{{ app_group }}"
-    tags: [ drupal-console, drupal-console-deploy, provision ]
+    tags: [ drupal-console, drupal-console-deploy, provision, deployment ]
     when: deploy_drupal_console_enabled|d(False)|bool and app_drupal_version|d('8')|version_compare('8', '==') and not app_in_container|d(False)|bool
   - role: drupsible.drush
-    tags: [ drush, drush-deploy ]
+    tags: [ drush, drush-deploy, deployment ]
     drush_drupal_version: "{{ app_drupal_version|default('8') }}"
     drush_app_user: "{{ app_user }}"  
   - role: drupsible.samba
-    tags: [ samba, samba-deploy ]
+    tags: [ samba, samba-deploy, deployment ]
     samba_webdomain: "{{ app_webdomain }}"
     samba_webhost: "{{ app_webhost }}"
-    when: app_target == 'local'
+    when: app_target == 'local' and not app_in_container|d(False)|bool
   - role: drupsible.twigc
-    tags: [ twigc, twigc-deploy ]
+    tags: [ twigc, twigc-deploy, deployment ]
     when: app_drupal_version|default('8')|version_compare('8', '==') and ansible_distribution_release != 'xenial'
     twigc_composer_working_dir: "/home/{{ app_user }}/{{ app_name }}"
   - role: debops.ferm
@@ -218,8 +218,8 @@
     ferm__dependent_rules: '{{ postfix_ferm_dependent_rules|default([]) + apache2_ferm_dependent_rules + samba_ferm_dependent_rules|default([]) }}'
     when: app_ferm_enabled|default(True)|bool and not app_in_container|d(False)|bool
   - role: drupsible.blackfire
-    tags: [ blackfire, blackfire-deploy ] 
-    when: deploy_blackfire_enabled|default(False)|bool and not app_in_container|d(False)|bool
+    tags: [ blackfire, blackfire-deploy, deployment ] 
+    when: deploy_blackfire_enabled|default(False)|bool
 
 - name: Varnish inventory group
   hosts: [ '{{ app_name }}-{{ app_target }}_varnish' ]
@@ -228,6 +228,17 @@
   roles:
   - role: debops.secret
     tags: [ secret, varnish, secret-varnish ]
+  - role: debops.users
+    when: not packer|default(False)|bool
+    users__enabled: True
+    users__groups:
+    - name: varnish
+      system: True
+    users__admin_accounts:
+    - name: vcache
+      group: varnish
+      state: 'present'
+    tags: [ users, users-varnish, varnish ]
   - role: drupsible.varnish
     tags: [ varnish, varnish-varnish ]
     varnish_webdomain: "{{ app_webdomain }}"
