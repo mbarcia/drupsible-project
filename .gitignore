@@ -27,3 +27,5 @@
 
 # Data volume for mysql container 
 /datavol/
+
+/drupsible.log
